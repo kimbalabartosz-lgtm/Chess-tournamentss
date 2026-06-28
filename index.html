@@ -1124,7 +1124,7 @@ function cardHTML(t) {
     <div class="card-footer">
       <div class="location-line">
         <div class="loc-dash"></div>
-        <span>${t.flag ? t.flag + ' ' : ''}${t.city}</span>
+        <span>${t.flag ? t.flag + ' ' : ''}${t.country} &middot; ${t.city}</span>
       </div>
       <div class="prize-line">
         ${t.firstPrize > 0 ? `<span class="prize-val">${fmtPrize(t.firstPrize)}</span>` : ''}
@@ -1268,11 +1268,3 @@ loadLiveData();
 </script>
 </body>
 </html>
-
-   
-    
-   
-    
-     
-   
-      
