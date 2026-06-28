@@ -87,8 +87,28 @@ async function scrapeChessArbiter() {
 
 const countryFlags = {
   'POL': '🇵🇱', 'ENG': '🏴󠁧󠁢󠁥󠁮󠁧󠁿', 'GER': '🇩🇪', 'FRA': '🇫🇷', 'ESP': '🇪🇸', 'ITA': '🇮🇹', 'USA': '🇺🇸', 'CAN': '🇨🇦',
-  'COL': '🇨🇴', 'IND': '🇮🇳', 'BRA': '🇧🇷', 'AUS': '🇦🇺', 'NZL': '🇳🇿', 'ARG': '🇦🇷', 'NED': '🇳🇱', 'BEL': '🇧🇪'
+  'COL': '🇨🇴', 'IND': '🇮🇳', 'BRA': '🇧🇷', 'AUS': '🇦🇺', 'NZL': '🇳🇿', 'ARG': '🇦🇷', 'NED': '🇳🇱', 'BEL': '🇧🇪',
+  'TUR': '🇹🇷', 'CAT': '🇪🇸', 'ECU': '🇪🇨', 'CRC': '🇨🇷', 'BOL': '🇧🇴', 'URU': '🇺🇾', 'TUN': '🇹🇳', 'EGY': '🇪🇬',
+  'MAR': '🇲🇦', 'UKR': '🇺🇦', 'UAE': '🇦🇪', 'MEX': '🇲🇽', 'IRI': '🇮🇷', 'GRE': '🇬🇷', 'BLR': '⬜', 'PAN': '🇵🇦',
+  'AZE': '🇦🇿', 'PER': '🇵🇪', 'ARM': '🇦🇲', 'ISL': '🇮🇸', 'PHI': '🇵🇭', 'ISR': '🇮🇱', 'CRO': '🇭🇷', 'ROU': '🇷🇴',
+  'RSA': '🇿🇦', 'CHI': '🇨🇱', 'KAZ': '🇰🇿', 'UZB': '🇺🇿', 'SRB': '🇷🇸', 'CZE': '🇨🇿', 'SVK': '🇸🇰', 'SWE': '🇸🇪',
+  'NOR': '🇳🇴', 'DEN': '🇩🇰', 'FIN': '🇫🇮', 'HUN': '🇭🇺', 'SUI': '🇨🇭', 'AUT': '🇦🇹', 'IRL': '🇮🇪', 'WLS': '🏴󠁧󠁢󠁷󠁬󠁳󠁿',
+  'SCO': '🏴󠁧󠁢󠁳󠁣󠁴󠁿', 'POR': '🇵🇹', 'CUB': '🇨🇺', 'VEN': '🇻🇪', 'PAR': '🇵🇾', 'INA': '🇮🇩', 'MAS': '🇲🇾', 'SGP': '🇸🇬',
+  'VIE': '🇻🇳', 'THA': '🇹🇭', 'CHN': '🇨🇳', 'JPN': '🇯🇵', 'KOR': '🇰🇷', 'ALG': '🇩🇿', 'NGR': '🇳🇬', 'KEN': '🇰🇪'
 };
+
+function getContinent(fedCode) {
+  const americas = ['USA', 'CAN', 'COL', 'BRA', 'ARG', 'ECU', 'CRC', 'BOL', 'URU', 'MEX', 'PAN', 'PER', 'CUB', 'VEN', 'PAR', 'CHI'];
+  const asia =     ['IND', 'UAE', 'IRI', 'PHI', 'ISR', 'KAZ', 'UZB', 'INA', 'MAS', 'SGP', 'VIE', 'THA', 'CHN', 'JPN', 'KOR'];
+  const africa =   ['TUN', 'EGY', 'MAR', 'RSA', 'ALG', 'NGR', 'KEN'];
+  const oceania =  ['AUS', 'NZL'];
+  
+  if (americas.includes(fedCode)) return 'Americas';
+  if (asia.includes(fedCode)) return 'Asia';
+  if (africa.includes(fedCode)) return 'Africa';
+  if (oceania.includes(fedCode)) return 'Oceania';
+  return 'Europe'; // Default fallback
+}
 
 async function scrapeChessResults() {
   console.log('📡 Scraping Chess-Results.com (via Puppeteer)...');
@@ -105,7 +125,14 @@ async function scrapeChessResults() {
     // Increase navigation timeout for GitHub Actions
     await page.goto('https://chess-results.com/TurnierSuche.aspx?lan=1', { waitUntil: 'networkidle2', timeout: 60000 });
     
+    console.log('  Selecting max results...');
     await page.evaluate(() => {
+      // Set to max rows (value '10' usually means max/all depending on the form, or we can just try to click)
+      const select = document.querySelector('select[name="ctl00$P1$combo_anzahl_zeilen"]');
+      if (select) {
+        const lastOption = select.options[select.options.length - 1];
+        select.value = lastOption.value; // Select the maximum value available in the dropdown
+      }
       document.querySelector('input[name="ctl00$P1$cb_suchen"]').click();
     });
     
@@ -137,7 +164,7 @@ async function scrapeChessResults() {
         name,
         city: city || fedCode,
         country: fedCode,
-        continent: 'Global',
+        continent: getContinent(fedCode),
         flag: countryFlags[fedCode] || '🏳️',
         startDate: start,
         endDate: end || start,
@@ -157,6 +184,58 @@ async function scrapeChessResults() {
   return tournaments;
 }
 
+async function fetchTournamentDetails(tournaments) {
+  console.log(`\n🔍 Deep scraping details for ${tournaments.length} tournaments (this takes a minute)...`);
+  
+  const concurrency = 15;
+  for (let i = 0; i < tournaments.length; i += concurrency) {
+    const chunk = tournaments.slice(i, i + concurrency);
+    
+    await Promise.all(chunk.map(async (t) => {
+      try {
+        let fetchUrl = t.source;
+        if (t.scrapedFrom === 'Chess-Results' && fetchUrl.includes('.aspx')) {
+          fetchUrl = fetchUrl.replace('.aspx', '.aspx?art=0'); // Starting rank
+        } else if (t.scrapedFrom === 'ChessArbiter' && fetchUrl.includes('turnieje/')) {
+          fetchUrl = fetchUrl + (fetchUrl.endsWith('/') ? '?' : '&') + 'str=2'; // Starting list
+        }
+        
+        if (fetchUrl === '#' || !fetchUrl.startsWith('http')) return;
+
+        const res = await fetch(fetchUrl, { headers: { 'User-Agent': 'Mozilla/5.0' }, timeout: 10000 });
+        if (!res.ok) return;
+        const html = await res.text();
+        
+        // Count Titled Players
+        t.gms = (html.match(/\bW?GM\b/g) || []).length;
+        t.ims = (html.match(/\bW?IM\b/g) || []).length;
+        t.fms = (html.match(/\bW?FM\b/g) || []).length;
+        
+        // Extract Prize Money (rough regex for € and PLN)
+        const prizeMatch = html.match(/(?:€|PLN|EUR|USD|\$|£)\s*([\d,\.]+)/i);
+        if (prizeMatch) {
+          const val = parseInt(prizeMatch[1].replace(/[^\d]/g, ''), 10);
+          if (val > 0 && val < 1000000) t.firstPrize = val;
+        }
+
+        // Open/Closed Check
+        if (html.toLowerCase().includes('closed') || t.name.toLowerCase().includes('zamknięt')) {
+          t.isOpen = false;
+        } else {
+          t.isOpen = true;
+        }
+
+      } catch (e) {
+        // Ignore timeouts
+      }
+    }));
+    
+    process.stdout.write(`\r  Progress: ${Math.min(i + concurrency, tournaments.length)} / ${tournaments.length}`);
+  }
+  console.log('\n  ✅ Deep scraping complete!');
+  return tournaments;
+}
+
 async function main() {
   console.log('\n🏁 chess:tour scraper starting...\n');
   
@@ -165,15 +244,18 @@ async function main() {
     scrapeChessResults()
   ]);
   
-  const all = [...arbiterData, ...resultsData];
+  let all = [...arbiterData, ...resultsData];
 
   const cutoff = new Date();
   cutoff.setDate(cutoff.getDate() - 2);
   const cutoffStr = cutoff.toISOString().slice(0, 10);
 
-  const upcoming = all
+  let upcoming = all
     .filter(t => t.endDate >= cutoffStr)
     .sort((a, b) => a.startDate.localeCompare(b.startDate));
+
+  // DEEP SCRAPE!
+  upcoming = await fetchTournamentDetails(upcoming);
 
   console.log(`📦 Total playable upcoming: ${upcoming.length}`);
 
@@ -193,7 +275,4 @@ async function main() {
 
 main().catch(e => { console.error('Fatal error:', e); process.exit(1); });
 
-  
-  
-       
-  
+ 
