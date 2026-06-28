@@ -649,7 +649,7 @@
           </svg>
         </div>
         <div class="sub-label">Continent</div>
-        <select class="styled-select" id="continent-select">
+        <select class="styled-select" id="continent-select" onchange="applyFilters()">
           <option value="">All continents</option>
           <option value="Europe">Europe</option>
           <option value="Americas">Americas</option>
@@ -658,7 +658,7 @@
           <option value="Oceania">Oceania</option>
         </select>
         <div class="sub-label">Country</div>
-        <select class="styled-select" id="country-select">
+        <select class="styled-select" id="country-select" onchange="applyFilters()">
           <option value="">All countries</option>
         </select>
         <div class="sub-label">City</div>
@@ -704,10 +704,10 @@
             <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
           </svg>
         </div>
-        <label class="check-item"><input type="checkbox" value="Classical" class="tc-check" /><span>Classical</span></label>
-        <label class="check-item"><input type="checkbox" value="Rapid" class="tc-check" /><span>Rapid</span></label>
-        <label class="check-item"><input type="checkbox" value="Blitz" class="tc-check" /><span>Blitz</span></label>
-        <label class="check-item"><input type="checkbox" value="Bullet" class="tc-check" /><span>Bullet</span></label>
+        <label class="check-item"><input type="checkbox" value="Classical" class="tc-check" onchange="applyFilters()" /><span>Classical</span></label>
+        <label class="check-item"><input type="checkbox" value="Rapid" class="tc-check" onchange="applyFilters()" /><span>Rapid</span></label>
+        <label class="check-item"><input type="checkbox" value="Blitz" class="tc-check" onchange="applyFilters()" /><span>Blitz</span></label>
+        <label class="check-item"><input type="checkbox" value="Bullet" class="tc-check" onchange="applyFilters()" /><span>Bullet</span></label>
       </div>
 
       <!-- Duration -->
@@ -715,10 +715,10 @@
         <div class="section-label">
           <span class="section-label-text">Duration</span>
         </div>
-        <label class="check-item"><input type="checkbox" value="weekend" class="dur-check" /><span>Weekend (1–2 days)</span></label>
-        <label class="check-item"><input type="checkbox" value="short" class="dur-check" /><span>Short (3–5 days)</span></label>
-        <label class="check-item"><input type="checkbox" value="week" class="dur-check" /><span>Full week (6–7 days)</span></label>
-        <label class="check-item"><input type="checkbox" value="extended" class="dur-check" /><span>Extended (8+ days)</span></label>
+        <label class="check-item"><input type="checkbox" value="weekend" class="dur-check" onchange="applyFilters()" /><span>Weekend (1–2 days)</span></label>
+        <label class="check-item"><input type="checkbox" value="short" class="dur-check" onchange="applyFilters()" /><span>Short (3–5 days)</span></label>
+        <label class="check-item"><input type="checkbox" value="week" class="dur-check" onchange="applyFilters()" /><span>Full week (6–7 days)</span></label>
+        <label class="check-item"><input type="checkbox" value="extended" class="dur-check" onchange="applyFilters()" /><span>Extended (8+ days)</span></label>
       </div>
 
       <!-- Titled Players -->
@@ -750,8 +750,8 @@
             <line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/>
           </svg>
         </div>
-        <label class="check-item"><input type="checkbox" id="free-only" /><span>Free entry only</span></label>
-        <label class="check-item"><input type="checkbox" id="fide-rated" /><span>FIDE Rated</span></label>
+        <label class="check-item"><input type="checkbox" id="free-only" onchange="applyFilters()" /><span>Free entry only</span></label>
+        <label class="check-item"><input type="checkbox" id="fide-rated" onchange="applyFilters()" /><span>FIDE Rated</span></label>
       </div>
 
       <button class="filter-btn" onclick="applyFilters()">
