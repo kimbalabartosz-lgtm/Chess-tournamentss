@@ -159,6 +159,9 @@ async function scrapeChessResults() {
       
       if (!start || start.length < 8) return;
       
+      const rounds = parseInt(tds.eq(16).text().trim()) || null;
+      const players = parseInt(tds.eq(17).text().trim()) || null;
+      
       tournaments.push({
         id: `cr-${crCounter++}`,
         name,
@@ -170,6 +173,8 @@ async function scrapeChessResults() {
         endDate: end || start,
         durationDays: 1,
         timeControl: detectTimeControl(tcRaw || name),
+        rounds: rounds,
+        players: players,
         source: `https://chess-results.com/${sourceUrl}`,
         scrapedFrom: 'Chess-Results'
       });
@@ -274,5 +279,3 @@ async function main() {
 }
 
 main().catch(e => { console.error('Fatal error:', e); process.exit(1); });
-
- 
