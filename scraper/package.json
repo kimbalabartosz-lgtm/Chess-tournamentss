@@ -1,0 +1,13 @@
+{
+  "name": "chess-tour-scraper",
+  "version": "1.0.0",
+  "description": "Scrapes chess tournaments from Chess-Results, ChessArbiter, and FIDE",
+  "main": "scraper.js",
+  "scripts": {
+    "scrape": "node scraper.js"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0",
+    "node-fetch": "^2.7.0"
+  }
+}

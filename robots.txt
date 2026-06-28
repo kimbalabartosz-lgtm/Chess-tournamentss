@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /scraper/
+
+Sitemap: https://chess-tour.app/sitemap.xml
