@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- ── Primary SEO ─────────────────────────────────── -->
+  <title>Chess Tournament Finder — Browse Worldwide Chess Tournaments | chess:tour</title>
+  <meta name="description" content="Find upcoming chess tournaments worldwide. Filter by prize money, entry fee, location, time control (Classical, Rapid, Blitz), grandmasters, and more. Updated daily." />
+  <meta name="keywords" content="chess tournament, chess competition, find chess tournament, chess open, grandmaster tournament, FIDE rated, rapid chess, blitz chess, classical chess, chess prize" />
+  <link rel="canonical" href="https://chess-tour.app/" />
+
+  <!-- ── Open Graph (Facebook, LinkedIn previews) ──── -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:url"         content="https://chess-tour.app/" />
+  <meta property="og:title"       content="Chess Tournament Finder — chess:tour" />
+  <meta property="og:description" content="Browse and filter thousands of chess tournaments worldwide. Filter by prize, location, time control and more." />
+  <meta property="og:site_name"   content="chess:tour" />
+
+  <!-- ── Twitter Card ───────────────────────────────── -->
+  <meta name="twitter:card"        content="summary_large_image" />
+  <meta name="twitter:title"       content="Chess Tournament Finder — chess:tour" />
+  <meta name="twitter:description" content="Browse and filter thousands of chess tournaments worldwide." />
+
+  <!-- ── Structured Data for Google ────────────────── -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "chess:tour",
+    "url": "https://chess-tour.app",
+    "description": "Global chess tournament aggregator — find and filter chess tournaments worldwide",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://chess-tour.app/?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #f6f8fa;
+      color: #2d3748;
+      font-size: 13.5px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── HEADER ─────────────────────────────────── */
+    .header {
+      background: #24294d;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo {
+      font-size: 19px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 0;
+      text-decoration: none;
+    }
+    .logo-colon { color: #ffd13b; }
+    .header-slogan {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+    .header-slogan-top {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: rgba(255,209,59,0.55);
+    }
+    .header-slogan-main {
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #ffd13b;
+      line-height: 1;
+    }
+    .header-slogan-sub {
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,209,59,0.4);
+    }
+    .header-right { width: 120px; } /* balance for flex centering */
+
+    /* ── LAYOUT ─────────────────────────────────── */
+    .page-wrap {
+      max-width: 1260px;
+      margin: 0 auto;
+      padding: 28px 24px;
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+    }
+
+    /* ── SIDEBAR ─────────────────────────────────── */
+    .sidebar {
+      width: 252px;
+      flex-shrink: 0;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      overflow: hidden;
+      position: relative;
+    }
+    /* Left accent bar — inset with gap */
+    .sidebar::before {
+      content: '';
+      position: absolute;
+      left: 9px;
+      top: 16px;
+      bottom: 16px;
+      width: 4px;
+      border-radius: 4px;
+      background: #24294d;
+    }
+    .sidebar-inner { padding: 16px 16px 16px 24px; }
+
+    .sidebar-search {
+      position: relative;
+      margin-bottom: 14px;
+    }
+    .sidebar-search input {
+      width: 100%;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 8px 32px 8px 12px;
+      font-family: inherit;
+      font-size: 13px;
+      color: #2d3748;
+      outline: none;
+      background: #fff;
+      transition: border-color 0.15s;
+    }
+    .sidebar-search input:focus { border-color: #24294d; }
+    .sidebar-search input::placeholder { color: #a0aec0; }
+    .sidebar-search svg {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #a0aec0;
+      pointer-events: none;
+    }
+
+    .sidebar-section { margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid #f0f4f8; }
+    .sidebar-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+    .section-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .section-label-text {
+      font-size: 13px;
+      font-weight: 700;
+      color: #2d3748;
+    }
+    .section-label svg { color: #a0aec0; }
+
+    .row-inputs { display: flex; gap: 8px; }
+    .row-inputs input {
+      flex: 1;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 7px 10px;
+      font-family: inherit;
+      font-size: 12.5px;
+      color: #2d3748;
+      outline: none;
+      min-width: 0;
+      transition: border-color 0.15s;
+    }
+    .row-inputs input:focus { border-color: #24294d; }
+    .row-inputs input::placeholder { color: #a0aec0; }
+
+    .sub-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #718096;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 5px;
+    }
+
+    .styled-select {
+      width: 100%;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 7px 10px;
+      font-family: inherit;
+      font-size: 12.5px;
+      color: #2d3748;
+      background: #fff;
+      outline: none;
+      cursor: pointer;
+      margin-bottom: 7px;
+      transition: border-color 0.15s;
+    }
+    .styled-select:focus { border-color: #24294d; }
+
+    .city-wrap { position: relative; }
+    .city-wrap input {
+      width: 100%;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 7px 52px 7px 10px;
+      font-family: inherit;
+      font-size: 12.5px;
+      color: #2d3748;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .city-wrap input:focus { border-color: #24294d; }
+    .city-wrap input::placeholder { color: #a0aec0; }
+    .km-badge {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 11px;
+      font-weight: 600;
+      color: #a0aec0;
+      background: #f7fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px;
+      padding: 2px 7px;
+    }
+
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 4px 0;
+      cursor: pointer;
+    }
+    .check-item input[type=checkbox] {
+      width: 14px;
+      height: 14px;
+      accent-color: #24294d;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .check-item span {
+      font-size: 13px;
+      color: #4a5568;
+      user-select: none;
+      transition: color 0.1s;
+    }
+    .check-item:hover span { color: #1a202c; }
+
+    .prize-inputs { display: flex; gap: 8px; margin-bottom: 0; }
+    .prize-input-wrap { flex: 1; position: relative; min-width: 0; }
+    .prize-input-wrap span {
+      position: absolute;
+      left: 9px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 12px;
+      color: #a0aec0;
+      pointer-events: none;
+    }
+    .prize-input-wrap input {
+      width: 100%;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 7px 8px 7px 20px;
+      font-family: inherit;
+      font-size: 12.5px;
+      color: #2d3748;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .prize-input-wrap input:focus { border-color: #24294d; }
+    .prize-input-wrap input::placeholder { color: #a0aec0; }
+
+    .filter-btn {
+      width: 100%;
+      background: #24294d;
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      padding: 10px 0;
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      margin-top: 4px;
+      transition: opacity 0.15s;
+    }
+    .filter-btn:hover { opacity: 0.9; }
+
+    .clear-btn {
+      width: 100%;
+      background: none;
+      border: none;
+      font-family: inherit;
+      font-size: 12px;
+      color: #a0aec0;
+      cursor: pointer;
+      padding: 8px 0 0;
+      transition: color 0.15s;
+    }
+    .clear-btn:hover { color: #24294d; text-decoration: underline; }
+
+    /* ── MAIN CONTENT ─────────────────────────────── */
+    .main-content { flex: 1; min-width: 0; }
+
+    .content-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .content-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: #24294d;
+      letter-spacing: -0.5px;
+    }
+    .toolbar { display: flex; align-items: center; gap: 10px; }
+
+    .sort-select {
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 7px 12px;
+      font-family: inherit;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: #4a5568;
+      background: #fff;
+      outline: none;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .sort-select:focus { border-color: #24294d; }
+
+    .view-toggle { display: flex; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .view-btn {
+      width: 34px;
+      height: 34px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #a0aec0;
+      transition: all 0.15s;
+    }
+    .view-btn + .view-btn { border-left: 1px solid #e2e8f0; }
+    .view-btn.active, .view-btn:hover { background: #24294d; color: #fff; }
+
+    /* ── TOURNAMENT ROWS ─────────────────────────── */
+    .tournaments-list { display: flex; flex-direction: column; gap: 10px; }
+
+    .tournament-row {
+      position: relative;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 14px 16px 14px 26px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: box-shadow 0.15s, border-color 0.15s;
+    }
+    .tournament-row:hover { box-shadow: 0 3px 12px rgba(36,41,77,0.08); border-color: #cbd5e0; }
+
+    /* Left colored accent bar — inset with gap */
+    .bar {
+      position: absolute;
+      left: 9px;
+      top: 12px;
+      bottom: 12px;
+      width: 4px;
+      border-radius: 4px;
+    }
+    .bar-classical { background: #24294d; }
+    .bar-rapid     { background: #e53e3e; }
+    .bar-blitz     { background: #38a169; }
+    .bar-bullet    { background: #805ad5; }
+
+    .row-left { flex: 1; min-width: 0; }
+    .row-name {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: #1a56db;
+      margin-bottom: 7px;
+      line-height: 1.35;
+      display: block;
+      text-decoration: none;
+    }
+    .row-name:hover { text-decoration: underline; color: #1240b0; }
+    .row-name.no-link { color: #24294d; cursor: default; pointer-events: none; }
+
+    .row-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0 20px;
+      row-gap: 4px;
+    }
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      color: #718096;
+      font-weight: 500;
+    }
+    .meta-item svg { color: #a0aec0; flex-shrink: 0; }
+
+    .row-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+    .location-line {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #4a5568;
+    }
+    .loc-dash { width: 14px; height: 3px; background: #e53e3e; border-radius: 2px; flex-shrink: 0; }
+    .prize-line {
+      font-size: 12px;
+      color: #718096;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .prize-val { font-weight: 700; color: #1a365d; }
+    .free-badge {
+      font-size: 11px;
+      font-weight: 700;
+      background: #f0fff4;
+      color: #276749;
+      border: 1px solid #c6f6d5;
+      border-radius: 4px;
+      padding: 1px 7px;
+    }
+
+    /* ── GRID VIEW ─────────────────────────────────── */
+    .tournaments-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(285px, 1fr));
+      gap: 12px;
+    }
+    .tournament-card {
+      position: relative;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 14px 14px 14px 24px;
+      cursor: pointer;
+      transition: box-shadow 0.15s, border-color 0.15s;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .tournament-card:hover { box-shadow: 0 4px 14px rgba(36,41,77,0.1); border-color: #cbd5e0; }
+    .card-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1a56db;
+      line-height: 1.35;
+      text-decoration: none;
+      display: block;
+    }
+    .card-name:hover { text-decoration: underline; color: #1240b0; }
+    .card-name.no-link { color: #24294d; cursor: default; pointer-events: none; }
+    .card-meta { display: flex; flex-direction: column; gap: 5px; }
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 8px;
+      border-top: 1px solid #f0f4f8;
+      margin-top: auto;
+    }
+
+    /* ── TABS ─────────────────────────────────────── */
+    .tabs-wrap {
+      display: flex;
+      justify-content: center;
+      border-bottom: 1px solid #e2e8f0;
+      margin: 22px 0 18px;
+    }
+    .tab-list { display: flex; gap: 48px; }
+    .tab-btn {
+      background: none;
+      border: none;
+      font-family: inherit;
+      font-size: 14.5px;
+      font-weight: 600;
+      color: #a0aec0;
+      padding-bottom: 12px;
+      cursor: pointer;
+      position: relative;
+      transition: color 0.15s;
+    }
+    .tab-btn:hover { color: #24294d; }
+    .tab-btn.active { color: #24294d; }
+    .tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 2.5px;
+      background: #24294d;
+      border-radius: 2px 2px 0 0;
+    }
+
+    /* ── EMPTY STATE ─────────────────────────────── */
+    .empty-state {
+      text-align: center;
+      padding: 60px 24px;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+    }
+    .empty-icon { font-size: 40px; opacity: 0.15; margin-bottom: 12px; }
+    .empty-title { font-size: 15px; font-weight: 700; color: #4a5568; margin-bottom: 4px; }
+    .empty-sub { font-size: 13px; color: #a0aec0; }
+
+    /* ── RESULT COUNT ─────────────────────────────── */
+    .result-meta {
+      font-size: 12.5px;
+      color: #718096;
+      margin-bottom: 12px;
+    }
+    .result-meta strong { color: #24294d; }
+
+    /* ── SCROLLBAR ─────────────────────────────────── */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 4px; }
+
+    /* ── FOOTER ─────────────────────────────────────── */
+    .footer {
+      background: #fff;
+      border-top: 1px solid #e2e8f0;
+      padding: 16px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #a0aec0;
+      margin-top: 40px;
+    }
+    .footer-logo { font-weight: 800; color: #24294d; }
+    .footer-logo span { color: #a0aec0; }
+
+    /* ── RESPONSIVE ─────────────────────────────────── */
+    @media (max-width: 768px) {
+      .page-wrap { flex-direction: column; padding: 16px; }
+      .sidebar { width: 100%; }
+      .header-slogan { display: none; }
+      .header { padding: 0 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════ HEADER ═══════════════════════════════════ -->
+<header class="header">
+  <a class="logo" href="#">chess<span class="logo-colon">:</span>tour</a>
+  <div class="header-slogan">
+    <span class="header-slogan-top">global</span>
+    <span class="header-slogan-main">Find Your Tournament</span>
+    <span class="header-slogan-sub">chess · worldwide · 2026</span>
+  </div>
+  <div class="header-right"></div>
+</header>
+
+<!-- ═══════════════════════════════════ PAGE ═══════════════════════════════════ -->
+<div class="page-wrap">
+
+  <!-- ── SIDEBAR ─────────────────────────── -->
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <!-- Search -->
+      <div class="sidebar-search">
+        <input type="text" id="q-input" placeholder="City or tournament name" />
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+      </div>
+
+      <!-- Date -->
+      <div class="sidebar-section">
+        <div class="section-label">
+          <span class="section-label-text">Date</span>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+        </div>
+        <div class="row-inputs">
+          <input type="date" id="date-from" placeholder="From" />
+          <input type="date" id="date-to" placeholder="To" />
+        </div>
+      </div>
+
+      <!-- Location -->
+      <div class="sidebar-section">
+        <div class="section-label">
+          <span class="section-label-text">Location</span>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+          </svg>
+        </div>
+        <div class="sub-label">Continent</div>
+        <select class="styled-select" id="continent-select">
+          <option value="">All continents</option>
+          <option value="Europe">Europe</option>
+          <option value="Americas">Americas</option>
+          <option value="Asia">Asia</option>
+          <option value="Africa">Africa</option>
+          <option value="Oceania">Oceania</option>
+        </select>
+        <div class="sub-label">Country</div>
+        <select class="styled-select" id="country-select">
+          <option value="">All countries</option>
+        </select>
+        <div class="sub-label">City</div>
+        <div class="city-wrap">
+          <input type="text" id="city-input" placeholder="Enter city" />
+          <span class="km-badge">0 km</span>
+        </div>
+      </div>
+
+      <!-- Prize -->
+      <div class="sidebar-section">
+        <div class="section-label">
+          <span class="section-label-text">1st Prize (€)</span>
+        </div>
+        <div class="prize-inputs">
+          <div class="prize-input-wrap">
+            <span>€</span>
+            <input type="number" id="prize-min" placeholder="Min" min="0" />
+          </div>
+          <div class="prize-input-wrap">
+            <span>€</span>
+            <input type="number" id="prize-max" placeholder="Max" min="0" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Entry Fee -->
+      <div class="sidebar-section">
+        <div class="section-label">
+          <span class="section-label-text">Entry Fee (€ max)</span>
+        </div>
+        <div class="prize-input-wrap">
+          <span>€</span>
+          <input type="number" id="fee-max" placeholder="Any" min="0" style="width:100%" />
+        </div>
+      </div>
+
+      <!-- Time Control -->
+      <div class="sidebar-section">
+        <div class="section-label">
+          <span class="section-label-text">Time Control</span>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+        </div>
+        <label class="check-item"><input type="checkbox" value="Classical" class="tc-check" /><span>Classical</span></label>
+        <label class="check-item"><input type="checkbox" value="Rapid" class="tc-check" /><span>Rapid</span></label>
+        <label class="check-item"><input type="checkbox" value="Blitz" class="tc-check" /><span>Blitz</span></label>
+        <label class="check-item"><input type="checkbox" value="Bullet" class="tc-check" /><span>Bullet</span></label>
+      </div>
+
+      <!-- Duration -->
+      <div class="sidebar-section">
+        <div class="section-label">
+          <span class="section-label-text">Duration</span>
+        </div>
+        <label class="check-item"><input type="checkbox" value="weekend" class="dur-check" /><span>Weekend (1–2 days)</span></label>
+        <label class="check-item"><input type="checkbox" value="short" class="dur-check" /><span>Short (3–5 days)</span></label>
+        <label class="check-item"><input type="checkbox" value="week" class="dur-check" /><span>Full week (6–7 days)</span></label>
+        <label class="check-item"><input type="checkbox" value="extended" class="dur-check" /><span>Extended (8+ days)</span></label>
+      </div>
+
+      <!-- Titled Players -->
+      <div class="sidebar-section">
+        <div class="section-label">
+          <span class="section-label-text">Titled Players</span>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+          </svg>
+        </div>
+        <div class="sub-label" style="margin-bottom:5px">Min. Grandmasters</div>
+        <div class="prize-input-wrap" style="margin-bottom:8px">
+          <input type="number" id="gm-min" placeholder="Any" min="0" style="width:100%; padding-left:10px" />
+        </div>
+        <div class="sub-label" style="margin-bottom:5px">Min. Titled (GM+IM+FM)</div>
+        <div class="prize-input-wrap">
+          <input type="number" id="titled-min" placeholder="Any" min="0" style="width:100%; padding-left:10px" />
+        </div>
+      </div>
+
+      <!-- Options -->
+      <div class="sidebar-section">
+        <div class="section-label">
+          <span class="section-label-text">Options</span>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/>
+            <line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/>
+            <line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/>
+            <line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/>
+          </svg>
+        </div>
+        <label class="check-item"><input type="checkbox" id="free-only" /><span>Free entry only</span></label>
+        <label class="check-item"><input type="checkbox" id="fide-rated" /><span>FIDE Rated</span></label>
+      </div>
+
+      <button class="filter-btn" onclick="applyFilters()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+        </svg>
+        Filter
+      </button>
+      <button class="clear-btn" onclick="clearFilters()">Clear all filters</button>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ─────────────────────────────── -->
+  <main class="main-content">
+    <div class="content-header">
+      <h1 class="content-title">Chess Tournaments</h1>
+      <div class="toolbar">
+        <select class="sort-select" id="sort-select" onchange="renderAll()">
+          <option value="date-asc">Date: soonest</option>
+          <option value="date-desc">Date: latest</option>
+          <option value="prize-desc">Prize: highest</option>
+          <option value="prize-asc">Prize: lowest</option>
+          <option value="players-desc">Players: most</option>
+          <option value="gms-desc">GMs: most</option>
+          <option value="fee-asc">Entry fee: lowest</option>
+        </select>
+        <div class="view-toggle">
+          <button class="view-btn active" id="list-btn" onclick="setView('list')" title="List view">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/>
+              <line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>
+            </svg>
+          </button>
+          <button class="view-btn" id="grid-btn" onclick="setView('grid')" title="Grid view">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+              <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <p class="result-meta" id="result-meta"></p>
+
+    <!-- Featured (top 3) -->
+    <div id="featured-wrap"></div>
+
+    <!-- Tabs -->
+    <div class="tabs-wrap">
+      <div class="tab-list">
+        <button class="tab-btn" id="tab-completed" onclick="setTab('completed')">completed</button>
+        <button class="tab-btn active" id="tab-upcoming" onclick="setTab('upcoming')">upcoming</button>
+        <button class="tab-btn" id="tab-ongoing" onclick="setTab('ongoing')">ongoing</button>
+      </div>
+    </div>
+
+    <!-- Tab results -->
+    <div id="tab-wrap"></div>
+  </main>
+</div>
+
+<footer class="footer">
+  <div><span class="footer-logo">chess<span>:</span>tour</span> · Global chess tournament aggregator</div>
+  <div id="footer-status">Loading data…</div>
+</footer>
+
+<script>
+// ═══════════════════════ DATA ═══════════════════════════
+
+const TODAY = new Date().toISOString().slice(0, 10);
+
+// Mock fallback data (used when data/tournaments.json is not available)
+const MOCK_TOURNAMENTS = [
+  // ── EUROPE ──
+  { id:1,  name:'Zurich Chess Challenge 2026', city:'Zurich', country:'Switzerland', continent:'Europe', flag:'🇨🇭',
+    startDate:'2026-07-12', endDate:'2026-07-20', durationDays:9, timeControl:'Classical',
+    firstPrize:15000, totalPrize:45000, entryFee:140, players:180, gms:12, ims:18, fms:6,
+    rounds:9, fideRated:true, source:'https://zurichchesschallenge.com' },
+
+  { id:2,  name:'Wrocław Grand Prix Rapid', city:'Wrocław', country:'Poland', continent:'Europe', flag:'🇵🇱',
+    startDate:'2026-07-18', endDate:'2026-07-19', durationDays:2, timeControl:'Rapid',
+    firstPrize:2500, totalPrize:8000, entryFee:45, players:340, gms:3, ims:11, fms:20,
+    rounds:7, fideRated:true, source:'#' },
+
+  { id:3,  name:'Barcelona Summer Open 2026', city:'Barcelona', country:'Spain', continent:'Europe', flag:'🇪🇸',
+    startDate:'2026-08-01', endDate:'2026-08-09', durationDays:9, timeControl:'Classical',
+    firstPrize:8000, totalPrize:28000, entryFee:95, players:520, gms:22, ims:34, fms:41,
+    rounds:9, fideRated:true, source:'#' },
+
+  { id:4,  name:'Tata Steel Challengers', city:'Wijk aan Zee', country:'Netherlands', continent:'Europe', flag:'🇳🇱',
+    startDate:'2026-08-15', endDate:'2026-08-30', durationDays:16, timeControl:'Classical',
+    firstPrize:22000, totalPrize:75000, entryFee:200, players:95, gms:35, ims:22, fms:8,
+    rounds:13, fideRated:true, source:'https://tatasteelchess.com' },
+
+  { id:5,  name:'Prague Open Rapid & Blitz', city:'Prague', country:'Czech Republic', continent:'Europe', flag:'🇨🇿',
+    startDate:'2026-07-04', endDate:'2026-07-07', durationDays:4, timeControl:'Rapid',
+    firstPrize:1800, totalPrize:5500, entryFee:0, players:195, gms:1, ims:6, fms:12,
+    rounds:7, fideRated:false, source:'#' },
+
+  { id:6,  name:'Biel Grandmaster Tournament', city:'Biel', country:'Switzerland', continent:'Europe', flag:'🇨🇭',
+    startDate:'2026-07-26', endDate:'2026-08-06', durationDays:12, timeControl:'Classical',
+    firstPrize:12000, totalPrize:38000, entryFee:160, players:120, gms:18, ims:14, fms:5,
+    rounds:10, fideRated:true, source:'#' },
+
+  { id:7,  name:'Poznan Rapid Open', city:'Poznań', country:'Poland', continent:'Europe', flag:'🇵🇱',
+    startDate:'2026-08-22', endDate:'2026-08-23', durationDays:2, timeControl:'Rapid',
+    firstPrize:1200, totalPrize:4000, entryFee:35, players:280, gms:2, ims:8, fms:14,
+    rounds:7, fideRated:false, source:'#' },
+
+  { id:8,  name:'Vienna International Open', city:'Vienna', country:'Austria', continent:'Europe', flag:'🇦🇹',
+    startDate:'2026-09-05', endDate:'2026-09-13', durationDays:9, timeControl:'Classical',
+    firstPrize:5000, totalPrize:16000, entryFee:80, players:310, gms:8, ims:20, fms:28,
+    rounds:9, fideRated:true, source:'#' },
+
+  { id:9,  name:'Isle of Man International', city:'Douglas', country:'Isle of Man', continent:'Europe', flag:'🇮🇲',
+    startDate:'2026-09-19', endDate:'2026-09-27', durationDays:9, timeControl:'Classical',
+    firstPrize:18000, totalPrize:55000, entryFee:180, players:220, gms:42, ims:35, fms:12,
+    rounds:9, fideRated:true, source:'https://iomchess.com' },
+
+  { id:10, name:'Warsaw Chess Festival — Blitz Night', city:'Warsaw', country:'Poland', continent:'Europe', flag:'🇵🇱',
+    startDate:'2026-07-25', endDate:'2026-07-25', durationDays:1, timeControl:'Blitz',
+    firstPrize:800, totalPrize:2500, entryFee:20, players:150, gms:0, ims:4, fms:9,
+    rounds:11, fideRated:false, source:'#' },
+
+  { id:11, name:'Olympiad A Open — Budapest', city:'Budapest', country:'Hungary', continent:'Europe', flag:'🇭🇺',
+    startDate:'2026-10-10', endDate:'2026-10-20', durationDays:11, timeControl:'Classical',
+    firstPrize:10000, totalPrize:32000, entryFee:120, players:430, gms:28, ims:44, fms:60,
+    rounds:11, fideRated:true, source:'#' },
+
+  { id:12, name:'Paris Blitz Grand Prix', city:'Paris', country:'France', continent:'Europe', flag:'🇫🇷',
+    startDate:'2026-08-08', endDate:'2026-08-09', durationDays:2, timeControl:'Blitz',
+    firstPrize:3000, totalPrize:9000, entryFee:50, players:390, gms:5, ims:13, fms:22,
+    rounds:11, fideRated:true, source:'#' },
+
+  // ── AMERICAS ──
+  { id:13, name:'New York Open Championship', city:'New York', country:'United States', continent:'Americas', flag:'🇺🇸',
+    startDate:'2026-07-25', endDate:'2026-07-28', durationDays:4, timeControl:'Rapid',
+    firstPrize:6000, totalPrize:20000, entryFee:80, players:410, gms:8, ims:19, fms:27,
+    rounds:6, fideRated:true, source:'#' },
+
+  { id:14, name:'Buenos Aires Memorial Classic', city:'Buenos Aires', country:'Argentina', continent:'Americas', flag:'🇦🇷',
+    startDate:'2026-08-08', endDate:'2026-08-16', durationDays:9, timeControl:'Classical',
+    firstPrize:5500, totalPrize:16000, entryFee:65, players:230, gms:6, ims:14, fms:18,
+    rounds:9, fideRated:true, source:'#' },
+
+  { id:15, name:'São Paulo Rapid Festival', city:'São Paulo', country:'Brazil', continent:'Americas', flag:'🇧🇷',
+    startDate:'2026-09-12', endDate:'2026-09-14', durationDays:3, timeControl:'Rapid',
+    firstPrize:2200, totalPrize:7000, entryFee:30, players:260, gms:2, ims:7, fms:11,
+    rounds:7, fideRated:false, source:'#' },
+
+  { id:16, name:'Capablanca Memorial Open — Havana', city:'Havana', country:'Cuba', continent:'Americas', flag:'🇨🇺',
+    startDate:'2026-11-01', endDate:'2026-11-10', durationDays:10, timeControl:'Classical',
+    firstPrize:4500, totalPrize:13000, entryFee:55, players:175, gms:4, ims:12, fms:16,
+    rounds:9, fideRated:true, source:'#' },
+
+  // ── ASIA ──
+  { id:17, name:'Dubai Open 2026', city:'Dubai', country:'UAE', continent:'Asia', flag:'🇦🇪',
+    startDate:'2026-10-01', endDate:'2026-10-10', durationDays:10, timeControl:'Classical',
+    firstPrize:18000, totalPrize:60000, entryFee:250, players:650, gms:28, ims:41, fms:55,
+    rounds:9, fideRated:true, source:'https://dubaiopen.ae' },
+
+  { id:18, name:'Tokyo Blitz & Rapid Festival', city:'Tokyo', country:'Japan', continent:'Asia', flag:'🇯🇵',
+    startDate:'2026-09-05', endDate:'2026-09-06', durationDays:2, timeControl:'Blitz',
+    firstPrize:3000, totalPrize:9500, entryFee:40, players:280, gms:2, ims:7, fms:14,
+    rounds:11, fideRated:false, source:'#' },
+
+  { id:19, name:'Kolkata Grand Masters Open', city:'Kolkata', country:'India', continent:'Asia', flag:'🇮🇳',
+    startDate:'2026-08-20', endDate:'2026-08-29', durationDays:10, timeControl:'Classical',
+    firstPrize:7000, totalPrize:22000, entryFee:50, players:480, gms:15, ims:30, fms:45,
+    rounds:10, fideRated:true, source:'#' },
+
+  { id:20, name:'Riyadh World Rapid & Blitz', city:'Riyadh', country:'Saudi Arabia', continent:'Asia', flag:'🇸🇦',
+    startDate:'2026-12-26', endDate:'2027-01-03', durationDays:9, timeControl:'Rapid',
+    firstPrize:50000, totalPrize:150000, entryFee:0, players:200, gms:80, ims:40, fms:20,
+    rounds:15, fideRated:true, source:'https://worldrapidblitz.fide.com' },
+
+  { id:21, name:'Seoul International Open', city:'Seoul', country:'South Korea', continent:'Asia', flag:'🇰🇷',
+    startDate:'2026-10-15', endDate:'2026-10-23', durationDays:9, timeControl:'Classical',
+    firstPrize:6500, totalPrize:19000, entryFee:70, players:320, gms:10, ims:22, fms:30,
+    rounds:9, fideRated:true, source:'#' },
+
+  // ── AFRICA ──
+  { id:22, name:'Johannesburg Open 2026', city:'Johannesburg', country:'South Africa', continent:'Africa', flag:'🇿🇦',
+    startDate:'2026-09-18', endDate:'2026-09-26', durationDays:9, timeControl:'Classical',
+    firstPrize:3500, totalPrize:10000, entryFee:40, players:145, gms:2, ims:6, fms:10,
+    rounds:9, fideRated:true, source:'#' },
+
+  { id:23, name:'Cairo Blitz Open', city:'Cairo', country:'Egypt', continent:'Africa', flag:'🇪🇬',
+    startDate:'2026-11-14', endDate:'2026-11-14', durationDays:1, timeControl:'Blitz',
+    firstPrize:1200, totalPrize:3500, entryFee:15, players:120, gms:1, ims:3, fms:5,
+    rounds:9, fideRated:false, source:'#' },
+
+  // ── OCEANIA ──
+  { id:24, name:'Australian Open Championship', city:'Sydney', country:'Australia', continent:'Oceania', flag:'🇦🇺',
+    startDate:'2027-01-05', endDate:'2027-01-14', durationDays:10, timeControl:'Classical',
+    firstPrize:8000, totalPrize:24000, entryFee:90, players:210, gms:6, ims:15, fms:22,
+    rounds:9, fideRated:true, source:'#' },
+];
+
+// ═══════════════════════ LIVE DATA LOADER ═══════════════
+
+let TOURNAMENTS = [...MOCK_TOURNAMENTS];
+let filtered    = [...TOURNAMENTS];
+let dataSource  = 'demo';
+
+async function loadLiveData() {
+  try {
+    const res = await fetch('data/tournaments.json?v=' + Date.now());
+    if (!res.ok) throw new Error('No data file');
+    const json = await res.json();
+    const list = json.tournaments || json;
+    if (Array.isArray(list) && list.length > 0) {
+      TOURNAMENTS = list;
+      filtered    = [...TOURNAMENTS];
+      dataSource  = 'live';
+      const updated = json.updatedAt ? new Date(json.updatedAt).toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'}) : 'recently';
+      document.getElementById('footer-status').textContent = `✅ Live data · ${list.length} tournaments · Updated ${updated}`;
+      populateCountries();
+      renderAll();
+      return;
+    }
+  } catch(e) {
+    // Silently fall back to mock data
+  }
+  document.getElementById('footer-status').textContent = '⚠️ Demo mode — run the scraper to load real tournaments';
+  populateCountries();
+  renderAll();
+}
+
+function populateCountries() {
+  const sel = document.getElementById('country-select');
+  sel.innerHTML = '<option value="">All countries</option>';
+  const countries = [...new Set(TOURNAMENTS.map(t => t.country))].sort();
+  countries.forEach(c => {
+    const o = document.createElement('option');
+    o.value = c; o.textContent = c;
+    sel.appendChild(o);
+  });
+}
+
+// ═══════════════════════ STATE ═══════════════════════════
+
+let currentView = 'list';
+let currentTab  = 'upcoming';
+
+function getBarClass(tc) {
+  switch((tc||'').toLowerCase()) {
+    case 'rapid':    return 'bar-rapid';
+    case 'blitz':    return 'bar-blitz';
+    case 'bullet':   return 'bar-bullet';
+    default:         return 'bar-classical';
+  }
+}
+
+function fmtDate(d) {
+  if(!d) return '';
+  const [y,m,day] = d.split('-');
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${+day} ${months[+m-1]} ${y}`;
+}
+
+function fmtDateRange(s, e) {
+  if(s === e) return fmtDate(s);
+  return `${fmtDate(s)} – ${fmtDate(e)}`;
+}
+
+function fmtPrize(n) {
+  if(!n) return '—';
+  return n >= 1000 ? '€' + (n/1000).toFixed(0) + 'k' : '€' + n;
+}
+
+// ═══════════════════════ RENDER ═══════════════════════════
+
+function rowHTML(t) {
+  const isFinished = t.endDate < TODAY;
+  const rounds = isFinished ? `${t.rounds}/${t.rounds} rounds` : `0/${t.rounds} rounds`;
+  const roundIcon = isFinished
+    ? `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>`
+    : `<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>`;
+  const titled = t.gms + t.ims + t.fms;
+
+  return `
+  <div class="tournament-row" ${t.source && t.source !== '#' ? `onclick="window.open('${t.source}','_blank')"` : 'style="cursor:default"'}>
+    <div class="bar ${getBarClass(t.timeControl)}"></div>
+    <div class="row-left">
+      <a class="row-name${!t.source || t.source === '#' ? ' no-link' : ''}" ${t.source && t.source !== '#' ? `href="${t.source}" target="_blank" rel="noopener" onclick="event.stopPropagation()"` : ''}>${t.name}${t.source && t.source !== '#' ? ' <svg style="display:inline;vertical-align:middle;margin-left:3px" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' : ''}</a>
+      <div class="row-meta">
+        <div class="meta-item">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          ${fmtDateRange(t.startDate, t.endDate)}
+        </div>
+        <div class="meta-item">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+          ${t.players} players
+        </div>
+        <div class="meta-item">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+          ${t.timeControl}
+        </div>
+        <div class="meta-item">
+          ${roundIcon}
+          ${rounds}
+        </div>
+        ${t.gms > 0 ? `<div class="meta-item">♟ ${t.gms} GMs, ${titled} titled</div>` : ''}
+      </div>
+    </div>
+    <div class="row-right">
+      <div class="location-line">
+        <div class="loc-dash"></div>
+        <span>${t.city}, ${t.country}</span>
+      </div>
+      <div class="prize-line">
+        ${t.firstPrize > 0 ? `<span>Prize: <span class="prize-val">${fmtPrize(t.firstPrize)}</span></span>` : ''}
+        ${t.entryFee === 0 ? '<span class="free-badge">Free entry</span>' : `<span>Entry: €${t.entryFee}</span>`}
+      </div>
+    </div>
+  </div>`;
+}
+
+function cardHTML(t) {
+  const isFinished = t.endDate < TODAY;
+  const rounds = isFinished ? `${t.rounds}/${t.rounds} rounds` : `0/${t.rounds} rounds`;
+  const titled = t.gms + t.ims + t.fms;
+
+  return `
+  <div class="tournament-card" ${t.source && t.source !== '#' ? `onclick="window.open('${t.source}','_blank')"` : 'style="cursor:default"'}>
+    <div class="bar ${getBarClass(t.timeControl)}"></div>
+    <a class="card-name${!t.source || t.source === '#' ? ' no-link' : ''}" ${t.source && t.source !== '#' ? `href="${t.source}" target="_blank" rel="noopener" onclick="event.stopPropagation()"` : ''}>${t.name}${t.source && t.source !== '#' ? ' <svg style="display:inline;vertical-align:middle;margin-left:3px" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' : ''}</a>
+    <div class="card-meta">
+      <div class="meta-item">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        ${fmtDateRange(t.startDate, t.endDate)}
+      </div>
+      <div class="meta-item">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+        </svg>
+        ${t.players} players · ${rounds}
+      </div>
+      <div class="meta-item">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+        ${t.timeControl}
+      </div>
+      ${t.gms > 0 ? `<div class="meta-item">♟ ${t.gms} GMs · ${titled} titled</div>` : ''}
+    </div>
+    <div class="card-footer">
+      <div class="location-line">
+        <div class="loc-dash"></div>
+        <span>${t.city}</span>
+      </div>
+      <div class="prize-line">
+        ${t.firstPrize > 0 ? `<span class="prize-val">${fmtPrize(t.firstPrize)}</span>` : ''}
+        ${t.entryFee === 0 ? '<span class="free-badge">Free</span>' : `<span>€${t.entryFee} fee</span>`}
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderList(items, container) {
+  if(!items.length) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">♟</div><div class="empty-title">No tournaments match</div><div class="empty-sub">Try relaxing your filters</div></div>`;
+    return;
+  }
+  if(currentView === 'list') {
+    container.innerHTML = `<div class="tournaments-list">${items.map(rowHTML).join('')}</div>`;
+  } else {
+    container.innerHTML = `<div class="tournaments-grid">${items.map(cardHTML).join('')}</div>`;
+  }
+}
+
+function sortItems(items) {
+  const s = document.getElementById('sort-select').value;
+  return [...items].sort((a,b) => {
+    switch(s) {
+      case 'prize-desc':   return b.firstPrize - a.firstPrize;
+      case 'prize-asc':    return a.firstPrize - b.firstPrize;
+      case 'date-asc':     return a.startDate.localeCompare(b.startDate);
+      case 'date-desc':    return b.startDate.localeCompare(a.startDate);
+      case 'players-desc': return b.players - a.players;
+      case 'gms-desc':     return b.gms - a.gms;
+      case 'fee-asc':      return a.entryFee - b.entryFee;
+      default:             return 0;
+    }
+  });
+}
+
+function renderAll() {
+  const sorted = sortItems(filtered);
+  const featured = sorted.slice(0, 3);
+  const rest = sorted.slice(3);
+
+  const isFinished = t => t.endDate < TODAY;
+  const isUpcoming = t => t.startDate > TODAY;
+  const isOngoing  = t => !isFinished(t) && !isUpcoming(t);
+
+  let tabItems;
+  if(currentTab === 'completed') tabItems = rest.filter(isFinished);
+  else if(currentTab === 'upcoming') tabItems = rest.filter(isUpcoming);
+  else tabItems = rest.filter(isOngoing);
+
+  renderList(featured, document.getElementById('featured-wrap'));
+  renderList(tabItems,  document.getElementById('tab-wrap'));
+
+  document.getElementById('result-meta').innerHTML =
+    `Showing <strong>${filtered.length}</strong> of <strong>${TOURNAMENTS.length}</strong> tournaments`;
+}
+
+// ═══════════════════════ FILTER LOGIC ════════════════════
+
+function applyFilters() {
+  const q         = document.getElementById('q-input').value.trim().toLowerCase();
+  const continent = document.getElementById('continent-select').value;
+  const country   = document.getElementById('country-select').value;
+  const city      = document.getElementById('city-input').value.trim().toLowerCase();
+  const prizeMin  = +document.getElementById('prize-min').value || 0;
+  const prizeMax  = +document.getElementById('prize-max').value || Infinity;
+  const feeMax    = +document.getElementById('fee-max').value || Infinity;
+  const gmMin     = +document.getElementById('gm-min').value || 0;
+  const titledMin = +document.getElementById('titled-min').value || 0;
+  const freeOnly  = document.getElementById('free-only').checked;
+  const fideOnly  = document.getElementById('fide-rated').checked;
+
+  const tcs = [...document.querySelectorAll('.tc-check:checked')].map(el => el.value);
+  const durs = [...document.querySelectorAll('.dur-check:checked')].map(el => el.value);
+
+  const durMap = { weekend:[1,2], short:[3,5], week:[6,7], extended:[8,999] };
+
+  filtered = TOURNAMENTS.filter(t => {
+    if(q && !t.name.toLowerCase().includes(q) && !t.city.toLowerCase().includes(q) && !t.country.toLowerCase().includes(q)) return false;
+    if(continent && t.continent !== continent) return false;
+    if(country && t.country !== country) return false;
+    if(city && !t.city.toLowerCase().includes(city)) return false;
+    if(t.firstPrize < prizeMin) return false;
+    if(t.firstPrize > prizeMax) return false;
+    if(t.entryFee > feeMax) return false;
+    if(freeOnly && t.entryFee !== 0) return false;
+    if(fideOnly && !t.fideRated) return false;
+    if(tcs.length && !tcs.includes(t.timeControl)) return false;
+    if(gmMin > 0 && t.gms < gmMin) return false;
+    if(titledMin > 0 && (t.gms + t.ims + t.fms) < titledMin) return false;
+    if(durs.length) {
+      const ok = durs.some(d => { const [mn,mx] = durMap[d]; return t.durationDays >= mn && t.durationDays <= mx; });
+      if(!ok) return false;
+    }
+    return true;
+  });
+
+  renderAll();
+}
+
+function clearFilters() {
+  document.getElementById('q-input').value = '';
+  document.getElementById('continent-select').value = '';
+  document.getElementById('country-select').value = '';
+  document.getElementById('city-input').value = '';
+  document.getElementById('prize-min').value = '';
+  document.getElementById('prize-max').value = '';
+  document.getElementById('fee-max').value = '';
+  document.getElementById('gm-min').value = '';
+  document.getElementById('titled-min').value = '';
+  document.getElementById('free-only').checked = false;
+  document.getElementById('fide-rated').checked = false;
+  document.querySelectorAll('.tc-check, .dur-check').forEach(el => el.checked = false);
+  filtered = [...TOURNAMENTS];
+  renderAll();
+}
+
+// ═══════════════════════ TAB & VIEW ══════════════════════
+
+function setTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  renderAll();
+}
+
+function setView(view) {
+  currentView = view;
+  document.getElementById('list-btn').classList.toggle('active', view === 'list');
+  document.getElementById('grid-btn').classList.toggle('active', view === 'grid');
+  renderAll();
+}
+
+// ═══════════════════════ LIVE SEARCH ══════════════════════
+
+document.getElementById('q-input').addEventListener('input', applyFilters);
+
+// Start app — tries to load live data, falls back to demo
+loadLiveData();
+</script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+# Dependencies — never upload these (huge folder, auto-installed)
+node_modules/
+scraper/node_modules/
+
+# Secret/environment files — if you ever add API keys, put them here
+.env
+.env.local
+.env.production
+*.key
+*.pem
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor folders
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
