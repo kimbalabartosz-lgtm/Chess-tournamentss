@@ -1,13 +1,20 @@
 name: Scrape Tournaments Daily
 
 on:
+  push:
+    branches:
+      - main
   schedule:
+    # Run every day at 03:00 UTC (5am Warsaw time)
     - cron: '0 3 * * *'
+  # Also allow manual trigger from GitHub
   workflow_dispatch:
 
 jobs:
   scrape:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repository
@@ -32,3 +39,4 @@ jobs:
           git config user.email "bot@chess-tour.app"
           git add data/tournaments.json
           git diff --staged --quiet || (git commit -m "🤖 Auto-update tournaments $(date -u +%Y-%m-%d)" && git push)
+     
