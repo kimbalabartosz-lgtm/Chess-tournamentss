@@ -2,9 +2,7 @@ name: Scrape Tournaments Daily
 
 on:
   schedule:
-    # Run every day at 03:00 UTC (5am Warsaw time)
     - cron: '0 3 * * *'
-  # Also allow manual trigger from GitHub
   workflow_dispatch:
 
 jobs:
