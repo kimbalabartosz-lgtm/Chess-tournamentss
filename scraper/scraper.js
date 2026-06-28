@@ -200,9 +200,14 @@ async function fetchTournamentDetails(tournaments) {
       try {
         let fetchUrl = t.source;
         if (t.scrapedFrom === 'Chess-Results' && fetchUrl.includes('.aspx')) {
-          fetchUrl = fetchUrl.replace('.aspx', '.aspx?art=0'); // Starting rank
+          fetchUrl = fetchUrl.replace('.aspx', '.aspx?art=0&zeilen=99999'); // Starting rank all players
         } else if (t.scrapedFrom === 'ChessArbiter' && fetchUrl.includes('turnieje/')) {
-          fetchUrl = fetchUrl + (fetchUrl.endsWith('/') ? '?' : '&') + 'str=2'; // Starting list
+          const match = fetchUrl.match(/turn=([^&]+)/);
+          if (match) {
+            fetchUrl = `http://www.chessarbiter.com/turnieje/${match[1]}/results.html?l=pl&tb=2_`;
+          } else {
+            fetchUrl = fetchUrl + (fetchUrl.endsWith('/') ? '?' : '&') + 'str=2'; // Fallback
+          }
         }
         
         if (fetchUrl === '#' || !fetchUrl.startsWith('http')) return;
