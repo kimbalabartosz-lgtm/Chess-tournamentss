@@ -1028,11 +1028,17 @@ function fmtPrize(n) {
 
 function rowHTML(t) {
   const isFinished = t.endDate < TODAY;
-  const rounds = isFinished ? `${t.rounds}/${t.rounds} rounds` : `0/${t.rounds} rounds`;
+  const totalRounds = t.rounds || '?';
+  const rounds = isFinished ? `${totalRounds}/${totalRounds} rounds` : `0/${totalRounds} rounds`;
   const roundIcon = isFinished
     ? `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>`
     : `<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>`;
-  const titled = t.gms + t.ims + t.fms;
+  
+  const gms = t.gms || 0;
+  const ims = t.ims || 0;
+  const fms = t.fms || 0;
+  const titled = gms + ims + fms;
+  const players = t.players || '?';
 
   return `
   <div class="tournament-row" ${t.source && t.source !== '#' ? `onclick="window.open('${t.source}','_blank')"` : 'style="cursor:default"'}>
@@ -1051,7 +1057,7 @@ function rowHTML(t) {
             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
             <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
           </svg>
-          ${t.players} players
+          ${players} players
         </div>
         <div class="meta-item">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -1063,17 +1069,17 @@ function rowHTML(t) {
           ${roundIcon}
           ${rounds}
         </div>
-        ${t.gms > 0 ? `<div class="meta-item">♟ ${t.gms} GMs, ${titled} titled</div>` : ''}
+        ${gms > 0 ? `<div class="meta-item">♟ ${gms} GMs, ${titled} titled</div>` : (titled > 0 ? `<div class="meta-item">♟ ${titled} titled</div>` : '')}
       </div>
     </div>
     <div class="row-right">
       <div class="location-line">
         <div class="loc-dash"></div>
-        <span>${t.city}, ${t.country}</span>
+        <span>${t.flag ? t.flag + ' ' : ''}${t.city}, ${t.country}</span>
       </div>
       <div class="prize-line">
         ${t.firstPrize > 0 ? `<span>Prize: <span class="prize-val">${fmtPrize(t.firstPrize)}</span></span>` : ''}
-        ${t.entryFee === 0 ? '<span class="free-badge">Free entry</span>' : `<span>Entry: €${t.entryFee}</span>`}
+        ${t.entryFee === 0 ? '<span class="free-badge">Free entry</span>' : (t.entryFee > 0 ? `<span>Entry: €${t.entryFee}</span>` : '')}
       </div>
     </div>
   </div>`;
@@ -1081,8 +1087,14 @@ function rowHTML(t) {
 
 function cardHTML(t) {
   const isFinished = t.endDate < TODAY;
-  const rounds = isFinished ? `${t.rounds}/${t.rounds} rounds` : `0/${t.rounds} rounds`;
-  const titled = t.gms + t.ims + t.fms;
+  const totalRounds = t.rounds || '?';
+  const rounds = isFinished ? `${totalRounds}/${totalRounds} rounds` : `0/${totalRounds} rounds`;
+  
+  const gms = t.gms || 0;
+  const ims = t.ims || 0;
+  const fms = t.fms || 0;
+  const titled = gms + ims + fms;
+  const players = t.players || '?';
 
   return `
   <div class="tournament-card" ${t.source && t.source !== '#' ? `onclick="window.open('${t.source}','_blank')"` : 'style="cursor:default"'}>
@@ -1099,7 +1111,7 @@ function cardHTML(t) {
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
         </svg>
-        ${t.players} players · ${rounds}
+        ${players} players · ${rounds}
       </div>
       <div class="meta-item">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -1107,16 +1119,16 @@ function cardHTML(t) {
         </svg>
         ${t.timeControl}
       </div>
-      ${t.gms > 0 ? `<div class="meta-item">♟ ${t.gms} GMs · ${titled} titled</div>` : ''}
+      ${gms > 0 ? `<div class="meta-item">♟ ${gms} GMs · ${titled} titled</div>` : (titled > 0 ? `<div class="meta-item">♟ ${titled} titled</div>` : '')}
     </div>
     <div class="card-footer">
       <div class="location-line">
         <div class="loc-dash"></div>
-        <span>${t.city}</span>
+        <span>${t.flag ? t.flag + ' ' : ''}${t.city}</span>
       </div>
       <div class="prize-line">
         ${t.firstPrize > 0 ? `<span class="prize-val">${fmtPrize(t.firstPrize)}</span>` : ''}
-        ${t.entryFee === 0 ? '<span class="free-badge">Free</span>' : `<span>€${t.entryFee} fee</span>`}
+        ${t.entryFee === 0 ? '<span class="free-badge">Free</span>' : (t.entryFee > 0 ? `<span>€${t.entryFee} fee</span>` : '')}
       </div>
     </div>
   </div>`;
@@ -1256,3 +1268,11 @@ loadLiveData();
 </script>
 </body>
 </html>
+
+   
+    
+   
+    
+     
+   
+      
