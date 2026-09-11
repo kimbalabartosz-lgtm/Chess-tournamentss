@@ -539,7 +539,13 @@ function applyFilters() {
     if (gmMin > 0 && (t.gms || 0) < gmMin) return false;
     if (titledMin > 0 && ((t.gms||0) + (t.ims||0) + (t.fms||0)) < titledMin) return false;
     if (durs.length) {
-      const ok = durs.some(d => { const [mn,mx] = durMap[d]; return (t.durationDays||1) >= mn && (t.durationDays||1) <= mx; });
+      // Compute actual duration from dates (durationDays field is unreliable)
+      let days = 1;
+      if (t.startDate && t.endDate) {
+        const ms = new Date(t.endDate) - new Date(t.startDate);
+        days = Math.max(1, Math.round(ms / 86400000) + 1);
+      }
+      const ok = durs.some(d => { const [mn,mx] = durMap[d]; return days >= mn && days <= mx; });
       if (!ok) return false;
     }
     return true;
