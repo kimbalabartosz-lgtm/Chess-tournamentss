@@ -488,7 +488,26 @@ function renderAll() {
 
 const normalizeStr = str => str ? str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase() : '';
 
-function applyFilters() {
+// Cache for Nominatim geocoding results
+const geocodeCache = {};
+
+async function geocodeCity(cityName) {
+  const key = cityName.toLowerCase().trim();
+  if (geocodeCache[key]) return geocodeCache[key];
+  try {
+    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(cityName)}&format=json&limit=1`;
+    const res = await fetch(url, { headers: { 'Accept-Language': 'en' } });
+    const data = await res.json();
+    if (data && data[0]) {
+      const result = { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon), name: data[0].display_name.split(',')[0] };
+      geocodeCache[key] = result;
+      return result;
+    }
+  } catch(e) {}
+  return null;
+}
+
+function runFilter(centerLat, centerLon) {
   const q         = normalizeStr(document.getElementById('q-input').value.trim());
   const continent = document.getElementById('continent-select').value;
   const country   = document.getElementById('country-select').value;
@@ -503,12 +522,6 @@ function applyFilters() {
   const durs = [...document.querySelectorAll('.dur-check:checked')].map(el => el.value);
   const durMap = { weekend:[1,2], short:[3,5], week:[6,7], extended:[8,999] };
 
-  // Determine center point for distance filter
-  let centerLat = userLat, centerLon = userLon;
-  if (!centerLat && city) {
-    const ref = TOURNAMENTS.find(x => normalizeStr(x.city).includes(city) && x.lat);
-    if (ref) { centerLat = ref.lat; centerLon = ref.lon; }
-  }
   activeCenterLat = centerLat;
   activeCenterLon = centerLon;
 
@@ -516,11 +529,12 @@ function applyFilters() {
     if (currentTab === 'saved' && !savedIds.includes(t.id)) return false;
 
     if (maxDist > 0) {
-      if (centerLat && centerLon && t.lat && t.lon) {
+      // Distance filter: only show tournaments within radius that have coordinates
+      if (centerLat && centerLon) {
+        if (!t.lat || !t.lon) return false; // no coords = exclude from distance filter
         if (getHaversineDistance(centerLat, centerLon, t.lat, t.lon) > maxDist) return false;
-      } else {
-        return false; // hide if we can't calculate distance
       }
+      // If no center point set, distance slider is ignored (need a city or GPS)
     }
 
     const tName    = normalizeStr(t.name);
@@ -530,8 +544,8 @@ function applyFilters() {
     if (q && !tName.includes(q) && !tCity.includes(q) && !tCountry.includes(q)) return false;
     if (continent && t.continent !== continent) return false;
     if (country && t.country !== country) return false;
-    // When distance is active, city is used as search center, not strict filter
-    if (city && !tCity.includes(city) && maxDist === 0) return false;
+    // City text filter only when distance slider is 0 (else city = search center only)
+    if (city && maxDist === 0 && !tCity.includes(city)) return false;
     if (startMonth && !t.startDate.startsWith(startMonth)) return false;
     if (prizeMin > 0 && (t.firstPrize || 0) < prizeMin) return false;
     if (prizeMax < Infinity && (t.firstPrize || 0) > prizeMax) return false;
@@ -539,7 +553,6 @@ function applyFilters() {
     if (gmMin > 0 && (t.gms || 0) < gmMin) return false;
     if (titledMin > 0 && ((t.gms||0) + (t.ims||0) + (t.fms||0)) < titledMin) return false;
     if (durs.length) {
-      // Compute actual duration from dates (durationDays field is unreliable)
       let days = 1;
       if (t.startDate && t.endDate) {
         const ms = new Date(t.endDate) - new Date(t.startDate);
@@ -552,6 +565,32 @@ function applyFilters() {
   });
 
   renderAll();
+}
+
+async function applyFilters() {
+  const cityRaw = document.getElementById('city-input').value.trim();
+  const maxDist = +document.getElementById('distance-slider').value;
+
+  let centerLat = userLat, centerLon = userLon;
+
+  if (maxDist > 0 && cityRaw && !centerLat) {
+    // Show loading indicator
+    const distVal = document.getElementById('distance-value');
+    const prev = distVal.textContent;
+    distVal.textContent = '⏳ Locating ' + cityRaw + '...';
+
+    const geo = await geocodeCity(cityRaw);
+    if (geo) {
+      centerLat = geo.lat;
+      centerLon = geo.lon;
+      distVal.textContent = `📍 ${geo.name} · ≤ ${maxDist} km`;
+    } else {
+      distVal.textContent = '❌ City not found';
+      setTimeout(() => distVal.textContent = prev, 2000);
+    }
+  }
+
+  runFilter(centerLat, centerLon);
 }
 
 function clearFilters() {
