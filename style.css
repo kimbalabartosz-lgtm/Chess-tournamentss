@@ -548,3 +548,49 @@
       .header-slogan { display: none; }
       .header { padding: 0 16px; }
     }
+/* =================== MONTH PICKER =================== */
+.month-picker-wrap { position: relative; }
+
+.month-picker-trigger {
+  width: 100%; display: flex; align-items: center; justify-content: space-between;
+  padding: 7px 10px; border: 1px solid var(--border, #e2e8f0); border-radius: 6px;
+  background: var(--card-bg, #fff); cursor: pointer; font-size: 13px;
+  color: var(--text, #1a202c); text-align: left; font-family: inherit;
+  transition: border-color .15s;
+}
+.month-picker-trigger:hover { border-color: #1a56db; }
+
+.month-picker-panel {
+  position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+  background: var(--card-bg, #fff); border: 1px solid var(--border, #e2e8f0);
+  border-radius: 8px; padding: 10px; z-index: 200;
+  box-shadow: 0 4px 20px rgba(0,0,0,.12);
+}
+
+.picker-year-toggle {
+  width: 100%; font-size: 14px; font-weight: 700; color: #1a56db;
+  background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px;
+  padding: 6px 12px; cursor: pointer; margin-bottom: 8px;
+  font-family: inherit; transition: background .15s;
+}
+.picker-year-toggle:hover { background: #dbeafe; }
+
+.picker-months-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-bottom: 8px;
+}
+
+.picker-month-btn {
+  padding: 6px 0; border: 1px solid var(--border, #e2e8f0); border-radius: 5px;
+  background: transparent; cursor: pointer; font-size: 12px; font-family: inherit;
+  color: var(--text, #1a202c); transition: all .15s; font-weight: 500;
+}
+.picker-month-btn:hover { border-color: #1a56db; color: #1a56db; background: #eff6ff; }
+.picker-month-btn.active { background: #1a56db; color: #fff; border-color: #1a56db; }
+
+.picker-clear-btn {
+  width: 100%; font-size: 11px; color: #718096; background: transparent;
+  border: none; cursor: pointer; padding: 3px 0; font-family: inherit;
+  transition: color .15s;
+}
+.picker-clear-btn:hover { color: #e53e3e; }
+

@@ -484,6 +484,78 @@ function renderAll() {
 }
 
 
+// ═══════════════════════ MONTH PICKER ════════════════════
+
+const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const CURRENT_YEAR = new Date().getFullYear();
+let pickerYear = CURRENT_YEAR;
+const selectedMonths = new Set(); // stores "YYYY-MM" strings
+
+function toggleMonthPicker() {
+  const panel = document.getElementById('month-picker-panel');
+  const isOpen = panel.style.display !== 'none';
+  if (isOpen) {
+    panel.style.display = 'none';
+  } else {
+    panel.style.display = 'block';
+    renderPickerMonths();
+  }
+}
+
+function togglePickerYear() {
+  pickerYear = pickerYear === CURRENT_YEAR ? CURRENT_YEAR + 1 : CURRENT_YEAR;
+  document.getElementById('picker-year-btn').textContent = pickerYear;
+  renderPickerMonths();
+}
+
+function renderPickerMonths() {
+  const grid = document.getElementById('picker-months-grid');
+  if (!grid) return;
+  grid.innerHTML = MONTH_NAMES.map((name, i) => {
+    const key = `${pickerYear}-${String(i + 1).padStart(2, '0')}`;
+    const cls = selectedMonths.has(key) ? 'picker-month-btn active' : 'picker-month-btn';
+    return `<button class="${cls}" onclick="toggleMonth('${key}')">${name}</button>`;
+  }).join('');
+}
+
+function toggleMonth(key) {
+  if (selectedMonths.has(key)) selectedMonths.delete(key);
+  else selectedMonths.add(key);
+  renderPickerMonths();
+  updateMonthPickerLabel();
+  applyFilters();
+}
+
+function updateMonthPickerLabel() {
+  const label = document.getElementById('month-picker-label');
+  if (!label) return;
+  if (selectedMonths.size === 0) {
+    label.textContent = 'Any date';
+    return;
+  }
+  const sorted = [...selectedMonths].sort();
+  label.textContent = sorted.map(k => {
+    const [y, m] = k.split('-');
+    return MONTH_NAMES[+m - 1] + ' ' + y;
+  }).join(', ');
+}
+
+function clearMonthPicker() {
+  selectedMonths.clear();
+  renderPickerMonths();
+  updateMonthPickerLabel();
+  applyFilters();
+}
+
+// Close picker when clicking outside
+document.addEventListener('click', e => {
+  const wrap = document.getElementById('month-picker-wrap');
+  if (wrap && !wrap.contains(e.target)) {
+    const panel = document.getElementById('month-picker-panel');
+    if (panel) panel.style.display = 'none';
+  }
+});
+
 // ═══════════════════════ FILTER LOGIC ════════════════════
 
 const normalizeStr = str => str ? str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase() : '';
@@ -516,7 +588,6 @@ function runFilter(centerLat, centerLon) {
   const prizeMax  = +document.getElementById('prize-max').value || Infinity;
   const gmMin     = +document.getElementById('gm-min').value || 0;
   const titledMin = +document.getElementById('titled-min').value || 0;
-  const startMonth = document.getElementById('start-month').value;
   const maxDist   = +document.getElementById('distance-slider').value;
   const tcs  = [...document.querySelectorAll('.tc-check:checked')].map(el => el.value);
   const durs = [...document.querySelectorAll('.dur-check:checked')].map(el => el.value);
@@ -529,12 +600,10 @@ function runFilter(centerLat, centerLon) {
     if (currentTab === 'saved' && !savedIds.includes(t.id)) return false;
 
     if (maxDist > 0) {
-      // Distance filter: only show tournaments within radius that have coordinates
       if (centerLat && centerLon) {
-        if (!t.lat || !t.lon) return false; // no coords = exclude from distance filter
+        if (!t.lat || !t.lon) return false;
         if (getHaversineDistance(centerLat, centerLon, t.lat, t.lon) > maxDist) return false;
       }
-      // If no center point set, distance slider is ignored (need a city or GPS)
     }
 
     const tName    = normalizeStr(t.name);
@@ -544,9 +613,9 @@ function runFilter(centerLat, centerLon) {
     if (q && !tName.includes(q) && !tCity.includes(q) && !tCountry.includes(q)) return false;
     if (continent && t.continent !== continent) return false;
     if (country && t.country !== country) return false;
-    // City text filter only when distance slider is 0 (else city = search center only)
     if (city && maxDist === 0 && !tCity.includes(city)) return false;
-    if (startMonth && !t.startDate.startsWith(startMonth)) return false;
+    // Month picker filter — match any selected month
+    if (selectedMonths.size > 0 && !selectedMonths.has(t.startDate.substring(0, 7))) return false;
     if (prizeMin > 0 && (t.firstPrize || 0) < prizeMin) return false;
     if (prizeMax < Infinity && (t.firstPrize || 0) > prizeMax) return false;
     if (tcs.length && !tcs.includes(t.timeControl)) return false;
@@ -566,6 +635,7 @@ function runFilter(centerLat, centerLon) {
 
   renderAll();
 }
+
 
 async function applyFilters() {
   const cityRaw = document.getElementById('city-input').value.trim();
@@ -603,7 +673,6 @@ function clearFilters() {
   document.getElementById('continent-select').value = '';
   document.getElementById('country-select').value = '';
   document.getElementById('city-input').value = '';
-  document.getElementById('start-month').value = '';
   document.getElementById('prize-min').value = '';
   document.getElementById('prize-max').value = '';
   document.getElementById('gm-min').value = '';
@@ -613,9 +682,13 @@ function clearFilters() {
   document.getElementById('geo-btn').innerHTML = '📍 Use My Location';
   document.querySelectorAll('.tc-check, .dur-check').forEach(el => el.checked = false);
   userLat = userLon = activeCenterLat = activeCenterLon = null;
+  selectedMonths.clear();
+  updateMonthPickerLabel();
+  renderPickerMonths();
   filtered = [...TOURNAMENTS];
   renderAll();
 }
+
 
 // ═══════════════════════ TAB & VIEW ══════════════════════
 
