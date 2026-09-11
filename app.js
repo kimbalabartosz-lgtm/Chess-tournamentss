@@ -806,9 +806,10 @@ function setView(view) {
 
 // ═══════════════════════ LIVE LISTENERS ══════════════════
 
-['q-input', 'city-input', 'prize-min', 'prize-max', 'gm-min', 'titled-min', 'start-month'].forEach(id => {
+['q-input', 'city-input', 'prize-min', 'prize-max', 'gm-min', 'titled-min'].forEach(id => {
   document.getElementById(id).addEventListener('input', applyFilters);
 });
+
 
 // ═══════════════════════ BOOT ════════════════════════════
 
