@@ -591,6 +591,11 @@ async function applyFilters() {
   }
 
   runFilter(centerLat, centerLon);
+
+  // Auto-switch to map view when distance filter is active and center point found
+  if (maxDist > 0 && centerLat && centerLon && currentView !== 'map') {
+    setView('map');
+  }
 }
 
 function clearFilters() {
@@ -637,27 +642,77 @@ function initMap() {
     userLon = e.latlng.lng;
     document.getElementById('geo-btn').innerHTML = '📍 Custom Map Point';
     document.getElementById('city-input').value = '';
+    // Auto-set slider to 200km if still at 0
+    const slider = document.getElementById('distance-slider');
+    if (+slider.value === 0) {
+      slider.value = 200;
+      updateDistanceLabel();
+    }
     applyFilters();
   });
 }
+
+// Red marker icon
+const redIcon = L.icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+  iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
+});
+
+// Blue center marker icon
+const blueIcon = L.icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+  iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
+});
+
+let centerMarker = null;
 
 function updateMap(items) {
   if (!leafletMap) return;
   markers.forEach(m => leafletMap.removeLayer(m));
   markers = [];
+  if (centerMarker) { leafletMap.removeLayer(centerMarker); centerMarker = null; }
+
+  // Add center-point marker if distance filter is active
+  const maxDist = +document.getElementById('distance-slider').value;
+  if (maxDist > 0 && activeCenterLat && activeCenterLon) {
+    centerMarker = L.marker([activeCenterLat, activeCenterLon], { icon: blueIcon }).addTo(leafletMap);
+    centerMarker.bindPopup(`<b>📍 Search center</b><br>Radius: ${maxDist} km`);
+    // Draw circle showing the search radius
+    if (leafletMap._searchCircle) leafletMap.removeLayer(leafletMap._searchCircle);
+    leafletMap._searchCircle = L.circle([activeCenterLat, activeCenterLon], {
+      radius: maxDist * 1000,
+      color: '#1a56db', weight: 1.5, opacity: 0.5, fill: true, fillOpacity: 0.05
+    }).addTo(leafletMap);
+  } else if (leafletMap._searchCircle) {
+    leafletMap.removeLayer(leafletMap._searchCircle);
+    leafletMap._searchCircle = null;
+  }
+
   items.forEach(t => {
     if (t.lat && t.lon) {
-      const m = L.marker([t.lat, t.lon]).addTo(leafletMap);
-      m.bindPopup(`<b>${t.name}</b><br>${t.city}, ${t.country}<br>${fmtDateRange(t.startDate, t.endDate)}${t.firstPrize ? '<br>Prize: ' + fmtPrize(t.firstPrize) : ''}`);
+      const dist = (activeCenterLat && activeCenterLon)
+        ? ` · ${Math.round(getHaversineDistance(activeCenterLat, activeCenterLon, t.lat, t.lon))} km`
+        : '';
+      const m = L.marker([t.lat, t.lon], { icon: redIcon }).addTo(leafletMap);
+      m.bindPopup(`<b>${t.name}</b><br>${t.city}, ${t.country}${dist}<br>${fmtDateRange(t.startDate, t.endDate)}${t.firstPrize ? '<br>Prize: ' + fmtPrize(t.firstPrize) : ''}`);
       markers.push(m);
     }
   });
+
   if (markers.length > 0) {
     try {
-      leafletMap.fitBounds(L.featureGroup(markers).getBounds().pad(0.1));
+      const group = centerMarker
+        ? L.featureGroup([...markers, centerMarker])
+        : L.featureGroup(markers);
+      leafletMap.fitBounds(group.getBounds().pad(0.15));
     } catch(e) {}
+  } else if (activeCenterLat) {
+    leafletMap.setView([activeCenterLat, activeCenterLon], 7);
   }
 }
+
 
 function setView(view) {
   currentView = view;
