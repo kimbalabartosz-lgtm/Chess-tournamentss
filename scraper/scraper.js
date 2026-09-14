@@ -699,8 +699,15 @@ async function fetchTournamentDetails(tournaments, cache) {
                 players: t.players || count,
                 playerCategories
               });
+              let allowedOrder = ['V', 'IV', 'III', 'II', 'I', 'k', 'm'];
+              const tc = (t.timeControl || '').toLowerCase();
+              if (tc === 'blitz' || tc === 'bullet') {
+                allowedOrder = [];
+              } else if (tc === 'rapid') {
+                allowedOrder = ['V', 'IV', 'III'];
+              }
               const merged = new Set([...(t.achievableNorms || []), ...calculatedNorms]);
-              t.achievableNorms = ['V', 'IV', 'III', 'II', 'I', 'k', 'm'].filter(x => merged.has(x));
+              t.achievableNorms = allowedOrder.filter(x => merged.has(x));
               t.hasNorms = t.achievableNorms.length > 0;
               detailsFound = true;
             }
@@ -863,8 +870,15 @@ async function fetchTournamentDetails(tournaments, cache) {
                 players: count,
                 playerCategories
               });
+              let allowedOrder = ['V', 'IV', 'III', 'II', 'I', 'k', 'm'];
+              const tc = (t.timeControl || '').toLowerCase();
+              if (tc === 'blitz' || tc === 'bullet') {
+                allowedOrder = [];
+              } else if (tc === 'rapid') {
+                allowedOrder = ['V', 'IV', 'III'];
+              }
               const merged = new Set([...(t.achievableNorms || []), ...calculatedNorms]);
-              t.achievableNorms = ['V', 'IV', 'III', 'II', 'I', 'k', 'm'].filter(x => merged.has(x));
+              t.achievableNorms = allowedOrder.filter(x => merged.has(x));
               t.hasNorms = t.achievableNorms.length > 0;
             }
           }
@@ -976,6 +990,21 @@ async function main() {
 
   // DEEP SCRAPE with cache and safe batching
   upcoming = await fetchTournamentDetails(upcoming, cache);
+
+  // STRICT PZSZACH SANITIZATION:
+  // Blitz/Bullet can NEVER have norms. Rapid can NEVER have II, I, k, or m norms.
+  upcoming.forEach(t => {
+    const tc = (t.timeControl || '').toLowerCase();
+    if (tc === 'blitz' || tc === 'bullet') {
+      t.achievableNorms = [];
+      t.hasNorms = false;
+    } else if (tc === 'rapid') {
+      if (t.achievableNorms && t.achievableNorms.length > 0) {
+        t.achievableNorms = t.achievableNorms.filter(n => ['V', 'IV', 'III'].includes(n));
+        t.hasNorms = t.achievableNorms.length > 0;
+      }
+    }
+  });
 
   // Geocoding — build TWO maps: exact + accent-normalized
   console.log('🌍 Geocoding cities...');

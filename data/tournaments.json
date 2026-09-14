@@ -10819,14 +10819,8 @@
       "timeControl": "Blitz",
       "rounds": 7,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II",
-        "I"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4655&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:36.227Z",
@@ -15018,13 +15012,8 @@
       "timeControl": "Blitz",
       "rounds": 7,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4650&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:36.141Z",
@@ -19197,8 +19186,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2024/ti_40&n=",
@@ -20186,9 +20174,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II",
-        "I"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4402&n=",
@@ -20240,13 +20226,8 @@
       "timeControl": "Blitz",
       "rounds": 7,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4499&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:36.800Z",
@@ -20274,8 +20255,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4530&n=",
@@ -20392,9 +20372,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II",
-        "I"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4656&n=",
@@ -21586,8 +21564,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4276&n=",
@@ -21660,9 +21637,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II",
-        "I"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_21&n=",
@@ -21801,8 +21776,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_2155&n=",
@@ -21828,9 +21802,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II",
-        "I"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_2156&n=",
@@ -22196,8 +22168,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_3572&n=",
@@ -22226,8 +22197,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_3614&n=",
@@ -22256,8 +22226,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_3615&n=",
@@ -22307,13 +22276,8 @@
       "timeControl": "Blitz",
       "rounds": 9,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_3838&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:38.634Z",
@@ -22334,13 +22298,8 @@
       "timeControl": "Blitz",
       "rounds": 9,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_3839&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:38.637Z",
@@ -22360,13 +22319,8 @@
       "timeControl": "Blitz",
       "rounds": 9,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_3840&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:38.640Z",
@@ -22522,8 +22476,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4035&n=",
@@ -22578,8 +22531,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4053&n=",
@@ -22821,8 +22773,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4316&n=",
@@ -23035,9 +22986,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II",
-        "I"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4404&n=",
@@ -23114,8 +23063,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4467&n=",
@@ -23393,13 +23341,8 @@
       "timeControl": "Blitz",
       "rounds": 7,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4549&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:40.322Z",
@@ -23453,13 +23396,8 @@
       "timeControl": "Blitz",
       "rounds": 7,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4591&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:40.353Z",
@@ -29174,8 +29112,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_3616&n=",
@@ -29225,8 +29162,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4142&n=",
@@ -29411,8 +29347,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4336&n=",
@@ -29467,8 +29402,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4477&n=",
@@ -29497,8 +29431,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4478&n=",
@@ -29527,8 +29460,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4479&n=",
@@ -29628,8 +29560,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4571&n=",
@@ -29655,8 +29586,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4572&n=",
@@ -29681,8 +29611,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4589&n=",
@@ -33035,14 +32964,8 @@
       "timeControl": "Blitz",
       "rounds": 7,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II",
-        "I"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4678&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:42.612Z",
@@ -33510,13 +33433,8 @@
       "timeControl": "Blitz",
       "rounds": 15,
       "isFide": true,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4642&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:42.574Z",
@@ -33683,8 +33601,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/tdr_4068&n=",
@@ -33928,13 +33845,8 @@
       "timeControl": "Blitz",
       "rounds": 9,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_86&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:42.583Z",
@@ -34009,13 +33921,8 @@
       "timeControl": "Blitz",
       "rounds": 7,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_3455&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:42.876Z",
@@ -35207,8 +35114,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_889&n=",
@@ -35321,8 +35227,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_2658&n=",
@@ -35376,8 +35281,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4206&n=",
@@ -35428,13 +35332,8 @@
       "timeControl": "Blitz",
       "rounds": 9,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_3450&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:43.802Z",
@@ -35639,8 +35538,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_3831&n=",
@@ -35715,8 +35613,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4133&n=",
@@ -35745,8 +35642,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4134&n=",
@@ -35803,9 +35699,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II",
-        "I"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4173&n=",
@@ -35928,8 +35822,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4331&n=",
@@ -36283,8 +36176,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4653&n=",
@@ -38789,13 +38681,8 @@
       "timeControl": "Blitz",
       "rounds": 13,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_1033&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:45.572Z",
@@ -38815,13 +38702,8 @@
       "timeControl": "Blitz",
       "rounds": 9,
       "isFide": true,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_1871&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:45.570Z",
@@ -38889,8 +38771,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_3792&n=",
@@ -38913,8 +38794,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_3793&n=",
@@ -38938,9 +38818,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II",
-        "I"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4165&n=",
@@ -39032,8 +38910,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4428&n=",
@@ -41121,12 +40998,8 @@
       "timeControl": "Blitz",
       "rounds": 6,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_1518&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:46.721Z",
@@ -42183,11 +42056,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II",
-        "I",
-        "k",
-        "m"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4256&n=",
@@ -42763,13 +42632,8 @@
       "timeControl": "Blitz",
       "rounds": 7,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4210&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:48.193Z",
@@ -42793,13 +42657,8 @@
       "timeControl": "Blitz",
       "rounds": 7,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4211&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:48.194Z",
@@ -42823,13 +42682,8 @@
       "timeControl": "Blitz",
       "rounds": 7,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4212&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:48.193Z",
@@ -42853,13 +42707,8 @@
       "timeControl": "Blitz",
       "rounds": 7,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4213&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:48.454Z",
@@ -42883,13 +42732,8 @@
       "timeControl": "Blitz",
       "rounds": 7,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4214&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:48.456Z",
@@ -42913,13 +42757,8 @@
       "timeControl": "Blitz",
       "rounds": 7,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4215&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:48.454Z",
@@ -42943,13 +42782,8 @@
       "timeControl": "Blitz",
       "rounds": 7,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4216&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:48.455Z",
@@ -42973,13 +42807,8 @@
       "timeControl": "Blitz",
       "rounds": 7,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4217&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:48.456Z",
@@ -43105,8 +42934,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4446&n=",
@@ -43135,8 +42963,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4494&n=",
@@ -43281,8 +43108,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4646&n=",
@@ -44546,8 +44372,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4577&n=",
@@ -44650,8 +44475,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4592&n=",
@@ -44739,8 +44563,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4051&n=",
@@ -44807,12 +44630,8 @@
       "timeControl": "Blitz",
       "rounds": 7,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4649&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:49.600Z",
@@ -44840,8 +44659,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4665&n=",
@@ -45678,8 +45496,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/tdr_751&n=",
@@ -45708,9 +45525,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II",
-        "I"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4437&n=",
@@ -45865,9 +45680,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II",
-        "I"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4332&n=",
@@ -45978,13 +45791,8 @@
       "timeControl": "Blitz",
       "rounds": 7,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4473&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:50.220Z",
@@ -46307,8 +46115,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2025/ti_7100&n=",
@@ -46333,8 +46140,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_1286&n=",
@@ -46387,13 +46193,8 @@
       "timeControl": "Blitz",
       "rounds": 9,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_3451&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:50.481Z",
@@ -46420,9 +46221,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II",
-        "I"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_3777&n=",
@@ -46469,8 +46268,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4401&n=",
@@ -46703,14 +46501,8 @@
       "timeControl": "Blitz",
       "rounds": 13,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II",
-        "I"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4335&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:51.138Z",
@@ -46832,8 +46624,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4468&n=",
@@ -47007,8 +46798,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4515&n=",
@@ -47062,8 +46852,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4545&n=",
@@ -47137,13 +46926,8 @@
       "timeControl": "Blitz",
       "rounds": 7,
       "isFide": true,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4619&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:51.974Z",
@@ -47959,9 +47743,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II",
-        "I"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4426&n=",
@@ -47987,8 +47769,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4486&n=",
@@ -48013,9 +47794,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II",
-        "I"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4492&n=",
@@ -48671,13 +48450,8 @@
       "timeControl": "Blitz",
       "rounds": 9,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4192&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:52.787Z",
@@ -49540,9 +49314,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II",
-        "I"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_20&n=",
@@ -49707,8 +49479,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4433&n=",
@@ -49757,8 +49528,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4137&n=",
@@ -49787,8 +49557,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4138&n=",
@@ -49866,8 +49635,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4434&n=",
@@ -49892,8 +49660,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_3200&n=",
@@ -51096,9 +50863,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II",
-        "I"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_691&n=",
@@ -51124,9 +50889,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II",
-        "I"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_1696&n=",
@@ -52315,13 +52078,8 @@
       "timeControl": "Blitz",
       "rounds": 7,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4474&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:55.063Z",
@@ -52369,9 +52127,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II",
-        "I"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4583&n=",
@@ -52458,14 +52214,8 @@
       "timeControl": "Blitz",
       "rounds": null,
       "isFide": true,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II",
-        "I"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2025/ti_6926&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:55.324Z",
@@ -52587,8 +52337,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_752&n=",
@@ -52684,8 +52433,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/tdr_2825&n=",
@@ -52708,8 +52456,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/tdr_2826&n=",
@@ -52784,8 +52531,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_3619&n=",
@@ -52811,8 +52557,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_3620&n=",
@@ -53084,8 +52829,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4388&n=",
@@ -53114,8 +52858,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4389&n=",
@@ -53169,8 +52912,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/tdr_4394&n=",
@@ -53247,8 +52989,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4493&n=",
@@ -53618,12 +53359,8 @@
       "timeControl": "Blitz",
       "rounds": 6,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4666&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:57.685Z",
@@ -53643,12 +53380,8 @@
       "timeControl": "Blitz",
       "rounds": 6,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4667&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:57.688Z",
@@ -53842,13 +53575,8 @@
       "timeControl": "Blitz",
       "rounds": 13,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_1034&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:57.684Z",
@@ -53916,8 +53644,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4418&n=",
@@ -53981,13 +53708,8 @@
       "timeControl": "Blitz",
       "rounds": 13,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4359&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:57.985Z",
@@ -54080,12 +53802,8 @@
       "timeControl": "Blitz",
       "rounds": 6,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4668&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:58.283Z",
@@ -54105,12 +53823,8 @@
       "timeControl": "Blitz",
       "rounds": 6,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4669&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:58.285Z",
@@ -54634,13 +54348,8 @@
       "timeControl": "Blitz",
       "rounds": 8,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_1519&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:58.251Z",
@@ -54783,13 +54492,8 @@
       "timeControl": "Blitz",
       "rounds": 7,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_3456&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:58.257Z",
@@ -54977,8 +54681,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2025/ti_6299&n=",
@@ -55003,8 +54706,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4139&n=",
@@ -55030,13 +54732,8 @@
       "timeControl": "Blitz",
       "rounds": 7,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4622&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:58.542Z",
@@ -56187,8 +55884,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4505&n=",
@@ -56240,8 +55936,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4546&n=",
@@ -56514,8 +56209,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_1818&n=",
@@ -56537,13 +56231,8 @@
       "timeControl": "Blitz",
       "rounds": 9,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_302&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:43:00.031Z",
@@ -56757,12 +56446,8 @@
       "timeControl": "Blitz",
       "rounds": 6,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_1504&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:43:00.567Z",
@@ -56836,13 +56521,8 @@
       "timeControl": "Blitz",
       "rounds": 7,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4018&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:43:00.567Z",
@@ -56891,8 +56571,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4143&n=",
@@ -57183,8 +56862,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2025/ti_7101&n=",
@@ -57238,8 +56916,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_1287&n=",
@@ -57264,8 +56941,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/tdr_1491&n=",
@@ -57393,8 +57069,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_3999&n=",
@@ -57815,8 +57490,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_890&n=",
@@ -58009,8 +57683,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/tdr_1222&n=",
@@ -58039,8 +57712,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_1223&n=",
@@ -58069,8 +57741,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_1767&n=",
@@ -58238,8 +57909,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4124&n=",
@@ -58268,8 +57938,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4144&n=",
@@ -58298,8 +57967,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4146&n=",
@@ -58372,8 +58040,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4557&n=",
@@ -58538,8 +58205,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_704&n=",
@@ -58568,8 +58234,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_705&n=",
@@ -58639,13 +58304,8 @@
       "timeControl": "Blitz",
       "rounds": 11,
       "isFide": true,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4125&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:43:03.235Z",
@@ -58765,13 +58425,8 @@
       "timeControl": "Blitz",
       "rounds": 7,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4475&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:43:03.559Z",
@@ -58839,13 +58494,8 @@
       "timeControl": "Blitz",
       "rounds": 9,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_1790&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:43:03.531Z",
@@ -58894,13 +58544,8 @@
       "timeControl": "Blitz",
       "rounds": 7,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_3457&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:43:03.529Z",
@@ -59016,8 +58661,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_1488&n=",
@@ -59041,13 +58685,8 @@
       "timeControl": "Blitz",
       "rounds": 9,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_3452&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:43:03.818Z",
@@ -59189,13 +58828,8 @@
       "timeControl": "Blitz",
       "rounds": 7,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4017&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:43:04.109Z",
@@ -59281,13 +58915,8 @@
       "timeControl": "Blitz",
       "rounds": 11,
       "isFide": true,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4436&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:43:04.396Z",
@@ -59333,13 +58962,8 @@
       "timeControl": "Blitz",
       "rounds": 13,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_1035&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:43:04.425Z",
@@ -59362,8 +58986,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_1490&n=",
@@ -59411,8 +59034,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4511&n=",
@@ -59622,13 +59244,8 @@
       "timeControl": "Blitz",
       "rounds": 7,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4476&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:43:04.713Z",
@@ -59701,8 +59318,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_674&n=",
@@ -59745,13 +59361,8 @@
       "timeControl": "Blitz",
       "rounds": 9,
       "isFide": true,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_1872&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:43:05.012Z",
@@ -59774,8 +59385,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_2547&n=",
@@ -59837,13 +59447,8 @@
       "timeControl": "Blitz",
       "rounds": 7,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4015&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:43:05.271Z",
@@ -60137,13 +59742,8 @@
       "timeControl": "Blitz",
       "rounds": 7,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_1505&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:43:05.566Z",
@@ -60284,8 +59884,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2025/ti_7102&n=",
@@ -60335,8 +59934,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_1288&n=",
@@ -60612,8 +60210,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4150&n=",
@@ -60642,8 +60239,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4151&n=",
@@ -60672,8 +60268,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4547&n=",
@@ -60957,13 +60552,8 @@
       "timeControl": "Blitz",
       "rounds": 7,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_1789&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:43:07.101Z",
@@ -61012,13 +60602,8 @@
       "timeControl": "Blitz",
       "rounds": 7,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_3458&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:43:07.097Z",
@@ -61042,13 +60627,8 @@
       "timeControl": "Blitz",
       "rounds": 7,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_3459&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:43:07.098Z",
@@ -61186,13 +60766,8 @@
       "timeControl": "Blitz",
       "rounds": 9,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_3453&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:43:07.382Z",
@@ -61216,13 +60791,8 @@
       "timeControl": "Blitz",
       "rounds": 9,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_3454&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:43:07.383Z",
@@ -62060,12 +61630,8 @@
       "timeControl": "Blitz",
       "rounds": 6,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_1521&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:43:08.254Z",
@@ -62092,8 +61658,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4248&n=",
@@ -62118,8 +61683,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4249&n=",
@@ -62829,8 +62393,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4526&n=",
@@ -62936,8 +62499,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4527&n=",
@@ -63006,8 +62568,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_2528&n=",
@@ -63060,8 +62621,7 @@
       "achievableNorms": [
         "V",
         "IV",
-        "III",
-        "II"
+        "III"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_2529&n=",
@@ -63874,13 +63434,8 @@
       "timeControl": "Blitz",
       "rounds": 7,
       "isFide": false,
-      "achievableNorms": [
-        "V",
-        "IV",
-        "III",
-        "II"
-      ],
-      "hasNorms": true,
+      "achievableNorms": [],
+      "hasNorms": false,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4432&n=",
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:43:10.963Z",

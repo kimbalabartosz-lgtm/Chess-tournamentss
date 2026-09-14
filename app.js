@@ -365,7 +365,7 @@ function rowHTML(t) {
     <div class="bar ${getBarClass(t.timeControl)}"></div>
     <div class="row-left">
       <a class="row-name${hasLink ? '' : ' no-link'}" ${hasLink ? `href="${t.source}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()"` : ''}>
-        ${starBtn(t.id)}${t.name}${normSuffix(t)}${hasLink ? ' <svg style="display:inline;vertical-align:middle;margin-left:3px" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' : ''}
+        ${starBtn(t.id)}${t.name}${hasLink ? ' <svg style="display:inline;vertical-align:middle;margin-left:3px" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' : ''}
       </a>
       <div class="row-meta">
         <div class="meta-item">
@@ -413,7 +413,7 @@ function cardHTML(t) {
   <div class="tournament-card" ${hasLink ? `onclick="window.open('${t.source}','_blank','noopener,noreferrer')"` : 'style="cursor:default"'}>
     <div class="bar ${getBarClass(t.timeControl)}"></div>
     <a class="card-name${hasLink ? '' : ' no-link'}" ${hasLink ? `href="${t.source}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()"` : ''}>
-      ${starBtn(t.id)}${t.name}${normSuffix(t)}
+      ${starBtn(t.id)}${t.name}
     </a>
     <div class="card-meta">
       <div class="meta-item">
