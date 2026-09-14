@@ -359,8 +359,6 @@ function rowHTML(t) {
   const hasLink = t.source && t.source !== '#';
   const playerLabel = t.players ? `${t.players} players` : (isFinished ? 'Completed' : 'Open registration');
   const tcAndRounds = t.rounds ? `${t.timeControl} · ${t.rounds} rounds` : t.timeControl;
-  const maxNorm = getMaxNorm(t);
-  const detailsNormTag = maxNorm ? ` (${maxNorm} kat.)` : '';
 
   return `
   <div class="tournament-row" ${hasLink ? `onclick="window.open('${t.source}','_blank','noopener,noreferrer')"` : 'style="cursor:default"'}>
@@ -398,7 +396,7 @@ function rowHTML(t) {
       </div>
       <div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap;justify-content:flex-end;">
         <a href="${getCalendarLink(t)}" target="_blank" rel="noopener noreferrer" class="signup-btn" onclick="event.stopPropagation()" style="background:#f7fafc;color:#4a5568;border:1px solid #e2e8f0;">📅 Calendar</a>
-        ${hasLink ? `<a href="${t.source}" target="_blank" rel="noopener noreferrer" class="signup-btn" onclick="event.stopPropagation()">Sign Up${detailsNormTag}</a>` : ''}
+        ${hasLink ? `<a href="${t.source}" target="_blank" rel="noopener noreferrer" class="signup-btn" onclick="event.stopPropagation()">Sign Up</a>` : ''}
       </div>
     </div>
   </div>`;
@@ -410,8 +408,6 @@ function cardHTML(t) {
   const titled = gms + ims + fms;
   const hasLink = t.source && t.source !== '#';
   const playerLabel = t.players ? `${t.players} players` : (isFinished ? 'Completed' : 'Open registration');
-  const maxNorm = getMaxNorm(t);
-  const detailsNormTag = maxNorm ? ` (${maxNorm} kat.)` : '';
 
   return `
   <div class="tournament-card" ${hasLink ? `onclick="window.open('${t.source}','_blank','noopener,noreferrer')"` : 'style="cursor:default"'}>
@@ -448,7 +444,7 @@ function cardHTML(t) {
     </div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;">
       <a href="${getCalendarLink(t)}" target="_blank" rel="noopener noreferrer" class="signup-btn" onclick="event.stopPropagation()" style="background:#f7fafc;color:#4a5568;border:1px solid #e2e8f0;flex:1;text-align:center;">📅 Calendar</a>
-      ${hasLink ? `<a href="${t.source}" target="_blank" rel="noopener noreferrer" class="signup-btn" onclick="event.stopPropagation()" style="flex:1;text-align:center;">Sign Up${detailsNormTag}</a>` : ''}
+      ${hasLink ? `<a href="${t.source}" target="_blank" rel="noopener noreferrer" class="signup-btn" onclick="event.stopPropagation()" style="flex:1;text-align:center;">Sign Up</a>` : ''}
     </div>
   </div>`;
 }

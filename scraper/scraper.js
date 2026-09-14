@@ -458,7 +458,13 @@ function parseChessManagerCard(raw, id) {
   const durationDays = isNaN(ms) || ms < 0 ? 1 : Math.max(1, Math.round(ms / 86400000) + 1);
 
   const isFide = detectFide(name) || detectFide(raw.text);
-  const categoryNorms = detectCategoryNorms(name) || detectCategoryNorms(raw.text);
+  const achievableNorms = computePzszachNorms({
+    timeControl: tc,
+    rounds,
+    durationDays,
+    players,
+    text: `${name} ${raw.text}`
+  });
 
   return {
     id: `cm-${id}`,
@@ -474,8 +480,8 @@ function parseChessManagerCard(raw, id) {
     rounds,
     players,
     isFide,
-    categoryNorms,
-    hasNorms: !!categoryNorms,
+    achievableNorms,
+    hasNorms: achievableNorms.length > 0,
     source: raw.href,
     scrapedFrom: 'ChessManager'
   };
