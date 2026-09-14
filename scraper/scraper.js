@@ -344,37 +344,91 @@ async function scrapeChessManager(browser) {
   return tournaments;
 }
 
-async function fetchTournamentDetails(tournaments) {
-  // Only deep scrape top upcoming Chess-Results tournaments (ChessArbiter/ChessManager already have all fields and their servers rate-limit bulk requests)
-  const targetCR = tournaments.filter(t => t.scrapedFrom === 'Chess-Results').slice(0, 100);
-  console.log(`\n🔍 Deep scraping details for top ${targetCR.length} Chess-Results tournaments...`);
-  
-  const concurrency = 5;
-  for (let i = 0; i < targetCR.length; i += concurrency) {
-    const chunk = targetCR.slice(i, i + concurrency);
-    
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+async function fetchTournamentDetails(tournaments, cache) {
+  // 1. Re-use existing cached details (GMs, IMs, prizes, isOpen)
+  let reused = 0;
+  tournaments.forEach(t => {
+    const key = t.source || `${t.name}_${t.startDate}`;
+    const old = cache.get(key);
+    if (old && (old.gms > 0 || old.firstPrize > 0 || old.isOpen !== undefined)) {
+      if (old.gms !== undefined) t.gms = old.gms;
+      if (old.ims !== undefined) t.ims = old.ims;
+      if (old.fms !== undefined) t.fms = old.fms;
+      if (old.firstPrize !== undefined) t.firstPrize = old.firstPrize;
+      if (old.isOpen !== undefined) t.isOpen = old.isOpen;
+      reused++;
+    }
+  });
+  console.log(`  ⚡ Reused details from cache for ${reused} tournaments`);
+
+  // 2. Identify priority tournaments needing detail extraction
+  const isPriority = t => {
+    const n = (t.name || '').toLowerCase();
+    return n.includes('open') || n.includes('festiwal') || n.includes('memoriał') ||
+           n.includes('memorial') || n.includes('mistrzostw') || n.includes('championship') ||
+           n.includes('grand prix') || n.includes('puchar') || n.includes('cup') ||
+           (t.players && t.players >= 20);
+  };
+
+  const pending = tournaments.filter(t => t.gms === undefined);
+  pending.sort((a, b) => {
+    const pA = isPriority(a) ? 1 : 0;
+    const pB = isPriority(b) ? 1 : 0;
+    if (pA !== pB) return pB - pA;
+    return (a.startDate || '').localeCompare(b.startDate || '');
+  });
+
+  // Safe batch of up to 60 per run to prevent server strain and rate limits
+  const batch = pending.slice(0, 60);
+  console.log(`\n🔍 Scraping batch of ${batch.length} tournaments for details (pacing 250ms, concurrency 2)...`);
+
+  const concurrency = 2;
+  for (let i = 0; i < batch.length; i += concurrency) {
+    const chunk = batch.slice(i, i + concurrency);
+
     await Promise.all(chunk.map(async (t) => {
       try {
         let fetchUrl = t.source;
-        if (fetchUrl.includes('.aspx')) {
+        if (t.scrapedFrom === 'Chess-Results' && fetchUrl.includes('.aspx')) {
           fetchUrl = fetchUrl.replace('.aspx', '.aspx?art=0&zeilen=99999');
+        } else if (t.scrapedFrom === 'ChessArbiter' && fetchUrl.includes('turnieje/')) {
+          const match = fetchUrl.match(/turnieje\/([^\/]+)/) || fetchUrl.match(/turn=([^&]+)/);
+          if (match) {
+            fetchUrl = `http://www.chessarbiter.com/turnieje/${match[1]}/results.html?l=pl&tb=2_`;
+          }
         }
-        
-        if (fetchUrl === '#' || !fetchUrl.startsWith('http')) return;
 
-        const res = await fetch(fetchUrl, { headers: { 'User-Agent': 'Mozilla/5.0' }, timeout: 10000 });
+        if (!fetchUrl || fetchUrl === '#' || !fetchUrl.startsWith('http')) {
+          t.gms = t.gms || 0;
+          t.ims = t.ims || 0;
+          t.fms = t.fms || 0;
+          return;
+        }
+
+        const res = await fetch(fetchUrl, {
+          headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' },
+          timeout: 10000
+        });
+
+        if (res.status === 429) {
+          console.warn(`  ⚠️ Rate limit reached for ${t.scrapedFrom}, sleeping 3s...`);
+          await sleep(3000);
+          return;
+        }
+
         if (!res.ok) return;
         const html = await res.text();
-        
+
         t.gms = (html.match(/\bW?GM\b/g) || []).length;
         t.ims = (html.match(/\bW?IM\b/g) || []).length;
         t.fms = (html.match(/\bW?FM\b/g) || []).length;
-        
+
         const prizeMatch = html.match(/(€|PLN|EUR|USD|\$|£|GBP|CHF|AUD|CAD)\s*([\d,\.]+)/i);
         if (prizeMatch) {
           const currency = prizeMatch[1].toUpperCase();
           const val = parseInt(prizeMatch[2].replace(/[^\d]/g, ''), 10);
-          
           if (val > 0 && val < 1000000) {
             let multiplier = 1.0;
             switch(currency) {
@@ -389,25 +443,49 @@ async function fetchTournamentDetails(tournaments) {
           }
         }
 
-        if (html.toLowerCase().includes('closed') || t.name.toLowerCase().includes('zamknięt')) {
-          t.isOpen = false;
-        } else {
-          t.isOpen = true;
-        }
-
+        t.isOpen = !(html.toLowerCase().includes('closed') || (t.name && t.name.toLowerCase().includes('zamknięt')));
       } catch (e) {
         // Ignore timeouts
       }
     }));
-    
-    process.stdout.write(`\r  Progress: ${Math.min(i + concurrency, targetCR.length)} / ${targetCR.length}`);
+
+    await sleep(250);
+    process.stdout.write(`\r  Progress: ${Math.min(i + concurrency, batch.length)} / ${batch.length}`);
   }
-  console.log('\n  ✅ Deep scraping complete!');
+
+  // Set clean default 0 for unscraped so frontend filters work seamlessly
+  tournaments.forEach(t => {
+    if (t.gms === undefined) t.gms = 0;
+    if (t.ims === undefined) t.ims = 0;
+    if (t.fms === undefined) t.fms = 0;
+    if (t.firstPrize === undefined) t.firstPrize = 0;
+    if (t.isOpen === undefined) t.isOpen = true;
+  });
+
+  console.log('\n  ✅ Batched details scraping complete!');
   return tournaments;
 }
 
 async function main() {
   console.log('\n🏁 chess:tour scraper starting...\n');
+
+  // Load cache of previously scraped details
+  const cacheFile = path.join(__dirname, '..', 'data', 'tournaments.json');
+  const cache = new Map();
+  if (fs.existsSync(cacheFile)) {
+    try {
+      const oldJson = JSON.parse(fs.readFileSync(cacheFile, 'utf8'));
+      if (oldJson && Array.isArray(oldJson.tournaments)) {
+        oldJson.tournaments.forEach(t => {
+          const key = t.source || `${t.name}_${t.startDate}`;
+          cache.set(key, t);
+        });
+        console.log(`💾 Cache loaded: ${cache.size} known tournaments`);
+      }
+    } catch (e) {
+      console.warn('Could not read existing cache:', e.message);
+    }
+  }
   
   // Launch shared Puppeteer browser for Chess-Results and ChessManager
   let browser;
@@ -440,8 +518,8 @@ async function main() {
     .filter(t => t.endDate >= cutoffStr)
     .sort((a, b) => a.startDate.localeCompare(b.startDate));
 
-  // DEEP SCRAPE!
-  upcoming = await fetchTournamentDetails(upcoming);
+  // DEEP SCRAPE with cache and safe batching
+  upcoming = await fetchTournamentDetails(upcoming, cache);
 
   // Geocoding — build TWO maps: exact + accent-normalized
   console.log('🌍 Geocoding cities...');

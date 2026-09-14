@@ -8,8 +8,8 @@ on:
       - 'scraper/**'
       - '.github/workflows/scrape.yml'
   schedule:
-    # Run every day at 03:00 UTC (5am Warsaw time)
-    - cron: '0 3 * * *'
+    # Run every 4 hours (transze: 00:00, 04:00, 08:00, 12:00, 16:00, 20:00 UTC)
+    - cron: '0 */4 * * *'
   # Also allow manual trigger from GitHub
   workflow_dispatch:
 
