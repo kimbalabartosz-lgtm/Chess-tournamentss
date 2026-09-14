@@ -20228,20 +20228,26 @@
       "continent": "Europe",
       "flag": "🇵🇱",
       "startDate": "2026-09-18",
-      "endDate": "2026-09-18",
-      "durationDays": 1,
+      "endDate": "2026-09-27",
+      "durationDays": 10,
       "timeControl": "Classical",
-      "rounds": null,
+      "rounds": 9,
       "isFide": false,
       "achievableNorms": [
         "V",
-        "IV"
+        "IV",
+        "III",
+        "II",
+        "I",
+        "k"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4348&n=",
       "scrapedFrom": "ChessArbiter",
       "lat": 52.64817,
-      "lon": 19.0678
+      "lon": 19.0678,
+      "players": 7,
+      "lastChecked": "2026-09-14T21:30:12.406Z"
     },
     {
       "id": "ca-88",

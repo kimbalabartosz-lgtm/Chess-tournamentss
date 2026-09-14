@@ -144,22 +144,22 @@ function computePzszachNorms({ timeControl, rounds, durationDays, players, playe
     }
 
     // II kat: WYŁĄCZNIE szachy klasyczne wielodniowe / min. 7 rund (60 min na gracza)
-    if (isMultiDayOrLong && (r === null || r >= 7) && n >= 8 && hasIIorHigher) {
+    if (isMultiDayOrLong && (r === null || r >= 7) && n >= 6 && hasIIorHigher) {
       norms.add('II');
     }
 
     // I kat: WYŁĄCZNIE szachy klasyczne wielodniowe (min. 7-9 rund) z min. I kat
-    if (isMultiDayOrLong && (r === null || r >= 7) && n >= 10 && hasIorHigher) {
+    if (isMultiDayOrLong && (r === null || r >= 7) && n >= 6 && hasIorHigher) {
       norms.add('I');
     }
 
-    // k (kandydat): WYŁĄCZNIE szachy klasyczne wielodniowe, min. 9 rund, min. 2 kandydatów/mistrzów
-    if (dur >= 3 && (r === null || r >= 9) && n >= 10 && hasKorHigher && titledCount >= 2) {
+    // k (kandydat): WYŁĄCZNIE szachy klasyczne wielodniowe, min. 9 rund, obecność kandydatów/mistrzów
+    if (dur >= 3 && (r === null || r >= 9) && n >= 6 && (hasKorHigher || titledCount >= 1)) {
       norms.add('k');
     }
 
     // m (mistrz krajowy): WYŁĄCZNIE szachy klasyczne wielodniowe, min. 9 rund, min. 3 graczy z tytułem mistrzowskim
-    if (dur >= 4 && (r === null || r >= 9) && n >= 10 && titledCount >= 3) {
+    if (dur >= 4 && (r === null || r >= 9) && n >= 8 && titledCount >= 3) {
       norms.add('m');
     }
   } else {
@@ -710,25 +710,96 @@ async function fetchTournamentDetails(tournaments, cache) {
 
             if (res.ok) {
               const html = await res.text();
-              
-              let maxRound = null;
-              const roundMatches = html.matchAll(/(?:final_standings&|pairing&)(\d+)\.html/gi);
-              for (const m of roundMatches) {
-                const r = parseInt(m[1], 10);
-                if (r >= 1 && r <= 30 && r > (maxRound || 0)) maxRound = r;
+              const $ = cheerio.load(html);
+
+              // 1. Extract dates from Main informations
+              const startM = html.match(/Tr\("Start date:",""\);<\/script><\/td><td[^>]*>([\d\-]+)<\/td>/i);
+              const endM = html.match(/Tr\("End date:",""\);<\/script><\/td><td[^>]*>([\d\-]+)<\/td>/i);
+              if (startM && startM[1]) t.startDate = startM[1].trim();
+              if (endM && endM[1]) t.endDate = endM[1].trim();
+              if (t.startDate && t.endDate) {
+                const ms = new Date(t.endDate) - new Date(t.startDate);
+                t.durationDays = isNaN(ms) || ms < 0 ? 1 : Math.max(1, Math.round(ms / 86400000) + 1);
               }
-              if (!maxRound) {
+
+              // 2. Extract rounds from Main informations or links
+              const roundsM = html.match(/Tr\("No\. of rounds:",""\);<\/script><\/td><td[^>]*>(\d+)<\/td>/i);
+              if (roundsM && roundsM[1]) {
+                const r = parseInt(roundsM[1], 10);
+                if (r >= 1 && r <= 30) t.rounds = r;
+              }
+              if (!t.rounds) {
+                const roundMatches = html.matchAll(/(?:final_standings&|pairing&)(\d+)\.html/gi);
+                for (const m of roundMatches) {
+                  const r = parseInt(m[1], 10);
+                  if (r >= 1 && r <= 30 && r > (t.rounds || 0)) t.rounds = r;
+                }
+              }
+              if (!t.rounds) {
                 const tm = html.match(/(\d+)\s*[- ]*rund/i);
-                if (tm) maxRound = parseInt(tm[1], 10);
+                if (tm) t.rounds = parseInt(tm[1], 10);
               }
-              if (maxRound) t.rounds = maxRound;
+
+              // 3. Extract rate of play
+              const rateM = html.match(/Tr\("Rate of play:",""\);<\/script><\/td><td[^>]*>(.*?)<\/td>/i);
+              if (rateM && rateM[1]) {
+                const tc = detectTimeControl(rateM[1], rateM[1]);
+                if (tc && tc !== 'Unknown') t.timeControl = tc;
+              }
+
+              // 4. Extract place
+              const placeM = html.match(/Tr\("Place:",""\);<\/script><\/td><td[^>]*>(.*?)<\/td>/i);
+              if (placeM && placeM[1] && (!t.city || t.city === 'Polska')) {
+                t.city = placeM[1].trim();
+              }
+
+              // 5. Extract players count
+              const playersM = html.match(/Tr\("No\. of players:",""\);<\/script><\/td><td[^>]*>(\d+)<\/td>/i);
+              if (playersM && playersM[1]) {
+                const pCount = parseInt(playersM[1], 10);
+                if (pCount > 0) t.players = pCount;
+              }
+
+              // 6. Extract categories from Titles' statistic table
+              const htmlPlayerCategories = [];
+              $('table.fr').each((i, tbl) => {
+                if ($(tbl).find('table').length > 0) return; // avoid outer wrapper
+                if ($(tbl).find('th.pan').text().includes("Titles' statistic")) {
+                  let currentHeaders = [];
+                  $(tbl).find('tr').each((ri, tr) => {
+                    const rowClass = $(tr).attr('class');
+                    if (rowClass === 'pan') {
+                      const ths = $(tr).find('td');
+                      currentHeaders = [];
+                      ths.each((ci, td) => currentHeaders.push($(td).text().trim()));
+                    } else if ($(tr).find('td.pan').length > 0 && currentHeaders.length > 0) {
+                      const tds = $(tr).find('td');
+                      tds.each((ci, td) => {
+                        const count = parseInt($(td).text().trim(), 10);
+                        const title = currentHeaders[ci];
+                        if (!isNaN(count) && count > 0 && title) {
+                          for (let k = 0; k < count; k++) htmlPlayerCategories.push(title);
+                        }
+                      });
+                    }
+                  });
+                }
+              });
 
               if (!t.isFide && detectFide(html)) t.isFide = true;
-              const homeNorms = computePzszachNorms({ timeControl: t.timeControl, rounds: t.rounds, text: html });
+
+              const homeNorms = computePzszachNorms({
+                timeControl: t.timeControl,
+                rounds: t.rounds,
+                durationDays: t.durationDays,
+                players: t.players || htmlPlayerCategories.length,
+                playerCategories: htmlPlayerCategories,
+                text: html
+              });
               if (homeNorms.length > 0) {
                 const currentSet = new Set(t.achievableNorms || []);
                 homeNorms.forEach(n => currentSet.add(n));
-                t.achievableNorms = ['V', 'IV', 'III', 'II', 'I'].filter(x => currentSet.has(x));
+                t.achievableNorms = ['V', 'IV', 'III', 'II', 'I', 'k', 'm'].filter(x => currentSet.has(x));
                 t.hasNorms = t.achievableNorms.length > 0;
               }
 
