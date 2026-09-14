@@ -65,6 +65,14 @@ function computePzszachNorms({ timeControl, rounds, players, playerCategories = 
     if (tc === 'classical') { norms.add('I'); norms.add('II'); }
     norms.add('III'); norms.add('IV'); norms.add('V');
   }
+  if (t.includes('norma na k') || t.includes('normy na k') || t.includes('kandydat') || t.includes('k++') || t.includes('k+')) {
+    if (tc === 'classical') { norms.add('k'); norms.add('I'); norms.add('II'); }
+    norms.add('III'); norms.add('IV'); norms.add('V');
+  }
+  if (t.includes('norma na m') || t.includes('normy na m') || t.includes('mistrz') || t.includes('kołowy') || t.includes('kolowy') || t.includes('arcymistrz')) {
+    if (tc === 'classical') { norms.add('m'); norms.add('k'); norms.add('I'); norms.add('II'); }
+    norms.add('III'); norms.add('IV'); norms.add('V');
+  }
 
   // Blitz never yields PZSzach norms
   if (tc === 'blitz' || tc === 'bullet') {
@@ -77,6 +85,7 @@ function computePzszachNorms({ timeControl, rounds, players, playerCategories = 
     const hasIIorHigher = cats.some(c => ['II', 'I', 'K', 'M', 'FM', 'IM', 'GM'].includes(c));
     const hasIorHigher = cats.some(c => ['I', 'K', 'M', 'FM', 'IM', 'GM'].includes(c));
     const hasKorHigher = cats.some(c => ['K', 'M', 'FM', 'IM', 'GM'].includes(c));
+    const titledCount = cats.filter(c => ['K', 'M', 'FM', 'IM', 'GM', 'WFM', 'WIM', 'WGM'].includes(c)).length;
 
     // V i IV kat: minimum 5 rund, turnieje klasyczne lub rapid
     if (r >= 5 && n >= 6) {
@@ -99,9 +108,19 @@ function computePzszachNorms({ timeControl, rounds, players, playerCategories = 
     if (tc === 'classical' && r >= 7 && n >= 10 && hasIorHigher) {
       norms.add('I');
     }
+
+    // k (kandydat): WYŁĄCZNIE szachy klasyczne, min. 9 rund, obecność min. 2 kandydatów/mistrzów
+    if (tc === 'classical' && r >= 9 && n >= 10 && hasKorHigher && titledCount >= 2) {
+      norms.add('k');
+    }
+
+    // m (mistrz krajowy): WYŁĄCZNIE szachy klasyczne, min. 9 rund, obecność min. 3 graczy z tytułem mistrzowskim
+    if (tc === 'classical' && r >= 9 && n >= 10 && titledCount >= 3) {
+      norms.add('m');
+    }
   }
 
-  const order = ['V', 'IV', 'III', 'II', 'I'];
+  const order = ['V', 'IV', 'III', 'II', 'I', 'k', 'm'];
   return order.filter(x => norms.has(x));
 }
 
@@ -609,7 +628,7 @@ async function fetchTournamentDetails(tournaments, cache) {
               playerCategories
             });
             const merged = new Set([...(t.achievableNorms || []), ...calculatedNorms]);
-            t.achievableNorms = ['V', 'IV', 'III', 'II', 'I'].filter(x => merged.has(x));
+            t.achievableNorms = ['V', 'IV', 'III', 'II', 'I', 'k', 'm'].filter(x => merged.has(x));
             t.hasNorms = t.achievableNorms.length > 0;
           }
         }
