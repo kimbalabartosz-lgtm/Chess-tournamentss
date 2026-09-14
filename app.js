@@ -300,11 +300,11 @@ function starBtn(id) {
 
 function rowHTML(t) {
   const isFinished = t.endDate < TODAY;
-  const totalRounds = t.rounds || '?';
   const gms = t.gms || 0, ims = t.ims || 0, fms = t.fms || 0;
   const titled = gms + ims + fms;
-  const players = t.players || '?';
   const hasLink = t.source && t.source !== '#';
+  const playerLabel = t.players ? `${t.players} players` : (isFinished ? 'Completed' : 'Open registration');
+  const tcAndRounds = t.rounds ? `${t.timeControl} · ${t.rounds} rounds` : t.timeControl;
 
   return `
   <div class="tournament-row" ${hasLink ? `onclick="window.open('${t.source}','_blank')"` : 'style="cursor:default"'}>
@@ -318,13 +318,13 @@ function rowHTML(t) {
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
           ${fmtDateRange(t.startDate, t.endDate)}
         </div>
-        <div class="meta-item">
+        <div class="meta-item"${!t.players ? ' style="color:#64748b;"' : ''}>
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          ${players} players
+          ${playerLabel}
         </div>
         <div class="meta-item">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          ${t.timeControl} · ${totalRounds} rounds
+          ${tcAndRounds}
         </div>
         ${gms > 0 ? `<div class="meta-item">♟ ${gms} GMs, ${titled} titled</div>` : (titled > 0 ? `<div class="meta-item">♟ ${titled} titled</div>` : '')}
       </div>
@@ -347,10 +347,11 @@ function rowHTML(t) {
 }
 
 function cardHTML(t) {
+  const isFinished = t.endDate < TODAY;
   const gms = t.gms || 0, ims = t.ims || 0, fms = t.fms || 0;
   const titled = gms + ims + fms;
-  const players = t.players || '?';
   const hasLink = t.source && t.source !== '#';
+  const playerLabel = t.players ? `${t.players} players` : (isFinished ? 'Completed' : 'Open registration');
 
   return `
   <div class="tournament-card" ${hasLink ? `onclick="window.open('${t.source}','_blank')"` : 'style="cursor:default"'}>
@@ -363,9 +364,9 @@ function cardHTML(t) {
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
         ${fmtDateRange(t.startDate, t.endDate)}
       </div>
-      <div class="meta-item">
+      <div class="meta-item"${!t.players ? ' style="color:#64748b;"' : ''}>
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-        ${players} players · ${t.rounds || '?'} rounds
+        ${playerLabel}${t.rounds ? ` · ${t.rounds} rounds` : ''}
       </div>
       <div class="meta-item">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>

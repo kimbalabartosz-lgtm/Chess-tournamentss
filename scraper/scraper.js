@@ -14,6 +14,17 @@ function detectTimeControl(name) {
   return 'Classical';
 }
 
+function detectRounds(name) {
+  if (!name) return null;
+  const m = name.match(/(\d+)\s*[- ]*(rund[a-z]*|rapid|blitz|kołow[a-z]*|szwajcar)/i) ||
+            name.match(/(\d+)\s*[- ]*r\b/i);
+  if (m) {
+    const val = parseInt(m[1], 10);
+    if (val >= 3 && val <= 25) return val;
+  }
+  return null;
+}
+
 function parseCADates(td) {
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1;
@@ -82,6 +93,7 @@ async function scrapeChessArbiter() {
           endDate: dates.end,
           durationDays,
           timeControl: detectTimeControl(name),
+          rounds: detectRounds(name),
           source: sourceUrl.startsWith('http') ? sourceUrl : `https://www.chessarbiter.com/turnieje/${sourceUrl}`,
           scrapedFrom: 'ChessArbiter'
         });
