@@ -562,6 +562,49 @@ document.addEventListener('click', e => {
 
 const normalizeStr = str => str ? str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase() : '';
 
+const CITY_ALIASES = {
+  'warsaw': ['warszawa', 'warsaw'],
+  'warszawa': ['warszawa', 'warsaw'],
+  'krakow': ['krakow', 'kraków', 'cracow'],
+  'cracow': ['krakow', 'kraków', 'cracow'],
+  'wroclaw': ['wroclaw', 'wrocław', 'breslau'],
+  'vienna': ['wien', 'vienna'],
+  'wien': ['wien', 'vienna'],
+  'prague': ['praha', 'prague'],
+  'praha': ['praha', 'prague'],
+  'rome': ['roma', 'rome'],
+  'roma': ['roma', 'rome'],
+  'munich': ['munchen', 'muenchen', 'münchen', 'munich'],
+  'munchen': ['munchen', 'muenchen', 'münchen', 'munich'],
+  'cologne': ['koln', 'koeln', 'köln', 'cologne'],
+  'koln': ['koln', 'koeln', 'köln', 'cologne'],
+  'geneva': ['geneve', 'genève', 'genf', 'geneva'],
+  'geneve': ['geneve', 'genève', 'genf', 'geneva'],
+  'milan': ['milano', 'milan'],
+  'milano': ['milano', 'milan'],
+  'kyiv': ['kiev', 'kyiv'],
+  'kiev': ['kiev', 'kyiv'],
+  'moscow': ['moskva', 'moscow'],
+  'moskva': ['moskva', 'moscow'],
+  'lisbon': ['lisboa', 'lisbon'],
+  'athens': ['athina', 'athens'],
+  'brussels': ['bruxelles', 'brussel', 'brussels'],
+};
+
+function matchCity(filterCity, targetCity) {
+  if (!filterCity) return true;
+  if (!targetCity) return false;
+  if (targetCity.includes(filterCity)) return true;
+  const aliases = CITY_ALIASES[filterCity];
+  if (aliases && aliases.some(a => targetCity.includes(a))) return true;
+  for (const [key, list] of Object.entries(CITY_ALIASES)) {
+    if (key.includes(filterCity) || list.some(a => a.includes(filterCity))) {
+      if (list.some(a => targetCity.includes(a))) return true;
+    }
+  }
+  return false;
+}
+
 // Cache for Nominatim geocoding results
 const geocodeCache = {};
 
@@ -612,10 +655,10 @@ function runFilter(centerLat, centerLon) {
     const tCity    = normalizeStr(t.city);
     const tCountry = normalizeStr(t.country);
 
-    if (q && !tName.includes(q) && !tCity.includes(q) && !tCountry.includes(q)) return false;
+    if (q && !tName.includes(q) && !tCity.includes(q) && !matchCity(q, tCity) && !tCountry.includes(q)) return false;
     if (continent && t.continent !== continent) return false;
     if (country && t.country !== country) return false;
-    if (city && maxDist === 0 && !tCity.includes(city)) return false;
+    if (city && maxDist === 0 && !matchCity(city, tCity)) return false;
     // Month picker filter — match any selected month
     if (selectedMonths.size > 0 && !selectedMonths.has(t.startDate.substring(0, 7))) return false;
     if (prizeMin > 0 && (t.firstPrize || 0) < prizeMin) return false;
