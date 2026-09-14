@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "cheerio": "^1.0.0",
+    "cities.json": "^1.1.61",
     "node-fetch": "^2.7.0",
     "puppeteer": "^25.2.1",
     "puppeteer-extra": "^3.3.6",

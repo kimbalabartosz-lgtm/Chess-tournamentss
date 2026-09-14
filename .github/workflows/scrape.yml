@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'scraper/**'
+      - '.github/workflows/scrape.yml'
   schedule:
     # Run every day at 03:00 UTC (5am Warsaw time)
     - cron: '0 3 * * *'
@@ -28,7 +31,9 @@ jobs:
           node-version: '24'
 
       - name: Install scraper dependencies
-        run: npm install
+        run: |
+          npm install
+          npx puppeteer browsers install chrome
         working-directory: scraper
 
       - name: Run scraper

@@ -2,7 +2,9 @@ const fetch = require('node-fetch');
 const cheerio = require('cheerio');
 const fs = require('fs');
 const path = require('path');
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-extra');
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+puppeteer.use(StealthPlugin());
 
 function detectTimeControl(name) {
   const n = (name || '').toLowerCase();
@@ -12,21 +14,25 @@ function detectTimeControl(name) {
   return 'Classical';
 }
 
-function extractDates(htmlStr) {
-  const parts = htmlStr.split('<br>').map(s => s.replace(/<[^>]+>/g, '').trim());
-  const year = new Date().getFullYear();
-  let start = '';
-  let end = '';
-  if (parts.length > 0 && parts[0].match(/\d{2}-\d{2}/)) {
-    const [d, m] = parts[0].split('-');
-    start = `${year}-${m}-${d}`;
+function parseCADates(td) {
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth() + 1;
+
+  const rawText = td.text().trim();
+  const matches = rawText.match(/(\d{2})-(\d{2})/g);
+  if (!matches || matches.length === 0) return null;
+
+  const [d1, m1] = matches[0].split('-').map(Number);
+  const year1 = m1 < currentMonth ? currentYear + 1 : currentYear;
+  const start = `${year1}-${String(m1).padStart(2, '0')}-${String(d1).padStart(2, '0')}`;
+
+  let end = start;
+  if (matches.length > 1) {
+    const [d2, m2] = matches[1].split('-').map(Number);
+    const year2 = m2 < currentMonth ? currentYear + 1 : currentYear;
+    end = `${year2}-${String(m2).padStart(2, '0')}-${String(d2).padStart(2, '0')}`;
   }
-  if (parts.length > 1 && parts[1].match(/\d{2}-\d{2}/)) {
-    const [d, m] = parts[1].split('-');
-    end = `${year}-${m}-${d}`;
-  } else {
-    end = start;
-  }
+
   return { start, end };
 }
 
@@ -35,8 +41,8 @@ async function scrapeChessArbiter() {
   const tournaments = [];
   try {
     const html = await fetch('http://www.chessarbiter.com/turnieje.php', {
-      headers: { 'User-Agent': 'Mozilla/5.0' },
-      timeout: 15000
+      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' },
+      timeout: 20000
     }).then(r => r.text());
 
     const $ = cheerio.load(html);
@@ -54,13 +60,16 @@ async function scrapeChessArbiter() {
         const sourceUrl = aTag.attr('href');
         if (!name || name.includes('SZUKAJ')) return;
 
-        const dateHtml = cells.eq(0).html() || '';
-        const { start, end } = extractDates(dateHtml);
-        if (!start) return;
+        const dates = parseCADates(cells.eq(0));
+        if (!dates) return;
 
-        let city = '';
-        aTag[0].nextSibling && (city = aTag[0].nextSibling.nodeValue || '');
-        city = city.replace(/\[.*\]/g, '').trim() || 'Polska';
+        const fullTd = cells.eq(1).text();
+        const remainder = fullTd.replace(aTag.text(), '').trim();
+        let city = remainder.replace(/\[.*\]/g, '').trim();
+        if (!city || city.length < 2) city = 'Polska';
+
+        const ms = new Date(dates.end) - new Date(dates.start);
+        const durationDays = isNaN(ms) || ms < 0 ? 1 : Math.max(1, Math.round(ms / 86400000) + 1);
 
         tournaments.push({
           id: `ca-${idCounter++}`,
@@ -69,9 +78,9 @@ async function scrapeChessArbiter() {
           country: 'Poland',
           continent: 'Europe',
           flag: '🇵🇱',
-          startDate: start,
-          endDate: end,
-          durationDays: 1,
+          startDate: dates.start,
+          endDate: dates.end,
+          durationDays,
           timeControl: detectTimeControl(name),
           source: sourceUrl.startsWith('http') ? sourceUrl : `https://www.chessarbiter.com/turnieje/${sourceUrl}`,
           scrapedFrom: 'ChessArbiter'
@@ -90,11 +99,26 @@ const countryFlags = {
   'COL': '🇨🇴', 'IND': '🇮🇳', 'BRA': '🇧🇷', 'AUS': '🇦🇺', 'NZL': '🇳🇿', 'ARG': '🇦🇷', 'NED': '🇳🇱', 'BEL': '🇧🇪',
   'TUR': '🇹🇷', 'CAT': '🇪🇸', 'ECU': '🇪🇨', 'CRC': '🇨🇷', 'BOL': '🇧🇴', 'URU': '🇺🇾', 'TUN': '🇹🇳', 'EGY': '🇪🇬',
   'MAR': '🇲🇦', 'UKR': '🇺🇦', 'UAE': '🇦🇪', 'MEX': '🇲🇽', 'IRI': '🇮🇷', 'GRE': '🇬🇷', 'BLR': '⬜', 'PAN': '🇵🇦',
-  'AZE': '🇦🇿', 'PER': '🇵🇪', 'ARM': '🇦🇲', 'ISL': '🇮🇸', 'PHI': '🇵🇭', 'ISR': '🇮🇱', 'CRO': '🇭🇷', 'ROU': '🇷🇴',
+  'AZE': '🇦🇿', 'PER': '🇵🇪', 'ARM': '🇦🇲', 'ISL': 'ISL', 'PHI': '🇵🇭', 'ISR': '🇮🇱', 'CRO': '🇭🇷', 'ROU': '🇷🇴',
   'RSA': '🇿🇦', 'CHI': '🇨🇱', 'KAZ': '🇰🇿', 'UZB': '🇺🇿', 'SRB': '🇷🇸', 'CZE': '🇨🇿', 'SVK': '🇸🇰', 'SWE': '🇸🇪',
   'NOR': '🇳🇴', 'DEN': '🇩🇰', 'FIN': '🇫🇮', 'HUN': '🇭🇺', 'SUI': '🇨🇭', 'AUT': '🇦🇹', 'IRL': '🇮🇪', 'WLS': '🏴󠁧󠁢󠁷󠁬󠁳󠁿',
   'SCO': '🏴󠁧󠁢󠁳󠁣󠁴󠁿', 'POR': '🇵🇹', 'CUB': '🇨🇺', 'VEN': '🇻🇪', 'PAR': '🇵🇾', 'INA': '🇮🇩', 'MAS': '🇲🇾', 'SGP': '🇸🇬',
   'VIE': '🇻🇳', 'THA': '🇹🇭', 'CHN': '🇨🇳', 'JPN': '🇯🇵', 'KOR': '🇰🇷', 'ALG': '🇩🇿', 'NGR': '🇳🇬', 'KEN': '🇰🇪'
+};
+
+const countryToCode = {
+  'poland': 'POL', 'united states': 'USA', 'usa': 'USA', 'germany': 'GER', 'france': 'FRA',
+  'spain': 'ESP', 'italy': 'ITA', 'england': 'ENG', 'united kingdom': 'ENG', 'great britain': 'ENG',
+  'canada': 'CAN', 'india': 'IND', 'brazil': 'BRA', 'australia': 'AUS', 'new zealand': 'NZL',
+  'argentina': 'ARG', 'netherlands': 'NED', 'belgium': 'BEL', 'turkey': 'TUR', 'ukraine': 'UKR',
+  'united arab emirates': 'UAE', 'mexico': 'MEX', 'iran': 'IRI', 'greece': 'GRE', 'azerbaijan': 'AZE',
+  'armenia': 'ARM', 'iceland': 'ISL', 'philippines': 'PHI', 'israel': 'ISR', 'croatia': 'CRO',
+  'romania': 'ROU', 'south africa': 'RSA', 'chile': 'CHI', 'kazakhstan': 'KAZ', 'uzbekistan': 'UZB',
+  'serbia': 'SRB', 'czech republic': 'CZE', 'czechia': 'CZE', 'slovakia': 'SVK', 'sweden': 'SWE',
+  'norway': 'NOR', 'denmark': 'DEN', 'finland': 'FIN', 'hungary': 'HUN', 'switzerland': 'SUI',
+  'austria': 'AUT', 'ireland': 'IRL', 'portugal': 'POR', 'singapore': 'SGP', 'malaysia': 'MAS',
+  'indonesia': 'INA', 'vietnam': 'VIE', 'thailand': 'THA', 'china': 'CHN', 'japan': 'JPN',
+  'south korea': 'KOR', 'korea': 'KOR', 'colombia': 'COL', 'ecuador': 'ECU', 'peru': 'PER'
 };
 
 function getContinent(fedCode) {
@@ -107,31 +131,34 @@ function getContinent(fedCode) {
   if (asia.includes(fedCode)) return 'Asia';
   if (africa.includes(fedCode)) return 'Africa';
   if (oceania.includes(fedCode)) return 'Oceania';
-  return 'Europe'; // Default fallback
+  return 'Europe';
 }
 
-async function scrapeChessResults() {
+function resolveCountry(countryStr) {
+  const norm = (countryStr || '').toLowerCase().trim();
+  const code = countryToCode[norm] || (countryStr.length === 3 ? countryStr.toUpperCase() : countryStr);
+  return {
+    code,
+    flag: countryFlags[code] || '🏳️',
+    continent: getContinent(code)
+  };
+}
+
+async function scrapeChessResults(browser) {
   console.log('📡 Scraping Chess-Results.com (via Puppeteer)...');
   const tournaments = [];
-  let browser;
   try {
-    browser = await puppeteer.launch({ 
-      headless: 'new',
-      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
-    });
     const page = await browser.newPage();
     await page.setViewport({ width: 1280, height: 800 });
     
-    // Increase navigation timeout for GitHub Actions
     await page.goto('https://chess-results.com/TurnierSuche.aspx?lan=1', { waitUntil: 'networkidle2', timeout: 60000 });
     
     console.log('  Selecting max results...');
     await page.evaluate(() => {
-      // Set to max rows (value '10' usually means max/all depending on the form, or we can just try to click)
       const select = document.querySelector('select[name="ctl00$P1$combo_anzahl_zeilen"]');
       if (select) {
         const lastOption = select.options[select.options.length - 1];
-        select.value = lastOption.value; // Select the maximum value available in the dropdown
+        select.value = lastOption.value;
       }
       document.querySelector('input[name="ctl00$P1$cb_suchen"]').click();
     });
@@ -161,6 +188,9 @@ async function scrapeChessResults() {
       
       const rounds = parseInt(tds.eq(16).text().trim()) || null;
       const players = parseInt(tds.eq(17).text().trim()) || null;
+
+      const ms = new Date(end || start) - new Date(start);
+      const durationDays = isNaN(ms) || ms < 0 ? 1 : Math.max(1, Math.round(ms / 86400000) + 1);
       
       tournaments.push({
         id: `cr-${crCounter++}`,
@@ -171,7 +201,7 @@ async function scrapeChessResults() {
         flag: countryFlags[fedCode] || '🏳️',
         startDate: start,
         endDate: end || start,
-        durationDays: 1,
+        durationDays,
         timeControl: detectTimeControl(tcRaw || name),
         rounds: rounds,
         players: players,
@@ -180,11 +210,136 @@ async function scrapeChessResults() {
       });
     });
     
+    await page.close();
     console.log(`  ✅ Chess-Results: ${tournaments.length} tournaments found`);
   } catch (e) {
     console.error('  ❌ Chess-Results failed:', e.message);
-  } finally {
-    if (browser) await browser.close();
+  }
+  return tournaments;
+}
+
+function parseDateMDY(str) {
+  const parts = str.trim().split('/');
+  if (parts.length !== 3) return null;
+  const m = String(parts[0]).padStart(2, '0');
+  const d = String(parts[1]).padStart(2, '0');
+  let y = String(parts[2]);
+  if (y.length === 2) y = '20' + y;
+  return `${y}-${m}-${d}`;
+}
+
+function parseChessManagerCard(raw, id) {
+  const lines = raw.text.split('\n').map(s => s.trim()).filter(Boolean);
+  if (lines.length < 2) return null;
+
+  const name = lines[0];
+  const locParts = lines[1].split(',').map(s => s.trim());
+  let city = 'Unknown';
+  let countryRaw = 'Unknown';
+  if (locParts.length >= 2) {
+    city = locParts[0];
+    countryRaw = locParts[locParts.length - 1];
+  } else if (locParts.length === 1) {
+    countryRaw = locParts[0];
+    city = countryRaw;
+  }
+
+  const countryInfo = resolveCountry(countryRaw);
+
+  const detailLine = lines[2] || '';
+  let startDate = '';
+  let endDate = '';
+  const dateRangeMatch = detailLine.match(/(\d{1,2}\/\d{1,2}\/\d{2,4})\s*-\s*(\d{1,2}\/\d{1,2}\/\d{2,4})/);
+  if (dateRangeMatch) {
+    startDate = parseDateMDY(dateRangeMatch[1]);
+    endDate = parseDateMDY(dateRangeMatch[2]);
+  } else {
+    const singleDateMatch = detailLine.match(/(\d{1,2}\/\d{1,2}\/\d{2,4})/);
+    if (singleDateMatch) {
+      startDate = parseDateMDY(singleDateMatch[1]);
+      endDate = startDate;
+    }
+  }
+
+  if (!startDate) return null;
+
+  let tc = 'Classical';
+  const lower = detailLine.toLowerCase();
+  if (lower.includes('blitz')) tc = 'Blitz';
+  else if (lower.includes('rapid')) tc = 'Rapid';
+  else if (lower.includes('bullet')) tc = 'Bullet';
+
+  let players = null;
+  const pMatch = detailLine.match(/(\d+)\s*players?/);
+  if (pMatch) players = parseInt(pMatch[1], 10);
+
+  let rounds = null;
+  const rMatch = detailLine.match(/(\d+)\/(\d+)\s*rounds/);
+  if (rMatch) rounds = parseInt(rMatch[2], 10);
+
+  const ms = new Date(endDate) - new Date(startDate);
+  const durationDays = isNaN(ms) || ms < 0 ? 1 : Math.max(1, Math.round(ms / 86400000) + 1);
+
+  return {
+    id: `cm-${id}`,
+    name,
+    city,
+    country: countryInfo.code,
+    continent: countryInfo.continent,
+    flag: countryInfo.flag,
+    startDate,
+    endDate,
+    durationDays,
+    timeControl: tc,
+    rounds,
+    players,
+    source: raw.href,
+    scrapedFrom: 'ChessManager'
+  };
+}
+
+async function scrapeChessManager(browser) {
+  console.log('📡 Scraping ChessManager.com (upcoming tournaments)...');
+  const tournaments = [];
+  try {
+    const page = await browser.newPage();
+    await page.setViewport({ width: 1280, height: 800 });
+    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36');
+
+    const offsets = [0, 50, 100];
+    let cmCounter = 1;
+
+    for (const offset of offsets) {
+      try {
+        const url = `https://www.chessmanager.com/en-us/tournaments/upcoming?offset=${offset}`;
+        await page.goto(url, { waitUntil: 'networkidle2', timeout: 30000 });
+
+        const cards = await page.evaluate(() => {
+          const list = [];
+          document.querySelectorAll('a[href*="/tournaments/"]').forEach(a => {
+            const href = a.getAttribute('href');
+            if (href && href.match(/\/tournaments\/\d+$/)) {
+              list.push({ href: a.href, text: a.innerText });
+            }
+          });
+          return list;
+        });
+
+        if (!cards || !cards.length) break;
+
+        for (const card of cards) {
+          const parsed = parseChessManagerCard(card, cmCounter++);
+          if (parsed) tournaments.push(parsed);
+        }
+      } catch (err) {
+        console.warn(`  ⚠️ ChessManager offset ${offset} failed:`, err.message);
+      }
+    }
+
+    await page.close();
+    console.log(`  ✅ ChessManager: ${tournaments.length} tournaments found`);
+  } catch (e) {
+    console.error('  ❌ ChessManager failed:', e.message);
   }
   return tournaments;
 }
@@ -262,12 +417,28 @@ async function fetchTournamentDetails(tournaments) {
 async function main() {
   console.log('\n🏁 chess:tour scraper starting...\n');
   
-  const [arbiterData, resultsData] = await Promise.all([
-    scrapeChessArbiter(),
-    scrapeChessResults()
-  ]);
+  // Launch shared Puppeteer browser for Chess-Results and ChessManager
+  let browser;
+  let resultsData = [];
+  let managerData = [];
+  try {
+    browser = await puppeteer.launch({ 
+      headless: 'new',
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+    });
+
+    resultsData = await scrapeChessResults(browser);
+    managerData = await scrapeChessManager(browser);
+  } catch (err) {
+    console.error('Puppeteer scraper error:', err.message);
+  } finally {
+    if (browser) await browser.close();
+  }
+
+  // Scrape ChessArbiter in parallel / separately via HTTP fetch
+  const arbiterData = await scrapeChessArbiter();
   
-  let all = [...arbiterData, ...resultsData];
+  let all = [...arbiterData, ...resultsData, ...managerData];
 
   const cutoff = new Date();
   cutoff.setDate(cutoff.getDate() - 2);
