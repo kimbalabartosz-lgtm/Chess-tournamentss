@@ -188,7 +188,15 @@
           </svg>
         </div>
         <label class="check-item"><input type="checkbox" id="fide-only-check" onchange="applyFilters()" /><span>⭐ FIDE rated only</span></label>
-        <label class="check-item"><input type="checkbox" id="norms-only-check" onchange="applyFilters()" /><span>🎯 Norms (kategorie)</span></label>
+        
+        <div class="sub-label" style="margin: 8px 0 4px; font-weight: 600;">Normy PZSzach:</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
+          <label class="check-item"><input type="checkbox" value="V" class="norm-cat-check" onchange="applyFilters()" /><span>V kat.</span></label>
+          <label class="check-item"><input type="checkbox" value="IV" class="norm-cat-check" onchange="applyFilters()" /><span>IV kat.</span></label>
+          <label class="check-item"><input type="checkbox" value="III" class="norm-cat-check" onchange="applyFilters()" /><span>III kat.</span></label>
+          <label class="check-item"><input type="checkbox" value="II" class="norm-cat-check" onchange="applyFilters()" /><span>II kat.</span></label>
+          <label class="check-item"><input type="checkbox" value="I" class="norm-cat-check" onchange="applyFilters()" /><span>I kat.</span></label>
+        </div>
       </div>
 
       <button class="filter-btn" onclick="applyFilters()">

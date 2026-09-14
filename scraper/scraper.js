@@ -21,20 +21,88 @@ function detectFide(text) {
   return /\bFIDE\b/i.test(text);
 }
 
-function detectCategoryNorms(text) {
-  if (!text) return null;
+const PZSZACH_RANKINGS = {
+  'BK': 1000, 'BRAK': 1000, '': 1000,
+  'V': 1200,
+  'IV': 1400,
+  'III': 1600,
+  'II': 1800, 'II+': 1800,
+  'I': 2000, 'I+': 2000, 'I++': 2000,
+  'K': 2200, 'K+': 2200, 'K++': 2200,
+  'M': 2400, 'FM': 2300, 'IM': 2400, 'GM': 2500,
+  'WFM': 2100, 'WIM': 2250, 'WGM': 2350
+};
+
+function normalizePzszachCat(catStr) {
+  if (!catStr) return 'BK';
+  const c = catStr.trim().toUpperCase();
+  if (c === 'V') return 'V';
+  if (c === 'IV') return 'IV';
+  if (c === 'III') return 'III';
+  if (c.startsWith('II')) return 'II';
+  if (c.startsWith('I')) return 'I';
+  if (c.startsWith('K')) return 'K';
+  if (['M', 'FM', 'IM', 'GM', 'WFM', 'WIM', 'WGM'].includes(c)) return c;
+  return 'BK';
+}
+
+function computePzszachNorms({ timeControl, rounds, players, playerCategories = [], text = '' }) {
+  const norms = new Set();
+  const tc = (timeControl || 'Classical').toLowerCase();
+  const r = rounds || 5; // default fallback if rounds not known yet
+  const n = players || playerCategories.length || 0;
+
+  // Check explicit mentions in text/title (e.g. "kat. V-II", "normy na IV i V")
   const t = text.toLowerCase();
-  // Match patterns like "kategorie", "kategorię", "normy", "kat. V-II", "kat V i IV", etc.
-  if (/kat(?:egori[a-zęóąśłżźćń]+)?\s*([ivx\d\s,\-–i]+)/i.test(text)) {
-    const match = text.match(/kat(?:egori[a-zęóąśłżźćń]+)?\s*([ivx\d\s,\-–i]+)/i);
-    if (match && match[1] && match[1].trim().length < 20) {
-      return `kat. ${match[1].trim()}`;
+  if (t.includes('v kat') || t.includes('kategoria v') || t.includes('kategorii v') || t.includes('v-iv') || t.includes('v-iii') || t.includes('v-ii') || t.includes('v-i')) norms.add('V');
+  if (t.includes('iv kat') || t.includes('kategoria iv') || t.includes('kategorii iv') || t.includes('iv-iii') || t.includes('iv-ii') || t.includes('iv-i')) { norms.add('V'); norms.add('IV'); }
+  if (t.includes('iii kat') || t.includes('kategoria iii') || t.includes('kategorii iii') || t.includes('iii-ii') || t.includes('iii-i')) { norms.add('V'); norms.add('IV'); norms.add('III'); }
+  if (t.includes('ii kat') || t.includes('kategoria ii') || t.includes('kategorii ii') || t.includes('ii-i')) {
+    if (tc === 'classical') norms.add('II');
+    norms.add('III'); norms.add('IV'); norms.add('V');
+  }
+  if (t.includes('i kat') || t.includes('kategoria i') || t.includes('kategorii i')) {
+    if (tc === 'classical') { norms.add('I'); norms.add('II'); }
+    norms.add('III'); norms.add('IV'); norms.add('V');
+  }
+
+  // Blitz never yields PZSzach norms
+  if (tc === 'blitz' || tc === 'bullet') {
+    return Array.from(norms);
+  }
+
+  // If we have actual registered players list from ChessArbiter:
+  if (playerCategories.length >= 4) {
+    const cats = playerCategories.map(normalizePzszachCat);
+    const hasIIorHigher = cats.some(c => ['II', 'I', 'K', 'M', 'FM', 'IM', 'GM'].includes(c));
+    const hasIorHigher = cats.some(c => ['I', 'K', 'M', 'FM', 'IM', 'GM'].includes(c));
+    const hasKorHigher = cats.some(c => ['K', 'M', 'FM', 'IM', 'GM'].includes(c));
+
+    // V i IV kat: minimum 5 rund, turnieje klasyczne lub rapid
+    if (r >= 5 && n >= 6) {
+      norms.add('V');
+      norms.add('IV');
+    }
+
+    // III kat: minimum 5-6 rund, turnieje klasyczne lub rapid (P'30+), obecność zawodników z min. IV/III/II kat.
+    const ivPlusCount = cats.filter(c => ['IV', 'III', 'II', 'I', 'K', 'M', 'FM', 'IM', 'GM'].includes(c)).length;
+    if (r >= 5 && n >= 6 && ivPlusCount >= 3) {
+      norms.add('III');
+    }
+
+    // II kat: WYŁĄCZNIE szachy klasyczne (minimum 60 min na zawodnika), min. 7 rund, obecność zawodników z min. II/I kat.
+    if (tc === 'classical' && r >= 7 && n >= 8 && hasIIorHigher) {
+      norms.add('II');
+    }
+
+    // I kat: WYŁĄCZNIE szachy klasyczne, min. 9 rund (lub 7 rund dla kobiet), obecność min. I kat / kandydata
+    if (tc === 'classical' && r >= 7 && n >= 10 && hasIorHigher) {
+      norms.add('I');
     }
   }
-  if (t.includes('norma na') || t.includes('normy na') || t.includes('kategorie okręgowe') || t.includes('kategoria v') || t.includes('kategoria iv') || t.includes('kategoria iii') || t.includes('kategoria ii') || t.includes('kategoria i')) {
-    return 'kategorie PZSzach';
-  }
-  return null;
+
+  const order = ['V', 'IV', 'III', 'II', 'I'];
+  return order.filter(x => norms.has(x));
 }
 
 function detectRounds(name) {
@@ -106,7 +174,9 @@ async function scrapeChessArbiter() {
         const durationDays = isNaN(ms) || ms < 0 ? 1 : Math.max(1, Math.round(ms / 86400000) + 1);
 
         const isFide = detectFide(fullTd) || detectFide(name) || (cells.eq(2) && detectFide(cells.eq(2).text()));
-        const categoryNorms = detectCategoryNorms(fullTd) || detectCategoryNorms(name);
+        const timeControl = detectTimeControl(name);
+        const rounds = detectRounds(name);
+        const achievableNorms = computePzszachNorms({ timeControl, rounds, text: `${name} ${fullTd}` });
 
         tournaments.push({
           id: `ca-${idCounter++}`,
@@ -118,11 +188,11 @@ async function scrapeChessArbiter() {
           startDate: dates.start,
           endDate: dates.end,
           durationDays,
-          timeControl: detectTimeControl(name),
-          rounds: detectRounds(name),
+          timeControl,
+          rounds,
           isFide,
-          categoryNorms,
-          hasNorms: !!categoryNorms,
+          achievableNorms,
+          hasNorms: achievableNorms.length > 0,
           source: sourceUrl.startsWith('http') ? sourceUrl : `https://www.chessarbiter.com/turnieje/${sourceUrl}`,
           scrapedFrom: 'ChessArbiter'
         });
@@ -411,8 +481,8 @@ async function fetchTournamentDetails(tournaments, cache) {
       if (old.firstPrize !== undefined) t.firstPrize = old.firstPrize;
       if (old.isOpen !== undefined) t.isOpen = old.isOpen;
       if (old.isFide !== undefined && !t.isFide) t.isFide = old.isFide;
-      if (old.categoryNorms && !t.categoryNorms) {
-        t.categoryNorms = old.categoryNorms;
+      if (old.achievableNorms && (!t.achievableNorms || !t.achievableNorms.length)) {
+        t.achievableNorms = old.achievableNorms;
         t.hasNorms = true;
       }
       reused++;
@@ -481,12 +551,12 @@ async function fetchTournamentDetails(tournaments, cache) {
 
             // Detect FIDE and category norms if homepage mentions it
             if (!t.isFide && detectFide(html)) t.isFide = true;
-            if (!t.categoryNorms) {
-              const norm = detectCategoryNorms(html);
-              if (norm) {
-                t.categoryNorms = norm;
-                t.hasNorms = true;
-              }
+            const homeNorms = computePzszachNorms({ timeControl: t.timeControl, rounds: t.rounds, text: html });
+            if (homeNorms.length > 0) {
+              const currentSet = new Set(t.achievableNorms || []);
+              homeNorms.forEach(n => currentSet.add(n));
+              t.achievableNorms = ['V', 'IV', 'III', 'II', 'I'].filter(x => currentSet.has(x));
+              t.hasNorms = t.achievableNorms.length > 0;
             }
 
             // Extract prize if mentioned
@@ -499,7 +569,7 @@ async function fetchTournamentDetails(tournaments, cache) {
 
           await sleep(300);
 
-          // B. Fetch list_of_players.html for player count & titles
+          // B. Fetch list_of_players.html for player count, titles & PZSzach categories
           const pRes = await fetch(`${baseUrl}list_of_players.html`, {
             headers: { 'User-Agent': BOT_USER_AGENT },
             timeout: 10000
@@ -510,6 +580,7 @@ async function fetchTournamentDetails(tournaments, cache) {
             const p$ = cheerio.load(pHtml);
             let count = 0;
             let gms = 0, ims = 0, fms = 0;
+            const playerCategories = [];
 
             p$('table tr').each((idx, tr) => {
               const tds = p$(tr).find('td');
@@ -520,6 +591,8 @@ async function fetchTournamentDetails(tournaments, cache) {
                 if (title === 'GM' || title === 'WGM') gms++;
                 else if (title === 'IM' || title === 'WIM') ims++;
                 else if (title === 'FM' || title === 'WFM') fms++;
+
+                if (title) playerCategories.push(title);
               }
             });
 
@@ -527,6 +600,17 @@ async function fetchTournamentDetails(tournaments, cache) {
             t.gms = gms;
             t.ims = ims;
             t.fms = fms;
+
+            // Recalculate achievable norms based on exact player categories in list
+            const calculatedNorms = computePzszachNorms({
+              timeControl: t.timeControl,
+              rounds: t.rounds,
+              players: count,
+              playerCategories
+            });
+            const merged = new Set([...(t.achievableNorms || []), ...calculatedNorms]);
+            t.achievableNorms = ['V', 'IV', 'III', 'II', 'I'].filter(x => merged.has(x));
+            t.hasNorms = t.achievableNorms.length > 0;
           }
         }
       } else if (t.scrapedFrom === 'Chess-Results' && t.source && t.source.includes('.aspx')) {

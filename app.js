@@ -306,9 +306,13 @@ function fideBadge(t) {
 }
 
 function normBadge(t) {
+  if (t.achievableNorms && t.achievableNorms.length > 0) {
+    const list = t.achievableNorms.join(', ');
+    return `<span class="badge-norm" title="Możliwość zdobycia kategorii: ${list}">🎯 kat. ${list}</span>`;
+  }
   if (!t.categoryNorms && !t.hasNorms) return '';
-  const label = t.categoryNorms ? `🎯 ${t.categoryNorms}` : '🎯 Norms';
-  return `<span class="badge-norm" title="Possibility to earn category norm">${label}</span>`;
+  const label = t.categoryNorms ? `🎯 ${t.categoryNorms}` : '🎯 Normy';
+  return `<span class="badge-norm" title="Możliwość zdobycia normy na kategorię">${label}</span>`;
 }
 
 function rowHTML(t) {
@@ -728,9 +732,15 @@ function runFilter(centerLat, centerLon) {
       if (!ok) return false;
     }
     const fideOnly  = document.getElementById('fide-only-check')?.checked || false;
-    const normsOnly = document.getElementById('norms-only-check')?.checked || false;
+    const selectedNormCats = [...document.querySelectorAll('.norm-cat-check:checked')].map(el => el.value);
+
     if (fideOnly && !t.isFide) return false;
-    if (normsOnly && !t.categoryNorms && !t.hasNorms) return false;
+    if (selectedNormCats.length > 0) {
+      const tourNorms = t.achievableNorms || [];
+      // Match if tournament allows earning ANY of the checked categories
+      const matchNorm = selectedNormCats.some(c => tourNorms.includes(c));
+      if (!matchNorm) return false;
+    }
 
     return true;
   });
@@ -783,11 +793,9 @@ function clearFilters() {
   document.getElementById('distance-slider').value = '0';
   document.getElementById('distance-value').textContent = 'Any distance';
   document.getElementById('geo-btn').innerHTML = '📍 Use My Location';
-  document.querySelectorAll('.tc-check, .dur-check').forEach(el => el.checked = false);
+  document.querySelectorAll('.tc-check, .dur-check, .norm-cat-check').forEach(el => el.checked = false);
   const fideBox = document.getElementById('fide-only-check');
   if (fideBox) fideBox.checked = false;
-  const normsBox = document.getElementById('norms-only-check');
-  if (normsBox) normsBox.checked = false;
   userLat = userLon = activeCenterLat = activeCenterLon = null;
   selectedMonths.clear();
   updateMonthPickerLabel();
