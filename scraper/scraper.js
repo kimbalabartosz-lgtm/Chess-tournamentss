@@ -8,16 +8,32 @@ puppeteer.use(StealthPlugin());
 
 const BOT_USER_AGENT = 'ChessTourBot/1.0 (+https://chess-tournamentss.vercel.app/; contact@chess-tour.app)';
 
+function isFischerRandom(name) {
+  const n = (name || '').toLowerCase();
+  if (/\b960\b/.test(n) || n.includes('chess960')) return true;
+  if (n.includes('fischer') || n.includes('fisher')) return true;
+  return false;
+}
+
 function detectTimeControl(name, extraText = '') {
   const n = `${name || ''} ${extraText || ''}`.toLowerCase();
-  if (n.includes('blitz') || n.includes('błysk') || n.includes('blysk')) return 'Blitz';
-  if (n.includes('bullet')) return 'Bullet';
-  // Check for 3 min, 5 min, 3+2, 5+3 -> Blitz
-  if (/\b(?:3|5)\s*(?:min|'|\+)/.test(n)) return 'Blitz';
-  // Check for 10 min, 15 min, 12 min, 20 min, rapid, szybki, P'15, 10'+5'', 15'+10'' -> Rapid
-  if (n.includes('rapid') || n.includes('szybki') || n.includes('szybkie') || n.includes('p' + String.fromCharCode(243) + 'łaktywn') || n.includes('polaktywn')) return 'Rapid';
-  if (/\b(?:10|12|15|20|25)\s*(?:min|'|\+)/.test(n) || /\bp['`’]?(?:10|15|20|25)\b/.test(n)) return 'Rapid';
-  if (n.includes('klasyczn')) return 'Classical';
+
+  // 1. Explicit Blitz keywords and time controls (<= 5 min)
+  if (/\b(?:blitz|błysk|blysk|blitzschach|relampago|lampo|blitzu|blitzem)\b/i.test(n)) return 'Blitz';
+  if (/\b(?:bullet)\b/i.test(n)) return 'Blitz';
+  if (/\b(?:1|2|3|4|5)\s*(?:min|'|\+|m\b)/i.test(n) || /\bp['`’]?(?:1|2|3|4|5)\b/i.test(n)) {
+    if (!/\b(?:1|2|3|4|5)\s*rund/i.test(n)) return 'Blitz';
+  }
+
+  // 2. Explicit Rapid keywords and time controls (10-45 min, 10'+5'', P'15, etc.)
+  if (/\b(?:rapid|szybki|szybkie|szybkich|szybkim|rapide|rapido|schnellschach|semilampo|aktivschach|półaktywn|polaktywn)\b/i.test(n)) return 'Rapid';
+  if (/\b(?:10|12|15|20|25|30|45)\s*(?:min|'|\+|m\b)/i.test(n) || /\bp['`’]?(?:10|12|15|20|25|30|45)\b/i.test(n)) {
+    if (!/\b(?:10|12|15|20|25|30|45)\s*rund/i.test(n)) return 'Rapid';
+  }
+
+  // 3. Classical keywords
+  if (/\b(?:klasyczn|classical|standard|turniej kołowy|kołowy|kolowy)\b/i.test(n)) return 'Classical';
+
   return 'Classical';
 }
 
@@ -230,7 +246,7 @@ async function scrapeChessArbiter() {
           id: `ca-${idCounter++}`,
           name,
           city,
-          country: 'Poland',
+          country: 'POL',
           continent: 'Europe',
           flag: '🇵🇱',
           startDate: dates.start,
@@ -763,7 +779,7 @@ async function main() {
   const cutoffStr = cutoff.toISOString().slice(0, 10);
 
   let upcoming = all
-    .filter(t => t.endDate >= cutoffStr)
+    .filter(t => t.endDate >= cutoffStr && !isFischerRandom(t.name))
     .sort((a, b) => a.startDate.localeCompare(b.startDate));
 
   // DEEP SCRAPE with cache and safe batching

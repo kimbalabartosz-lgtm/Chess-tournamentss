@@ -143,7 +143,15 @@ async function loadLiveData() {
     const json = await res.json();
     const list = json.tournaments || json;
     if (Array.isArray(list) && list.length > 0) {
-      TOURNAMENTS = list;
+      TOURNAMENTS = list.filter(t => {
+        const n = (t.name || '').toLowerCase();
+        if (/\b960\b/.test(n) || n.includes('chess960')) return false;
+        if (n.includes('fischer') || n.includes('fisher')) return false;
+        return true;
+      }).map(t => {
+        if (t.country === 'Poland') t.country = 'POL';
+        return t;
+      });
       filtered    = [...TOURNAMENTS];
       dataSource  = 'live';
       const updated = json.updatedAt ? new Date(json.updatedAt).toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'}) : 'recently';
@@ -176,16 +184,30 @@ const countryNames = {
 };
 
 function getCountryName(code) {
+  if (!code) return '';
+  if (code === 'POL' || code === 'Poland') return 'Poland';
   return countryNames[code] || code;
 }
 
 function populateCountries() {
   const sel = document.getElementById('country-select');
   sel.innerHTML = '<option value="">All countries</option>';
-  const countries = [...new Set(TOURNAMENTS.map(t => t.country))].sort((a,b) => getCountryName(a).localeCompare(getCountryName(b)));
-  countries.forEach(c => {
+
+  // Deduplicate countries by their canonical code/name
+  const countrySet = new Set(TOURNAMENTS.map(t => (t.country === 'Poland' ? 'POL' : t.country)).filter(Boolean));
+  const rawList = [...countrySet];
+
+  // Sort with Poland (POL) pinned as first
+  rawList.sort((a, b) => {
+    if (a === 'POL') return -1;
+    if (b === 'POL') return 1;
+    return getCountryName(a).localeCompare(getCountryName(b));
+  });
+
+  rawList.forEach(c => {
     const o = document.createElement('option');
-    o.value = c; o.textContent = getCountryName(c);
+    o.value = c;
+    o.textContent = (c === 'POL' ? '🇵🇱 ' : '') + getCountryName(c);
     sel.appendChild(o);
   });
 }
@@ -368,7 +390,7 @@ function rowHTML(t) {
     <div class="row-right">
       <div class="location-line">
         <div class="loc-dash"></div>
-        <span>${t.flag ? t.flag + ' ' : ''}${t.city}, ${t.country}</span>
+        <span>${t.flag ? t.flag + ' ' : ''}${t.city}, ${getCountryName(t.country)}</span>
         ${distanceBadge(t)}
       </div>
       <div class="prize-line">
@@ -417,7 +439,7 @@ function cardHTML(t) {
     <div class="card-footer">
       <div class="location-line">
         <div class="loc-dash"></div>
-        <span>${t.flag ? t.flag + ' ' : ''}${t.country} · ${t.city}</span>
+        <span>${t.flag ? t.flag + ' ' : ''}${getCountryName(t.country)} · ${t.city}</span>
         ${distanceBadge(t)}
       </div>
       <div class="prize-line">
@@ -732,7 +754,13 @@ function runFilter(centerLat, centerLon) {
 
     if (q && !tName.includes(q) && !tCity.includes(q) && !matchCity(q, tCity) && !tCountry.includes(q)) return false;
     if (continent && t.continent !== continent) return false;
-    if (country && t.country !== country) return false;
+    if (country) {
+      if (country === 'POL' || country === 'Poland') {
+        if (t.country !== 'POL' && t.country !== 'Poland') return false;
+      } else if (t.country !== country) {
+        return false;
+      }
+    }
     if (city && maxDist === 0 && !matchCity(city, tCity)) return false;
     // Month picker filter — match any selected month
     if (selectedMonths.size > 0 && !selectedMonths.has(t.startDate.substring(0, 7))) return false;
