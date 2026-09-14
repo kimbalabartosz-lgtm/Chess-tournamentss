@@ -359,12 +359,15 @@ async function scrapeChessManager(browser) {
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 async function fetchTournamentDetails(tournaments, cache) {
-  // 1. Re-use existing cached details (GMs, IMs, prizes, isOpen)
+  // 1. Re-use existing cached details
   let reused = 0;
   tournaments.forEach(t => {
     const key = t.source || `${t.name}_${t.startDate}`;
     const old = cache.get(key);
-    if (old && (old.gms > 0 || old.firstPrize > 0 || old.isOpen !== undefined)) {
+    if (old) {
+      if (old.lastChecked) t.lastChecked = old.lastChecked;
+      if (old.rounds !== undefined && old.rounds !== null && !t.rounds) t.rounds = old.rounds;
+      if (old.players !== undefined && old.players !== null && !t.players) t.players = old.players;
       if (old.gms !== undefined) t.gms = old.gms;
       if (old.ims !== undefined) t.ims = old.ims;
       if (old.fms !== undefined) t.fms = old.fms;
@@ -375,106 +378,155 @@ async function fetchTournamentDetails(tournaments, cache) {
   });
   console.log(`  ⚡ Reused details from cache for ${reused} tournaments`);
 
-  // 2. Identify priority tournaments needing detail extraction
-  const isPriority = t => {
-    const n = (t.name || '').toLowerCase();
-    return n.includes('open') || n.includes('festiwal') || n.includes('memoriał') ||
-           n.includes('memorial') || n.includes('mistrzostw') || n.includes('championship') ||
-           n.includes('grand prix') || n.includes('puchar') || n.includes('cup') ||
-           (t.players && t.players >= 20);
-  };
-
-  const pending = tournaments.filter(t => t.gms === undefined);
-  pending.sort((a, b) => {
-    const pA = isPriority(a) ? 1 : 0;
-    const pB = isPriority(b) ? 1 : 0;
-    if (pA !== pB) return pB - pA;
+  // 2. Build prioritized queue:
+  // Priority 1: New / never checked -> soonest future start date first (>= today)
+  // Priority 2: Already checked -> sorted by lastChecked ascending (od najdłużej nieaktualizowanego)
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const neverChecked = tournaments.filter(t => !t.lastChecked);
+  neverChecked.sort((a, b) => {
+    const aFut = (a.startDate || '') >= todayStr ? 1 : 0;
+    const bFut = (b.startDate || '') >= todayStr ? 1 : 0;
+    if (aFut !== bFut) return bFut - aFut;
     return (a.startDate || '').localeCompare(b.startDate || '');
   });
 
-  // Safe batch of up to 60 per run to prevent server strain and rate limits
-  const batch = pending.slice(0, 60);
-  console.log(`\n🔍 Scraping batch of ${batch.length} tournaments for details (pacing 250ms, concurrency 2)...`);
+  const alreadyChecked = tournaments.filter(t => !!t.lastChecked);
+  alreadyChecked.sort((a, b) => (a.lastChecked || '').localeCompare(b.lastChecked || ''));
 
-  const concurrency = 2;
-  for (let i = 0; i < batch.length; i += concurrency) {
-    const chunk = batch.slice(i, i + concurrency);
+  const queue = [...neverChecked, ...alreadyChecked];
 
-    await Promise.all(chunk.map(async (t) => {
-      try {
-        let fetchUrl = t.source;
-        if (t.scrapedFrom === 'Chess-Results' && fetchUrl.includes('.aspx')) {
-          fetchUrl = fetchUrl.replace('.aspx', '.aspx?art=0&zeilen=99999');
-        } else if (t.scrapedFrom === 'ChessArbiter' && fetchUrl.includes('turnieje/')) {
-          const match = fetchUrl.match(/turnieje\/([^\/]+)/) || fetchUrl.match(/turn=([^&]+)/);
-          if (match) {
-            fetchUrl = `http://www.chessarbiter.com/turnieje/${match[1]}/results.html?l=pl&tb=2_`;
+  // Batch of 50 tournaments per 4h transza
+  const batchSize = 50;
+  const batch = queue.slice(0, batchSize);
+  console.log(`\n🔍 Transza: processing ${batch.length} tournaments (New: ${Math.min(neverChecked.length, batchSize)}, Updating existing: ${Math.max(0, batch.length - neverChecked.length)})...`);
+
+  for (let i = 0; i < batch.length; i++) {
+    const t = batch[i];
+    try {
+      if (t.scrapedFrom === 'ChessArbiter' && t.source && t.source.includes('turnieje/')) {
+        const match = t.source.match(/turnieje\/([^\/]+)\/([^\/]+)/) || t.source.match(/turn=([^&]+)/);
+        if (match) {
+          const turnPath = t.source.includes('turn=') ? match[1] : `${match[1]}/${match[2]}`;
+          const baseUrl = `http://www.chessarbiter.com/turnieje/${turnPath}/`;
+
+          // A. Fetch tournament homepage for rounds
+          const res = await fetch(baseUrl, {
+            headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' },
+            timeout: 10000
+          });
+
+          if (res.status === 429) {
+            console.warn('  ⚠️ ChessArbiter 429 hit, pausing...');
+            await sleep(4000);
+            continue;
+          }
+
+          if (res.ok) {
+            const html = await res.text();
+            
+            // Extract max round from pairing links or text
+            let maxRound = null;
+            const roundMatches = html.matchAll(/(?:final_standings&|pairing&)(\d+)\.html/gi);
+            for (const m of roundMatches) {
+              const r = parseInt(m[1], 10);
+              if (r >= 1 && r <= 30 && r > (maxRound || 0)) maxRound = r;
+            }
+            if (!maxRound) {
+              const tm = html.match(/(\d+)\s*[- ]*rund/i);
+              if (tm) maxRound = parseInt(tm[1], 10);
+            }
+            if (maxRound) t.rounds = maxRound;
+
+            // Extract prize if mentioned
+            const prizeMatch = html.match(/(PLN|zł|zl|EUR|€)\s*([\d,\.]+)/i);
+            if (prizeMatch) {
+              const val = parseInt(prizeMatch[2].replace(/[^\d]/g, ''), 10);
+              if (val > 0 && val < 500000) t.firstPrize = val;
+            }
+          }
+
+          await sleep(300);
+
+          // B. Fetch list_of_players.html for player count & titles
+          const pRes = await fetch(`${baseUrl}list_of_players.html`, {
+            headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' },
+            timeout: 10000
+          });
+
+          if (pRes.ok) {
+            const pHtml = await pRes.text();
+            const p$ = cheerio.load(pHtml);
+            let count = 0;
+            let gms = 0, ims = 0, fms = 0;
+
+            p$('table tr').each((idx, tr) => {
+              const tds = p$(tr).find('td');
+              const firstTd = tds.eq(0).text().trim();
+              if (/^\d+$/.test(firstTd)) {
+                count++;
+                const title = tds.eq(3).text().trim().toUpperCase();
+                if (title === 'GM' || title === 'WGM') gms++;
+                else if (title === 'IM' || title === 'WIM') ims++;
+                else if (title === 'FM' || title === 'WFM') fms++;
+              }
+            });
+
+            if (count > 0) t.players = count;
+            t.gms = gms;
+            t.ims = ims;
+            t.fms = fms;
           }
         }
-
-        if (!fetchUrl || fetchUrl === '#' || !fetchUrl.startsWith('http')) {
-          t.gms = t.gms || 0;
-          t.ims = t.ims || 0;
-          t.fms = t.fms || 0;
-          return;
-        }
-
+      } else if (t.scrapedFrom === 'Chess-Results' && t.source && t.source.includes('.aspx')) {
+        const fetchUrl = t.source.replace('.aspx', '.aspx?art=0&zeilen=99999');
         const res = await fetch(fetchUrl, {
           headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' },
           timeout: 10000
         });
 
         if (res.status === 429) {
-          console.warn(`  ⚠️ Rate limit reached for ${t.scrapedFrom}, sleeping 3s...`);
-          await sleep(3000);
-          return;
+          console.warn('  ⚠️ Chess-Results 429 hit, pausing...');
+          await sleep(4000);
+          continue;
         }
 
-        if (!res.ok) return;
-        const html = await res.text();
+        if (res.ok) {
+          const html = await res.text();
+          t.gms = (html.match(/\bW?GM\b/g) || []).length;
+          t.ims = (html.match(/\bW?IM\b/g) || []).length;
+          t.fms = (html.match(/\bW?FM\b/g) || []).length;
 
-        t.gms = (html.match(/\bW?GM\b/g) || []).length;
-        t.ims = (html.match(/\bW?IM\b/g) || []).length;
-        t.fms = (html.match(/\bW?FM\b/g) || []).length;
-
-        const prizeMatch = html.match(/(€|PLN|EUR|USD|\$|£|GBP|CHF|AUD|CAD)\s*([\d,\.]+)/i);
-        if (prizeMatch) {
-          const currency = prizeMatch[1].toUpperCase();
-          const val = parseInt(prizeMatch[2].replace(/[^\d]/g, ''), 10);
-          if (val > 0 && val < 1000000) {
-            let multiplier = 1.0;
-            switch(currency) {
-              case '€': case 'EUR': multiplier = 1.10; break;
-              case 'PLN': multiplier = 0.25; break;
-              case '£': case 'GBP': multiplier = 1.25; break;
-              case 'CHF': multiplier = 1.15; break;
-              case 'AUD': multiplier = 0.65; break;
-              case 'CAD': multiplier = 0.74; break;
+          const prizeMatch = html.match(/(€|PLN|EUR|USD|\$|£|GBP|CHF|AUD|CAD)\s*([\d,\.]+)/i);
+          if (prizeMatch) {
+            const currency = prizeMatch[1].toUpperCase();
+            const val = parseInt(prizeMatch[2].replace(/[^\d]/g, ''), 10);
+            if (val > 0 && val < 1000000) {
+              let multiplier = 1.0;
+              switch(currency) {
+                case '€': case 'EUR': multiplier = 1.10; break;
+                case 'PLN': multiplier = 0.25; break;
+                case '£': case 'GBP': multiplier = 1.25; break;
+                case 'CHF': multiplier = 1.15; break;
+                case 'AUD': multiplier = 0.65; break;
+                case 'CAD': multiplier = 0.74; break;
+              }
+              t.firstPrize = Math.round(val * multiplier);
             }
-            t.firstPrize = Math.round(val * multiplier);
           }
+          t.isOpen = !(html.toLowerCase().includes('closed') || (t.name && t.name.toLowerCase().includes('zamknięt')));
         }
-
-        t.isOpen = !(html.toLowerCase().includes('closed') || (t.name && t.name.toLowerCase().includes('zamknięt')));
-      } catch (e) {
-        // Ignore timeouts
       }
-    }));
 
-    await sleep(250);
-    process.stdout.write(`\r  Progress: ${Math.min(i + concurrency, batch.length)} / ${batch.length}`);
+      t.lastChecked = new Date().toISOString();
+    } catch (err) {
+      // Ignore individual timeouts
+    }
+
+    await sleep(300);
+    process.stdout.write(`\r  Progress: ${i + 1} / ${batch.length}`);
   }
 
-  // Set clean default 0 for unscraped so frontend filters work seamlessly
-  tournaments.forEach(t => {
-    if (t.gms === undefined) t.gms = 0;
-    if (t.ims === undefined) t.ims = 0;
-    if (t.fms === undefined) t.fms = 0;
-    if (t.firstPrize === undefined) t.firstPrize = 0;
-    if (t.isOpen === undefined) t.isOpen = true;
-  });
-
-  console.log('\n  ✅ Batched details scraping complete!');
+  console.log('\n  ✅ Transza detail scraping complete!');
   return tournaments;
 }
 
