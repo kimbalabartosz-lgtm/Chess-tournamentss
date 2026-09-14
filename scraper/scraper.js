@@ -345,24 +345,19 @@ async function scrapeChessManager(browser) {
 }
 
 async function fetchTournamentDetails(tournaments) {
-  console.log(`\n🔍 Deep scraping details for ${tournaments.length} tournaments (this takes a minute)...`);
+  // Only deep scrape top upcoming Chess-Results tournaments (ChessArbiter/ChessManager already have all fields and their servers rate-limit bulk requests)
+  const targetCR = tournaments.filter(t => t.scrapedFrom === 'Chess-Results').slice(0, 100);
+  console.log(`\n🔍 Deep scraping details for top ${targetCR.length} Chess-Results tournaments...`);
   
-  const concurrency = 15;
-  for (let i = 0; i < tournaments.length; i += concurrency) {
-    const chunk = tournaments.slice(i, i + concurrency);
+  const concurrency = 5;
+  for (let i = 0; i < targetCR.length; i += concurrency) {
+    const chunk = targetCR.slice(i, i + concurrency);
     
     await Promise.all(chunk.map(async (t) => {
       try {
         let fetchUrl = t.source;
-        if (t.scrapedFrom === 'Chess-Results' && fetchUrl.includes('.aspx')) {
-          fetchUrl = fetchUrl.replace('.aspx', '.aspx?art=0&zeilen=99999'); // Starting rank all players
-        } else if (t.scrapedFrom === 'ChessArbiter' && fetchUrl.includes('turnieje/')) {
-          const match = fetchUrl.match(/turn=([^&]+)/);
-          if (match) {
-            fetchUrl = `http://www.chessarbiter.com/turnieje/${match[1]}/results.html?l=pl&tb=2_`;
-          } else {
-            fetchUrl = fetchUrl + (fetchUrl.endsWith('/') ? '?' : '&') + 'str=2'; // Fallback
-          }
+        if (fetchUrl.includes('.aspx')) {
+          fetchUrl = fetchUrl.replace('.aspx', '.aspx?art=0&zeilen=99999');
         }
         
         if (fetchUrl === '#' || !fetchUrl.startsWith('http')) return;
@@ -371,12 +366,10 @@ async function fetchTournamentDetails(tournaments) {
         if (!res.ok) return;
         const html = await res.text();
         
-        // Count Titled Players
         t.gms = (html.match(/\bW?GM\b/g) || []).length;
         t.ims = (html.match(/\bW?IM\b/g) || []).length;
         t.fms = (html.match(/\bW?FM\b/g) || []).length;
         
-        // Extract Prize Money and convert to USD
         const prizeMatch = html.match(/(€|PLN|EUR|USD|\$|£|GBP|CHF|AUD|CAD)\s*([\d,\.]+)/i);
         if (prizeMatch) {
           const currency = prizeMatch[1].toUpperCase();
@@ -396,7 +389,6 @@ async function fetchTournamentDetails(tournaments) {
           }
         }
 
-        // Open/Closed Check
         if (html.toLowerCase().includes('closed') || t.name.toLowerCase().includes('zamknięt')) {
           t.isOpen = false;
         } else {
@@ -408,7 +400,7 @@ async function fetchTournamentDetails(tournaments) {
       }
     }));
     
-    process.stdout.write(`\r  Progress: ${Math.min(i + concurrency, tournaments.length)} / ${tournaments.length}`);
+    process.stdout.write(`\r  Progress: ${Math.min(i + concurrency, targetCR.length)} / ${targetCR.length}`);
   }
   console.log('\n  ✅ Deep scraping complete!');
   return tournaments;
