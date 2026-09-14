@@ -23231,7 +23231,8 @@
         "IV",
         "III",
         "II",
-        "I"
+        "I",
+        "k"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4535&n=",
@@ -23262,7 +23263,8 @@
         "IV",
         "III",
         "II",
-        "I"
+        "I",
+        "k"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4536&n=",
@@ -53354,7 +53356,11 @@
       "isFide": true,
       "achievableNorms": [
         "V",
-        "IV"
+        "IV",
+        "III",
+        "II",
+        "I",
+        "k"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4627&n=",
@@ -53381,7 +53387,8 @@
         "IV",
         "III",
         "II",
-        "I"
+        "I",
+        "k"
       ],
       "hasNorms": true,
       "source": "https://www.chessarbiter.com/turnieje/open.php?turn=2026/ti_4657&n=",

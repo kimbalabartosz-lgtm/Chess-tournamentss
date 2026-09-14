@@ -107,25 +107,25 @@ function computePzszachNorms({ timeControl, rounds, durationDays, players, playe
   const isMultiDayOrLong = dur >= 2 || (r && r >= 7);
 
   // Check explicit category declarations from organizers in titles
-  if (/norm[ay]\s+na\s+k\b/i.test(t) || /na\s+i\s+i\s+k\b/i.test(t) || /kandydat/i.test(t) || /\bk\+\+/i.test(t) || /\bk\+/i.test(t)) {
+  if (/norm[ay]\s+na\s+k\b/i.test(t) || /na\s+i\s+i\s+k\b/i.test(t) || /kandydat/i.test(t) || /\bk\+\+/i.test(t) || /\bk\+/i.test(t) || /\bkm\b/i.test(t) || /tytu[łl]\s*km/i.test(t) || /na\s*tytu[łl]\s*km/i.test(t) || /o\s*tytu[łl]\s*km/i.test(t) || /normy\s+centralne/i.test(t) || /norm[aę]\s+k\b/i.test(t) || /norm[aę]\s+na\s+k/i.test(t)) {
     norms.add('k'); norms.add('I'); norms.add('II'); norms.add('III'); norms.add('IV'); norms.add('V');
   }
-  if (/norm[ay]\s+na\s+m\b/i.test(t) || (/\bmistrz\b/i.test(t) && !t.includes('mistrzostwa'))) {
+  if (/norm[ay]\s+na\s+m\b/i.test(t) || (/\bmistrz\b/i.test(t) && !t.includes('mistrzostwa')) || /mistrz\s+krajowy/i.test(t) || /tytu[łl]\s*m\b/i.test(t) || /norm[aę]\s+na\s+m/i.test(t)) {
     norms.add('m'); norms.add('k'); norms.add('I'); norms.add('II'); norms.add('III'); norms.add('IV'); norms.add('V');
   }
-  if (/(?:na|o|do|\b)\s*i\s*(?:lub|i|\/)?\s*(?:kategori|kat\b)/i.test(t) || /norm[ay]\s+na\s+i\b/i.test(t) || /mała norma na i/i.test(t) || /o\s+iii\s+ii\s+i/i.test(t)) {
+  if (/(?:na|o|do|\b)\s*i\s*(?:lub|i|\/)?\s*(?:kategori|kat\b)/i.test(t) || /norm[ay]\s+na\s+i\b/i.test(t) || /mała norma na i/i.test(t) || /o\s+iii\s+ii\s+i/i.test(t) || /norm[aę]\s+na\s+i\b/i.test(t)) {
     norms.add('I'); norms.add('II'); norms.add('III'); norms.add('IV'); norms.add('V');
   }
-  if (/(?:na|o|do|\b)\s*ii\s*(?:lub|i|\/)?\s*(?:kategori|kat\b)/i.test(t) || /norm[ay]\s+na\s+ii\b/i.test(t) || /o\s+iii\s+ii/i.test(t) || /ii\s+lub\s+i/i.test(t)) {
+  if (/(?:na|o|do|\b)\s*ii\s*(?:lub|i|\/)?\s*(?:kategori|kat\b)/i.test(t) || /norm[ay]\s+na\s+ii\b/i.test(t) || /o\s+iii\s+ii/i.test(t) || /ii\s+lub\s+i/i.test(t) || /norm[aę]\s+na\s+ii\b/i.test(t)) {
     norms.add('II'); norms.add('III'); norms.add('IV'); norms.add('V');
   }
-  if (/(?:na|o|do|\b)\s*iii\s*(?:lub|i|\/)?\s*(?:kategori|kat\b)/i.test(t) || /norm[ay]\s+na\s+iii\b/i.test(t) || /do\s+iii\b/i.test(t)) {
+  if (/(?:na|o|do|\b)\s*iii\s*(?:lub|i|\/)?\s*(?:kategori|kat\b)/i.test(t) || /norm[ay]\s+na\s+iii\b/i.test(t) || /do\s+iii\b/i.test(t) || /norm[aę]\s+na\s+iii\b/i.test(t)) {
     norms.add('III'); norms.add('IV'); norms.add('V');
   }
-  if (/(?:na|o|do|\b)\s*iv\s*(?:lub|i|\/)?\s*(?:kategori|kat\b)/i.test(t) || /norm[ay]\s+na\s+iv\b/i.test(t) || /v-iv/i.test(t) || /iv i v/i.test(t) || /v i iv/i.test(t)) {
+  if (/(?:na|o|do|\b)\s*iv\s*(?:lub|i|\/)?\s*(?:kategori|kat\b)/i.test(t) || /norm[ay]\s+na\s+iv\b/i.test(t) || /v-iv/i.test(t) || /iv i v/i.test(t) || /v i iv/i.test(t) || /norm[aę]\s+na\s+iv\b/i.test(t)) {
     norms.add('IV'); norms.add('V');
   }
-  if (/(?:na|o|do|\b)\s*v\s*(?:kategori|kat\b)/i.test(t) || /norm[ay]\s+na\s+v\b/i.test(t)) {
+  if (/(?:na|o|do|\b)\s*v\s*(?:kategori|kat\b)/i.test(t) || /norm[ay]\s+na\s+v\b/i.test(t) || /norm[aę]\s+na\s+v\b/i.test(t)) {
     norms.add('V');
   }
 
@@ -697,7 +697,8 @@ async function fetchTournamentDetails(tournaments, cache) {
                 rounds: t.rounds,
                 durationDays: t.durationDays,
                 players: t.players || count,
-                playerCategories
+                playerCategories,
+                text: `${t.name || ''} ${js || ''}`
               });
               let allowedOrder = ['V', 'IV', 'III', 'II', 'I', 'k', 'm'];
               const tc = (t.timeControl || '').toLowerCase();
@@ -868,7 +869,8 @@ async function fetchTournamentDetails(tournaments, cache) {
                 rounds: t.rounds,
                 durationDays: t.durationDays,
                 players: count,
-                playerCategories
+                playerCategories,
+                text: `${t.name || ''} ${pHtml || ''}`
               });
               let allowedOrder = ['V', 'IV', 'III', 'II', 'I', 'k', 'm'];
               const tc = (t.timeControl || '').toLowerCase();
