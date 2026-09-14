@@ -162,6 +162,19 @@ function computePzszachNorms({ timeControl, rounds, durationDays, players, playe
     if (dur >= 4 && (r === null || r >= 9) && n >= 10 && titledCount >= 3) {
       norms.add('m');
     }
+  } else {
+    // Fallback when playerCategories have not been fetched yet:
+    // Any official classical tournament in Poland allows gaining at least V and IV category
+    if (tc === 'classical') {
+      norms.add('V');
+      norms.add('IV');
+      if (isMultiDayOrLong || (r && r >= 5)) {
+        norms.add('III');
+      }
+      if (isMultiDayOrLong && (r === null || r >= 7)) {
+        norms.add('II');
+      }
+    }
   }
 
   const order = ['V', 'IV', 'III', 'II', 'I', 'k', 'm'];
@@ -591,96 +604,185 @@ async function fetchTournamentDetails(tournaments, cache) {
           const turnPath = t.source.includes('turn=') ? match[1] : `${match[1]}/${match[2]}`;
           const baseUrl = `http://www.chessarbiter.com/turnieje/${turnPath}/`;
 
-          // A. Fetch tournament homepage for rounds
-          const res = await fetch(baseUrl, {
-            headers: { 'User-Agent': BOT_USER_AGENT },
-            timeout: 10000
-          });
+          let detailsFound = false;
 
-          if (res.status === 429) {
-            console.warn('  ⚠️ ChessArbiter 429 hit, pausing...');
-            await sleep(4000);
-            continue;
+          // 1. Try modern ChessArbiter Pro: capro_tournament.js
+          try {
+            const caproRes = await fetch(`${baseUrl}capro_tournament.js`, {
+              headers: { 'User-Agent': BOT_USER_AGENT },
+              timeout: 10000
+            });
+
+            if (caproRes.status === 429) {
+              console.warn('  ⚠️ ChessArbiter 429 hit, pausing...');
+              await sleep(4000);
+              continue;
+            }
+
+            if (caproRes.ok) {
+              const js = await caproRes.text();
+              const startM = js.match(/Start date:.*?<b>(.*?)<\/b>/s);
+              const endM = js.match(/End date:.*?<b>(.*?)<\/b>/s);
+              const roundsM = js.match(/No\. of rounds:.*?<b>(.*?)<\/b>/s);
+              const rateM = js.match(/Rate of play:.*?<b>(.*?)<\/b>/s);
+              const placeM = js.match(/Place:.*?<b>(.*?)<\/b>/s);
+
+              if (startM && startM[1]) t.startDate = startM[1].trim();
+              if (endM && endM[1]) t.endDate = endM[1].trim();
+              if (t.startDate && t.endDate) {
+                const ms = new Date(t.endDate) - new Date(t.startDate);
+                t.durationDays = isNaN(ms) || ms < 0 ? 1 : Math.max(1, Math.round(ms / 86400000) + 1);
+              }
+
+              if (roundsM && roundsM[1]) {
+                const r = parseInt(roundsM[1], 10);
+                if (r >= 1 && r <= 30) t.rounds = r;
+              }
+
+              if (rateM && rateM[1]) {
+                const tc = detectTimeControl(rateM[1], rateM[1]);
+                if (tc && tc !== 'Unknown') t.timeControl = tc;
+              }
+
+              if (placeM && placeM[1] && (!t.city || t.city === 'Polska')) {
+                t.city = placeM[1].trim();
+              }
+
+              if (!t.isFide && detectFide(js)) t.isFide = true;
+
+              const catsM = js.match(/var A12 = \[([\s\S]*?)\];/);
+              const namesM = js.match(/var A11 = \[([\s\S]*?)\];/);
+
+              let playerCategories = [];
+              if (catsM) {
+                playerCategories = catsM[1].split(',')
+                  .map(s => s.trim().replace(/^["']|["']$/g, ''))
+                  .filter(Boolean);
+              }
+
+              let count = 0;
+              if (namesM) {
+                count = namesM[1].split(',')
+                  .map(s => s.trim().replace(/^["']|["']$/g, ''))
+                  .filter(Boolean).length;
+              }
+              if (count > 0) t.players = count;
+
+              let gms = 0, ims = 0, fms = 0;
+              playerCategories.forEach(cat => {
+                const c = cat.toUpperCase();
+                if (c === 'GM' || c === 'WGM') gms++;
+                else if (c === 'IM' || c === 'WIM') ims++;
+                else if (c === 'FM' || c === 'WFM') fms++;
+              });
+              t.gms = gms;
+              t.ims = ims;
+              t.fms = fms;
+
+              const calculatedNorms = computePzszachNorms({
+                timeControl: t.timeControl,
+                rounds: t.rounds,
+                durationDays: t.durationDays,
+                players: t.players || count,
+                playerCategories
+              });
+              const merged = new Set([...(t.achievableNorms || []), ...calculatedNorms]);
+              t.achievableNorms = ['V', 'IV', 'III', 'II', 'I', 'k', 'm'].filter(x => merged.has(x));
+              t.hasNorms = t.achievableNorms.length > 0;
+              detailsFound = true;
+            }
+          } catch (e) {
+            // fallback to HTML parsing
           }
 
-          if (res.ok) {
-            const html = await res.text();
-            
-            // Extract max round from pairing links or text
-            let maxRound = null;
-            const roundMatches = html.matchAll(/(?:final_standings&|pairing&)(\d+)\.html/gi);
-            for (const m of roundMatches) {
-              const r = parseInt(m[1], 10);
-              if (r >= 1 && r <= 30 && r > (maxRound || 0)) maxRound = r;
-            }
-            if (!maxRound) {
-              const tm = html.match(/(\d+)\s*[- ]*rund/i);
-              if (tm) maxRound = parseInt(tm[1], 10);
-            }
-            if (maxRound) t.rounds = maxRound;
+          if (!detailsFound) {
+            // 2. Legacy ChessArbiter fallback (fetch homepage + list_of_players.html)
+            const res = await fetch(baseUrl, {
+              headers: { 'User-Agent': BOT_USER_AGENT },
+              timeout: 10000
+            });
 
-            // Detect FIDE and category norms if homepage mentions it
-            if (!t.isFide && detectFide(html)) t.isFide = true;
-            const homeNorms = computePzszachNorms({ timeControl: t.timeControl, rounds: t.rounds, text: html });
-            if (homeNorms.length > 0) {
-              const currentSet = new Set(t.achievableNorms || []);
-              homeNorms.forEach(n => currentSet.add(n));
-              t.achievableNorms = ['V', 'IV', 'III', 'II', 'I'].filter(x => currentSet.has(x));
+            if (res.status === 429) {
+              console.warn('  ⚠️ ChessArbiter 429 hit, pausing...');
+              await sleep(4000);
+              continue;
+            }
+
+            if (res.ok) {
+              const html = await res.text();
+              
+              let maxRound = null;
+              const roundMatches = html.matchAll(/(?:final_standings&|pairing&)(\d+)\.html/gi);
+              for (const m of roundMatches) {
+                const r = parseInt(m[1], 10);
+                if (r >= 1 && r <= 30 && r > (maxRound || 0)) maxRound = r;
+              }
+              if (!maxRound) {
+                const tm = html.match(/(\d+)\s*[- ]*rund/i);
+                if (tm) maxRound = parseInt(tm[1], 10);
+              }
+              if (maxRound) t.rounds = maxRound;
+
+              if (!t.isFide && detectFide(html)) t.isFide = true;
+              const homeNorms = computePzszachNorms({ timeControl: t.timeControl, rounds: t.rounds, text: html });
+              if (homeNorms.length > 0) {
+                const currentSet = new Set(t.achievableNorms || []);
+                homeNorms.forEach(n => currentSet.add(n));
+                t.achievableNorms = ['V', 'IV', 'III', 'II', 'I'].filter(x => currentSet.has(x));
+                t.hasNorms = t.achievableNorms.length > 0;
+              }
+
+              const prizeMatch = html.match(/(PLN|zł|zl|EUR|€)\s*([\d,\.]+)/i);
+              if (prizeMatch) {
+                const val = parseInt(prizeMatch[2].replace(/[^\d]/g, ''), 10);
+                if (val > 0 && val < 500000) t.firstPrize = val;
+              }
+            }
+
+            await sleep(300);
+
+            const pRes = await fetch(`${baseUrl}list_of_players.html`, {
+              headers: { 'User-Agent': BOT_USER_AGENT },
+              timeout: 10000
+            });
+
+            if (pRes.ok) {
+              const pHtml = await pRes.text();
+              const p$ = cheerio.load(pHtml);
+              let count = 0;
+              let gms = 0, ims = 0, fms = 0;
+              const playerCategories = [];
+
+              p$('table tr').each((idx, tr) => {
+                const tds = p$(tr).find('td');
+                const firstTd = tds.eq(0).text().trim();
+                if (/^\d+$/.test(firstTd)) {
+                  count++;
+                  const title = tds.eq(3).text().trim().toUpperCase();
+                  if (title === 'GM' || title === 'WGM') gms++;
+                  else if (title === 'IM' || title === 'WIM') ims++;
+                  else if (title === 'FM' || title === 'WFM') fms++;
+
+                  if (title) playerCategories.push(title);
+                }
+              });
+
+              if (count > 0) t.players = count;
+              t.gms = gms;
+              t.ims = ims;
+              t.fms = fms;
+
+              const calculatedNorms = computePzszachNorms({
+                timeControl: t.timeControl,
+                rounds: t.rounds,
+                durationDays: t.durationDays,
+                players: count,
+                playerCategories
+              });
+              const merged = new Set([...(t.achievableNorms || []), ...calculatedNorms]);
+              t.achievableNorms = ['V', 'IV', 'III', 'II', 'I', 'k', 'm'].filter(x => merged.has(x));
               t.hasNorms = t.achievableNorms.length > 0;
             }
-
-            // Extract prize if mentioned
-            const prizeMatch = html.match(/(PLN|zł|zl|EUR|€)\s*([\d,\.]+)/i);
-            if (prizeMatch) {
-              const val = parseInt(prizeMatch[2].replace(/[^\d]/g, ''), 10);
-              if (val > 0 && val < 500000) t.firstPrize = val;
-            }
-          }
-
-          await sleep(300);
-
-          // B. Fetch list_of_players.html for player count, titles & PZSzach categories
-          const pRes = await fetch(`${baseUrl}list_of_players.html`, {
-            headers: { 'User-Agent': BOT_USER_AGENT },
-            timeout: 10000
-          });
-
-          if (pRes.ok) {
-            const pHtml = await pRes.text();
-            const p$ = cheerio.load(pHtml);
-            let count = 0;
-            let gms = 0, ims = 0, fms = 0;
-            const playerCategories = [];
-
-            p$('table tr').each((idx, tr) => {
-              const tds = p$(tr).find('td');
-              const firstTd = tds.eq(0).text().trim();
-              if (/^\d+$/.test(firstTd)) {
-                count++;
-                const title = tds.eq(3).text().trim().toUpperCase();
-                if (title === 'GM' || title === 'WGM') gms++;
-                else if (title === 'IM' || title === 'WIM') ims++;
-                else if (title === 'FM' || title === 'WFM') fms++;
-
-                if (title) playerCategories.push(title);
-              }
-            });
-
-            if (count > 0) t.players = count;
-            t.gms = gms;
-            t.ims = ims;
-            t.fms = fms;
-
-            // Recalculate achievable norms based on exact player categories in list
-            const calculatedNorms = computePzszachNorms({
-              timeControl: t.timeControl,
-              rounds: t.rounds,
-              players: count,
-              playerCategories
-            });
-            const merged = new Set([...(t.achievableNorms || []), ...calculatedNorms]);
-            t.achievableNorms = ['V', 'IV', 'III', 'II', 'I', 'k', 'm'].filter(x => merged.has(x));
-            t.hasNorms = t.achievableNorms.length > 0;
           }
         }
       } else if (t.scrapedFrom === 'Chess-Results' && t.source && t.source.includes('.aspx')) {
