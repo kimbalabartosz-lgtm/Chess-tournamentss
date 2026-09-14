@@ -73,7 +73,10 @@
           <div class="month-picker-panel" id="month-picker-panel" style="display:none">
             <button class="picker-year-toggle" id="picker-year-btn" onclick="togglePickerYear()">2026</button>
             <div class="picker-months-grid" id="picker-months-grid"></div>
-            <button class="picker-clear-btn" onclick="clearMonthPicker()">✕ Clear selection</button>
+            <div class="picker-actions">
+              <button class="picker-clear-btn" onclick="clearMonthPicker()">✕ Clear</button>
+              <button class="picker-apply-btn" onclick="closeMonthPicker()">✓ Apply</button>
+            </div>
           </div>
         </div>
       </div>

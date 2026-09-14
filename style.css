@@ -594,3 +594,10 @@
 }
 .picker-clear-btn:hover { color: #e53e3e; }
 
+
+.picker-actions { display: flex; gap: 6px; margin-top: 2px; }
+.picker-clear-btn { flex: 1; font-size: 12px; color: #718096; background: transparent; border: 1px solid var(--border,#e2e8f0); border-radius: 5px; cursor: pointer; padding: 5px 0; font-family: inherit; transition: color .15s, border-color .15s; }
+.picker-clear-btn:hover { color: #e53e3e; border-color: #e53e3e; }
+.picker-apply-btn { flex: 1; font-size: 12px; color: #fff; background: #1a56db; border: 1px solid #1a56db; border-radius: 5px; cursor: pointer; padding: 5px 0; font-family: inherit; font-weight: 600; transition: background .15s; }
+.picker-apply-btn:hover { background: #1e429f; }
+

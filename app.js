@@ -547,13 +547,15 @@ function clearMonthPicker() {
   applyFilters();
 }
 
-// Close picker when clicking outside
+function closeMonthPicker() {
+  const panel = document.getElementById('month-picker-panel');
+  if (panel) panel.style.display = 'none';
+}
+
+// Close picker when clicking outside (but not when clicking month buttons)
 document.addEventListener('click', e => {
   const wrap = document.getElementById('month-picker-wrap');
-  if (wrap && !wrap.contains(e.target)) {
-    const panel = document.getElementById('month-picker-panel');
-    if (panel) panel.style.display = 'none';
-  }
+  if (wrap && !wrap.contains(e.target)) closeMonthPicker();
 });
 
 // ═══════════════════════ FILTER LOGIC ════════════════════
