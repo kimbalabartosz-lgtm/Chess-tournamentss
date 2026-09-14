@@ -8,11 +8,16 @@ puppeteer.use(StealthPlugin());
 
 const BOT_USER_AGENT = 'ChessTourBot/1.0 (+https://chess-tournamentss.vercel.app/; contact@chess-tour.app)';
 
-function detectTimeControl(name) {
-  const n = (name || '').toLowerCase();
-  if (n.includes('blitz') || n.includes('błysk')) return 'Blitz';
-  if (n.includes('rapid') || n.includes('szybki') || n.includes('p' + String.fromCharCode(243) + 'łaktywn')) return 'Rapid';
+function detectTimeControl(name, extraText = '') {
+  const n = `${name || ''} ${extraText || ''}`.toLowerCase();
+  if (n.includes('blitz') || n.includes('błysk') || n.includes('blysk')) return 'Blitz';
   if (n.includes('bullet')) return 'Bullet';
+  // Check for 3 min, 5 min, 3+2, 5+3 -> Blitz
+  if (/\b(?:3|5)\s*(?:min|'|\+)/.test(n)) return 'Blitz';
+  // Check for 10 min, 15 min, 12 min, 20 min, rapid, szybki, P'15, 10'+5'', 15'+10'' -> Rapid
+  if (n.includes('rapid') || n.includes('szybki') || n.includes('szybkie') || n.includes('p' + String.fromCharCode(243) + 'łaktywn') || n.includes('polaktywn')) return 'Rapid';
+  if (/\b(?:10|12|15|20|25)\s*(?:min|'|\+)/.test(n) || /\bp['`’]?(?:10|15|20|25)\b/.test(n)) return 'Rapid';
+  if (n.includes('klasyczn')) return 'Classical';
   return 'Classical';
 }
 
@@ -46,37 +51,60 @@ function normalizePzszachCat(catStr) {
   return 'BK';
 }
 
-function computePzszachNorms({ timeControl, rounds, players, playerCategories = [], text = '' }) {
+function computePzszachNorms({ timeControl, rounds, durationDays, players, playerCategories = [], text = '' }) {
   const norms = new Set();
   const tc = (timeControl || 'Classical').toLowerCase();
-  const r = rounds || 5; // default fallback if rounds not known yet
+  const r = rounds || null;
   const n = players || playerCategories.length || 0;
+  const dur = durationDays || 1;
 
-  // Check explicit mentions in text/title (e.g. "kat. V-II", "normy na IV i V")
-  const t = text.toLowerCase();
-  if (t.includes('v kat') || t.includes('kategoria v') || t.includes('kategorii v') || t.includes('v-iv') || t.includes('v-iii') || t.includes('v-ii') || t.includes('v-i')) norms.add('V');
-  if (t.includes('iv kat') || t.includes('kategoria iv') || t.includes('kategorii iv') || t.includes('iv-iii') || t.includes('iv-ii') || t.includes('iv-i')) { norms.add('V'); norms.add('IV'); }
-  if (t.includes('iii kat') || t.includes('kategoria iii') || t.includes('kategorii iii') || t.includes('iii-ii') || t.includes('iii-i')) { norms.add('V'); norms.add('IV'); norms.add('III'); }
-  if (t.includes('ii kat') || t.includes('kategoria ii') || t.includes('kategorii ii') || t.includes('ii-i')) {
-    if (tc === 'classical') norms.add('II');
-    norms.add('III'); norms.add('IV'); norms.add('V');
-  }
-  if (t.includes('i kat') || t.includes('kategoria i') || t.includes('kategorii i')) {
-    if (tc === 'classical') { norms.add('I'); norms.add('II'); }
-    norms.add('III'); norms.add('IV'); norms.add('V');
-  }
-  if (t.includes('norma na k') || t.includes('normy na k') || t.includes('kandydat') || t.includes('k++') || t.includes('k+')) {
-    if (tc === 'classical') { norms.add('k'); norms.add('I'); norms.add('II'); }
-    norms.add('III'); norms.add('IV'); norms.add('V');
-  }
-  if (t.includes('norma na m') || t.includes('normy na m') || t.includes('mistrz') || t.includes('kołowy') || t.includes('kolowy') || t.includes('arcymistrz')) {
-    if (tc === 'classical') { norms.add('m'); norms.add('k'); norms.add('I'); norms.add('II'); }
-    norms.add('III'); norms.add('IV'); norms.add('V');
-  }
-
-  // Blitz never yields PZSzach norms
+  // STRICT RULE 1: Blitz / Bullet never grant any PZSzach norms
   if (tc === 'blitz' || tc === 'bullet') {
-    return Array.from(norms);
+    return [];
+  }
+
+  // Check explicit mentions in tournament title / text
+  const t = text.toLowerCase();
+
+  // Rapid/szybkie tournaments: only V, IV, and in special cases III (min 30 min)
+  if (tc === 'rapid') {
+    if (t.includes('v kat') || t.includes('iv kat') || t.includes('v-iv') || t.includes('v i iv') || t.includes('iv i v')) {
+      norms.add('V'); norms.add('IV');
+    }
+    if (t.includes('iii kat') || t.includes('do iii') || t.includes('v-iii')) {
+      norms.add('V'); norms.add('IV'); norms.add('III');
+    }
+    if (!norms.size && ((r && r >= 5) || dur >= 1) && n >= 6) {
+      norms.add('V'); norms.add('IV');
+    }
+    // NEVER allow II, I, k, m in rapid!
+    const orderRapid = ['V', 'IV', 'III'];
+    return orderRapid.filter(x => norms.has(x));
+  }
+
+  // STRICT RULE 2: Classical chess (szachy klasyczne)
+  // II, I, k, m require multiple rounds (at least 7 for II/I, 9 for k/m)
+  // A 1-day classical tournament CANNOT realistically hold 7+ classical games (min 60m each = 14 hours playing time!)
+  // If duration is 1 day, maximum achievable category is III (or II only if explicitly titled multi-round)
+  const isMultiDayOrLong = dur >= 2 || (r && r >= 7);
+
+  if (t.includes('v kat') || t.includes('v-iv') || t.includes('v-iii') || t.includes('v-ii') || t.includes('v-i')) norms.add('V');
+  if (t.includes('iv kat') || t.includes('iv-iii') || t.includes('iv-ii') || t.includes('iv-i')) { norms.add('V'); norms.add('IV'); }
+  if (t.includes('iii kat') || t.includes('iii-ii') || t.includes('iii-i')) { norms.add('V'); norms.add('IV'); norms.add('III'); }
+
+  if (isMultiDayOrLong) {
+    if (t.includes('ii kat') || t.includes('ii-i')) {
+      norms.add('II'); norms.add('III'); norms.add('IV'); norms.add('V');
+    }
+    if (t.includes('i kat') || t.includes('kategoria i') || t.includes('kategorii i')) {
+      norms.add('I'); norms.add('II'); norms.add('III'); norms.add('IV'); norms.add('V');
+    }
+    if (t.includes('norma na k') || t.includes('normy na k') || t.includes('kandydat') || t.includes('k++') || t.includes('k+')) {
+      if (r === null || r >= 9) { norms.add('k'); norms.add('I'); norms.add('II'); norms.add('III'); norms.add('IV'); norms.add('V'); }
+    }
+    if (t.includes('norma na m') || t.includes('normy na m') || t.includes('mistrz') || t.includes('kołowy') || t.includes('kolowy') || t.includes('arcymistrz')) {
+      if (r === null || r >= 9) { norms.add('m'); norms.add('k'); norms.add('I'); norms.add('II'); norms.add('III'); norms.add('IV'); norms.add('V'); }
+    }
   }
 
   // If we have actual registered players list from ChessArbiter:
@@ -87,35 +115,35 @@ function computePzszachNorms({ timeControl, rounds, players, playerCategories = 
     const hasKorHigher = cats.some(c => ['K', 'M', 'FM', 'IM', 'GM'].includes(c));
     const titledCount = cats.filter(c => ['K', 'M', 'FM', 'IM', 'GM', 'WFM', 'WIM', 'WGM'].includes(c)).length;
 
-    // V i IV kat: minimum 5 rund, turnieje klasyczne lub rapid
-    if (r >= 5 && n >= 6) {
+    // V i IV kat: minimum 5 rund
+    if ((r === null || r >= 5) && n >= 6) {
       norms.add('V');
       norms.add('IV');
     }
 
-    // III kat: minimum 5-6 rund, turnieje klasyczne lub rapid (P'30+), obecność zawodników z min. IV/III/II kat.
+    // III kat: minimum 5-6 rund, obecność zawodników z min. IV/III/II kat.
     const ivPlusCount = cats.filter(c => ['IV', 'III', 'II', 'I', 'K', 'M', 'FM', 'IM', 'GM'].includes(c)).length;
-    if (r >= 5 && n >= 6 && ivPlusCount >= 3) {
+    if ((r === null || r >= 5) && n >= 6 && ivPlusCount >= 3) {
       norms.add('III');
     }
 
-    // II kat: WYŁĄCZNIE szachy klasyczne (minimum 60 min na zawodnika), min. 7 rund, obecność zawodników z min. II/I kat.
-    if (tc === 'classical' && r >= 7 && n >= 8 && hasIIorHigher) {
+    // II kat: WYŁĄCZNIE szachy klasyczne wielodniowe / min. 7 rund (60 min na gracza)
+    if (isMultiDayOrLong && (r === null || r >= 7) && n >= 8 && hasIIorHigher) {
       norms.add('II');
     }
 
-    // I kat: WYŁĄCZNIE szachy klasyczne, min. 9 rund (lub 7 rund dla kobiet), obecność min. I kat / kandydata
-    if (tc === 'classical' && r >= 7 && n >= 10 && hasIorHigher) {
+    // I kat: WYŁĄCZNIE szachy klasyczne wielodniowe (min. 7-9 rund) z min. I kat
+    if (isMultiDayOrLong && (r === null || r >= 7) && n >= 10 && hasIorHigher) {
       norms.add('I');
     }
 
-    // k (kandydat): WYŁĄCZNIE szachy klasyczne, min. 9 rund, obecność min. 2 kandydatów/mistrzów
-    if (tc === 'classical' && r >= 9 && n >= 10 && hasKorHigher && titledCount >= 2) {
+    // k (kandydat): WYŁĄCZNIE szachy klasyczne wielodniowe, min. 9 rund, min. 2 kandydatów/mistrzów
+    if (dur >= 3 && (r === null || r >= 9) && n >= 10 && hasKorHigher && titledCount >= 2) {
       norms.add('k');
     }
 
-    // m (mistrz krajowy): WYŁĄCZNIE szachy klasyczne, min. 9 rund, obecność min. 3 graczy z tytułem mistrzowskim
-    if (tc === 'classical' && r >= 9 && n >= 10 && titledCount >= 3) {
+    // m (mistrz krajowy): WYŁĄCZNIE szachy klasyczne wielodniowe, min. 9 rund, min. 3 graczy z tytułem mistrzowskim
+    if (dur >= 4 && (r === null || r >= 9) && n >= 10 && titledCount >= 3) {
       norms.add('m');
     }
   }
@@ -193,9 +221,10 @@ async function scrapeChessArbiter() {
         const durationDays = isNaN(ms) || ms < 0 ? 1 : Math.max(1, Math.round(ms / 86400000) + 1);
 
         const isFide = detectFide(fullTd) || detectFide(name) || (cells.eq(2) && detectFide(cells.eq(2).text()));
-        const timeControl = detectTimeControl(name);
+        const col2Text = cells.eq(2) ? cells.eq(2).text() : '';
+        const timeControl = detectTimeControl(name, `${fullTd} ${col2Text}`);
         const rounds = detectRounds(name);
-        const achievableNorms = computePzszachNorms({ timeControl, rounds, text: `${name} ${fullTd}` });
+        const achievableNorms = computePzszachNorms({ timeControl, rounds, durationDays, text: `${name} ${fullTd} ${col2Text}` });
 
         tournaments.push({
           id: `ca-${idCounter++}`,

@@ -305,14 +305,29 @@ function fideBadge(t) {
   return `<span class="badge-fide" title="FIDE Rated Tournament">⭐ FIDE</span>`;
 }
 
-function normBadge(t) {
-  if (t.achievableNorms && t.achievableNorms.length > 0) {
-    const list = t.achievableNorms.join(', ');
-    return `<span class="badge-norm" title="Możliwość zdobycia kategorii: ${list}">🎯 kat. ${list}</span>`;
+function getMaxNorm(t) {
+  const norms = t.achievableNorms || [];
+  if (!norms.length) return null;
+  // Order from highest to lowest: m > k > I > II > III > IV > V
+  const hierarchy = ['m', 'k', 'I', 'II', 'III', 'IV', 'V'];
+  for (const cat of hierarchy) {
+    if (norms.includes(cat)) return cat;
   }
-  if (!t.categoryNorms && !t.hasNorms) return '';
-  const label = t.categoryNorms ? `🎯 ${t.categoryNorms}` : '🎯 Normy';
-  return `<span class="badge-norm" title="Możliwość zdobycia normy na kategorię">${label}</span>`;
+  return null;
+}
+
+function normBadge(t) {
+  const max = getMaxNorm(t);
+  if (!max) return '';
+  const label = (max === 'k' || max === 'm') ? `norma (${max})` : `(${max}) kategoria`;
+  return `<span class="badge-norm" title="Najwyższa możliwa do zdobycia kategoria: ${max}">🎯 ${label}</span>`;
+}
+
+function normSuffix(t) {
+  const max = getMaxNorm(t);
+  if (!max) return '';
+  const label = (max === 'k' || max === 'm') ? `(norma ${max})` : `(${max} kat.)`;
+  return ` <span style="font-size: 0.85em; font-weight: 700; color: #047857;">${label}</span>`;
 }
 
 function rowHTML(t) {
@@ -322,13 +337,15 @@ function rowHTML(t) {
   const hasLink = t.source && t.source !== '#';
   const playerLabel = t.players ? `${t.players} players` : (isFinished ? 'Completed' : 'Open registration');
   const tcAndRounds = t.rounds ? `${t.timeControl} · ${t.rounds} rounds` : t.timeControl;
+  const maxNorm = getMaxNorm(t);
+  const detailsNormTag = maxNorm ? ` (${maxNorm} kat.)` : '';
 
   return `
   <div class="tournament-row" ${hasLink ? `onclick="window.open('${t.source}','_blank','noopener,noreferrer')"` : 'style="cursor:default"'}>
     <div class="bar ${getBarClass(t.timeControl)}"></div>
     <div class="row-left">
       <a class="row-name${hasLink ? '' : ' no-link'}" ${hasLink ? `href="${t.source}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()"` : ''}>
-        ${starBtn(t.id)}${t.name}${hasLink ? ' <svg style="display:inline;vertical-align:middle;margin-left:3px" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' : ''}
+        ${starBtn(t.id)}${t.name}${normSuffix(t)}${hasLink ? ' <svg style="display:inline;vertical-align:middle;margin-left:3px" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' : ''}
       </a>
       <div class="row-meta">
         <div class="meta-item">
@@ -359,7 +376,7 @@ function rowHTML(t) {
       </div>
       <div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap;justify-content:flex-end;">
         <a href="${getCalendarLink(t)}" target="_blank" rel="noopener noreferrer" class="signup-btn" onclick="event.stopPropagation()" style="background:#f7fafc;color:#4a5568;border:1px solid #e2e8f0;">📅 Calendar</a>
-        ${hasLink ? `<a href="${t.source}" target="_blank" rel="noopener noreferrer" class="signup-btn" onclick="event.stopPropagation()">Sign Up / Details</a>` : ''}
+        ${hasLink ? `<a href="${t.source}" target="_blank" rel="noopener noreferrer" class="signup-btn" onclick="event.stopPropagation()">Sign Up${detailsNormTag}</a>` : ''}
       </div>
     </div>
   </div>`;
@@ -371,12 +388,14 @@ function cardHTML(t) {
   const titled = gms + ims + fms;
   const hasLink = t.source && t.source !== '#';
   const playerLabel = t.players ? `${t.players} players` : (isFinished ? 'Completed' : 'Open registration');
+  const maxNorm = getMaxNorm(t);
+  const detailsNormTag = maxNorm ? ` (${maxNorm} kat.)` : '';
 
   return `
   <div class="tournament-card" ${hasLink ? `onclick="window.open('${t.source}','_blank','noopener,noreferrer')"` : 'style="cursor:default"'}>
     <div class="bar ${getBarClass(t.timeControl)}"></div>
     <a class="card-name${hasLink ? '' : ' no-link'}" ${hasLink ? `href="${t.source}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()"` : ''}>
-      ${starBtn(t.id)}${t.name}
+      ${starBtn(t.id)}${t.name}${normSuffix(t)}
     </a>
     <div class="card-meta">
       <div class="meta-item">
@@ -407,7 +426,7 @@ function cardHTML(t) {
     </div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;">
       <a href="${getCalendarLink(t)}" target="_blank" rel="noopener noreferrer" class="signup-btn" onclick="event.stopPropagation()" style="background:#f7fafc;color:#4a5568;border:1px solid #e2e8f0;flex:1;text-align:center;">📅 Calendar</a>
-      ${hasLink ? `<a href="${t.source}" target="_blank" rel="noopener noreferrer" class="signup-btn" onclick="event.stopPropagation()" style="flex:1;text-align:center;">Sign Up</a>` : ''}
+      ${hasLink ? `<a href="${t.source}" target="_blank" rel="noopener noreferrer" class="signup-btn" onclick="event.stopPropagation()" style="flex:1;text-align:center;">Sign Up${detailsNormTag}</a>` : ''}
     </div>
   </div>`;
 }
