@@ -23,9 +23,12 @@
   <meta name="twitter:description" content="Browse and filter thousands of chess tournaments worldwide." />
 
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <!-- Leaflet map -->
+  <!-- Leaflet map & MarkerCluster -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -176,6 +179,18 @@
         </div>
       </div>
 
+      <!-- Chess Rating & Norms -->
+      <div class="sidebar-section">
+        <div class="section-label">
+          <span class="section-label-text">Rating & Norms</span>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+        </div>
+        <label class="check-item"><input type="checkbox" id="fide-only-check" onchange="applyFilters()" /><span>⭐ FIDE rated only</span></label>
+        <label class="check-item"><input type="checkbox" id="norms-only-check" onchange="applyFilters()" /><span>🎯 Norms (kategorie)</span></label>
+      </div>
+
       <button class="filter-btn" onclick="applyFilters()">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
@@ -246,8 +261,13 @@
 </div>
 
 <footer class="footer">
-  <div><span class="footer-logo">chess<span>:</span>tour</span> · Global chess tournament aggregator</div>
-  <div id="footer-status">Loading data…</div>
+  <div class="footer-top">
+    <div><span class="footer-logo">chess<span>:</span>tour</span> · Global chess tournament aggregator</div>
+    <div id="footer-status">Loading data…</div>
+  </div>
+  <div class="footer-disclaimer">
+    Disclaimer: chess:tour is an independent tournament search engine and aggregator. All tournament names, organizer names, trademarks and source links (e.g. ChessArbiter, ChessManager, Chess-Results, FIDE) belong to their respective owners and are used purely for referential and indexing purposes.
+  </div>
 </footer>
 
 <script src="app.js"></script>

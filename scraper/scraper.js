@@ -6,12 +6,35 @@ const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 puppeteer.use(StealthPlugin());
 
+const BOT_USER_AGENT = 'ChessTourBot/1.0 (+https://chess-tournamentss.vercel.app/; contact@chess-tour.app)';
+
 function detectTimeControl(name) {
   const n = (name || '').toLowerCase();
   if (n.includes('blitz') || n.includes('błysk')) return 'Blitz';
   if (n.includes('rapid') || n.includes('szybki') || n.includes('p' + String.fromCharCode(243) + 'łaktywn')) return 'Rapid';
   if (n.includes('bullet')) return 'Bullet';
   return 'Classical';
+}
+
+function detectFide(text) {
+  if (!text) return false;
+  return /\bFIDE\b/i.test(text);
+}
+
+function detectCategoryNorms(text) {
+  if (!text) return null;
+  const t = text.toLowerCase();
+  // Match patterns like "kategorie", "kategorię", "normy", "kat. V-II", "kat V i IV", etc.
+  if (/kat(?:egori[a-zęóąśłżźćń]+)?\s*([ivx\d\s,\-–i]+)/i.test(text)) {
+    const match = text.match(/kat(?:egori[a-zęóąśłżźćń]+)?\s*([ivx\d\s,\-–i]+)/i);
+    if (match && match[1] && match[1].trim().length < 20) {
+      return `kat. ${match[1].trim()}`;
+    }
+  }
+  if (t.includes('norma na') || t.includes('normy na') || t.includes('kategorie okręgowe') || t.includes('kategoria v') || t.includes('kategoria iv') || t.includes('kategoria iii') || t.includes('kategoria ii') || t.includes('kategoria i')) {
+    return 'kategorie PZSzach';
+  }
+  return null;
 }
 
 function detectRounds(name) {
@@ -52,7 +75,7 @@ async function scrapeChessArbiter() {
   const tournaments = [];
   try {
     const html = await fetch('http://www.chessarbiter.com/turnieje.php', {
-      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' },
+      headers: { 'User-Agent': BOT_USER_AGENT },
       timeout: 20000
     }).then(r => r.text());
 
@@ -82,6 +105,9 @@ async function scrapeChessArbiter() {
         const ms = new Date(dates.end) - new Date(dates.start);
         const durationDays = isNaN(ms) || ms < 0 ? 1 : Math.max(1, Math.round(ms / 86400000) + 1);
 
+        const isFide = detectFide(fullTd) || detectFide(name) || (cells.eq(2) && detectFide(cells.eq(2).text()));
+        const categoryNorms = detectCategoryNorms(fullTd) || detectCategoryNorms(name);
+
         tournaments.push({
           id: `ca-${idCounter++}`,
           name,
@@ -94,6 +120,9 @@ async function scrapeChessArbiter() {
           durationDays,
           timeControl: detectTimeControl(name),
           rounds: detectRounds(name),
+          isFide,
+          categoryNorms,
+          hasNorms: !!categoryNorms,
           source: sourceUrl.startsWith('http') ? sourceUrl : `https://www.chessarbiter.com/turnieje/${sourceUrl}`,
           scrapedFrom: 'ChessArbiter'
         });
@@ -162,6 +191,7 @@ async function scrapeChessResults(browser) {
   try {
     const page = await browser.newPage();
     await page.setViewport({ width: 1280, height: 800 });
+    await page.setUserAgent(BOT_USER_AGENT);
     
     await page.goto('https://chess-results.com/TurnierSuche.aspx?lan=1', { waitUntil: 'networkidle2', timeout: 60000 });
     
@@ -217,6 +247,7 @@ async function scrapeChessResults(browser) {
         timeControl: detectTimeControl(tcRaw || name),
         rounds: rounds,
         players: players,
+        isFide: true,
         source: `https://chess-results.com/${sourceUrl}`,
         scrapedFrom: 'Chess-Results'
       });
@@ -292,6 +323,9 @@ function parseChessManagerCard(raw, id) {
   const ms = new Date(endDate) - new Date(startDate);
   const durationDays = isNaN(ms) || ms < 0 ? 1 : Math.max(1, Math.round(ms / 86400000) + 1);
 
+  const isFide = detectFide(name) || detectFide(raw.text);
+  const categoryNorms = detectCategoryNorms(name) || detectCategoryNorms(raw.text);
+
   return {
     id: `cm-${id}`,
     name,
@@ -305,6 +339,9 @@ function parseChessManagerCard(raw, id) {
     timeControl: tc,
     rounds,
     players,
+    isFide,
+    categoryNorms,
+    hasNorms: !!categoryNorms,
     source: raw.href,
     scrapedFrom: 'ChessManager'
   };
@@ -316,7 +353,7 @@ async function scrapeChessManager(browser) {
   try {
     const page = await browser.newPage();
     await page.setViewport({ width: 1280, height: 800 });
-    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36');
+    await page.setUserAgent(BOT_USER_AGENT);
 
     const offsets = [0, 50, 100];
     let cmCounter = 1;
@@ -373,6 +410,11 @@ async function fetchTournamentDetails(tournaments, cache) {
       if (old.fms !== undefined) t.fms = old.fms;
       if (old.firstPrize !== undefined) t.firstPrize = old.firstPrize;
       if (old.isOpen !== undefined) t.isOpen = old.isOpen;
+      if (old.isFide !== undefined && !t.isFide) t.isFide = old.isFide;
+      if (old.categoryNorms && !t.categoryNorms) {
+        t.categoryNorms = old.categoryNorms;
+        t.hasNorms = true;
+      }
       reused++;
     }
   });
@@ -411,7 +453,7 @@ async function fetchTournamentDetails(tournaments, cache) {
 
           // A. Fetch tournament homepage for rounds
           const res = await fetch(baseUrl, {
-            headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' },
+            headers: { 'User-Agent': BOT_USER_AGENT },
             timeout: 10000
           });
 
@@ -437,6 +479,16 @@ async function fetchTournamentDetails(tournaments, cache) {
             }
             if (maxRound) t.rounds = maxRound;
 
+            // Detect FIDE and category norms if homepage mentions it
+            if (!t.isFide && detectFide(html)) t.isFide = true;
+            if (!t.categoryNorms) {
+              const norm = detectCategoryNorms(html);
+              if (norm) {
+                t.categoryNorms = norm;
+                t.hasNorms = true;
+              }
+            }
+
             // Extract prize if mentioned
             const prizeMatch = html.match(/(PLN|zł|zl|EUR|€)\s*([\d,\.]+)/i);
             if (prizeMatch) {
@@ -449,7 +501,7 @@ async function fetchTournamentDetails(tournaments, cache) {
 
           // B. Fetch list_of_players.html for player count & titles
           const pRes = await fetch(`${baseUrl}list_of_players.html`, {
-            headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' },
+            headers: { 'User-Agent': BOT_USER_AGENT },
             timeout: 10000
           });
 
@@ -480,7 +532,7 @@ async function fetchTournamentDetails(tournaments, cache) {
       } else if (t.scrapedFrom === 'Chess-Results' && t.source && t.source.includes('.aspx')) {
         const fetchUrl = t.source.replace('.aspx', '.aspx?art=0&zeilen=99999');
         const res = await fetch(fetchUrl, {
-          headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' },
+          headers: { 'User-Agent': BOT_USER_AGENT },
           timeout: 10000
         });
 

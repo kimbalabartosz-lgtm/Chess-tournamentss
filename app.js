@@ -199,6 +199,8 @@ let activeCenterLon = null;
 let currentView = 'list';
 let currentTab  = 'upcoming';
 let savedIds = JSON.parse(localStorage.getItem('chessTourSaved') || '[]');
+const PAGE_SIZE = 40;
+let displayLimit = PAGE_SIZE;
 
 // ═══════════════════════ LOCATION ════════════════════════
 
@@ -298,6 +300,17 @@ function starBtn(id) {
   return `<span onclick="event.stopPropagation(); toggleSave('${id}')" style="cursor:pointer;font-size:1.2em;margin-right:6px;" title="Bookmark">${savedIds.includes(id) ? '⭐' : '☆'}</span>`;
 }
 
+function fideBadge(t) {
+  if (!t.isFide) return '';
+  return `<span class="badge-fide" title="FIDE Rated Tournament">⭐ FIDE</span>`;
+}
+
+function normBadge(t) {
+  if (!t.categoryNorms && !t.hasNorms) return '';
+  const label = t.categoryNorms ? `🎯 ${t.categoryNorms}` : '🎯 Norms';
+  return `<span class="badge-norm" title="Possibility to earn category norm">${label}</span>`;
+}
+
 function rowHTML(t) {
   const isFinished = t.endDate < TODAY;
   const gms = t.gms || 0, ims = t.ims || 0, fms = t.fms || 0;
@@ -307,10 +320,10 @@ function rowHTML(t) {
   const tcAndRounds = t.rounds ? `${t.timeControl} · ${t.rounds} rounds` : t.timeControl;
 
   return `
-  <div class="tournament-row" ${hasLink ? `onclick="window.open('${t.source}','_blank')"` : 'style="cursor:default"'}>
+  <div class="tournament-row" ${hasLink ? `onclick="window.open('${t.source}','_blank','noopener,noreferrer')"` : 'style="cursor:default"'}>
     <div class="bar ${getBarClass(t.timeControl)}"></div>
     <div class="row-left">
-      <a class="row-name${hasLink ? '' : ' no-link'}" ${hasLink ? `href="${t.source}" target="_blank" rel="noopener" onclick="event.stopPropagation()"` : ''}>
+      <a class="row-name${hasLink ? '' : ' no-link'}" ${hasLink ? `href="${t.source}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()"` : ''}>
         ${starBtn(t.id)}${t.name}${hasLink ? ' <svg style="display:inline;vertical-align:middle;margin-left:3px" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' : ''}
       </a>
       <div class="row-meta">
@@ -326,6 +339,8 @@ function rowHTML(t) {
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           ${tcAndRounds}
         </div>
+        ${fideBadge(t)}
+        ${normBadge(t)}
         ${gms > 0 ? `<div class="meta-item">♟ ${gms} GMs, ${titled} titled</div>` : (titled > 0 ? `<div class="meta-item">♟ ${titled} titled</div>` : '')}
       </div>
     </div>
@@ -339,8 +354,8 @@ function rowHTML(t) {
         ${t.firstPrize > 0 ? `<span>Prize: <span class="prize-val">${fmtPrize(t.firstPrize)}</span></span>` : ''}
       </div>
       <div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap;justify-content:flex-end;">
-        <a href="${getCalendarLink(t)}" target="_blank" rel="noopener" class="signup-btn" onclick="event.stopPropagation()" style="background:#f7fafc;color:#4a5568;border:1px solid #e2e8f0;">📅 Calendar</a>
-        ${hasLink ? `<a href="${t.source}" target="_blank" rel="noopener" class="signup-btn" onclick="event.stopPropagation()">Sign Up / Details</a>` : ''}
+        <a href="${getCalendarLink(t)}" target="_blank" rel="noopener noreferrer" class="signup-btn" onclick="event.stopPropagation()" style="background:#f7fafc;color:#4a5568;border:1px solid #e2e8f0;">📅 Calendar</a>
+        ${hasLink ? `<a href="${t.source}" target="_blank" rel="noopener noreferrer" class="signup-btn" onclick="event.stopPropagation()">Sign Up / Details</a>` : ''}
       </div>
     </div>
   </div>`;
@@ -354,9 +369,9 @@ function cardHTML(t) {
   const playerLabel = t.players ? `${t.players} players` : (isFinished ? 'Completed' : 'Open registration');
 
   return `
-  <div class="tournament-card" ${hasLink ? `onclick="window.open('${t.source}','_blank')"` : 'style="cursor:default"'}>
+  <div class="tournament-card" ${hasLink ? `onclick="window.open('${t.source}','_blank','noopener,noreferrer')"` : 'style="cursor:default"'}>
     <div class="bar ${getBarClass(t.timeControl)}"></div>
-    <a class="card-name${hasLink ? '' : ' no-link'}" ${hasLink ? `href="${t.source}" target="_blank" rel="noopener" onclick="event.stopPropagation()"` : ''}>
+    <a class="card-name${hasLink ? '' : ' no-link'}" ${hasLink ? `href="${t.source}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()"` : ''}>
       ${starBtn(t.id)}${t.name}
     </a>
     <div class="card-meta">
@@ -372,6 +387,8 @@ function cardHTML(t) {
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         ${t.timeControl}
       </div>
+      ${fideBadge(t)}
+      ${normBadge(t)}
       ${gms > 0 ? `<div class="meta-item">♟ ${gms} GMs · ${titled} titled</div>` : (titled > 0 ? `<div class="meta-item">♟ ${titled} titled</div>` : '')}
     </div>
     <div class="card-footer">
@@ -385,22 +402,42 @@ function cardHTML(t) {
       </div>
     </div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;">
-      <a href="${getCalendarLink(t)}" target="_blank" rel="noopener" class="signup-btn" onclick="event.stopPropagation()" style="background:#f7fafc;color:#4a5568;border:1px solid #e2e8f0;flex:1;text-align:center;">📅 Calendar</a>
-      ${hasLink ? `<a href="${t.source}" target="_blank" rel="noopener" class="signup-btn" onclick="event.stopPropagation()" style="flex:1;text-align:center;">Sign Up</a>` : ''}
+      <a href="${getCalendarLink(t)}" target="_blank" rel="noopener noreferrer" class="signup-btn" onclick="event.stopPropagation()" style="background:#f7fafc;color:#4a5568;border:1px solid #e2e8f0;flex:1;text-align:center;">📅 Calendar</a>
+      ${hasLink ? `<a href="${t.source}" target="_blank" rel="noopener noreferrer" class="signup-btn" onclick="event.stopPropagation()" style="flex:1;text-align:center;">Sign Up</a>` : ''}
     </div>
   </div>`;
 }
 
-function renderList(items, container) {
+function loadMoreTournaments() {
+  displayLimit += PAGE_SIZE;
+  renderAll();
+}
+
+function renderList(items, container, allowPagination = false) {
   if (!items.length) {
     container.innerHTML = `<div class="empty-state"><div class="empty-icon">♟</div><div class="empty-title">No tournaments match</div><div class="empty-sub">Try relaxing your filters</div></div>`;
     return;
   }
-  if (currentView === 'list') {
-    container.innerHTML = `<div class="tournaments-list">${items.map(rowHTML).join('')}</div>`;
-  } else {
-    container.innerHTML = `<div class="tournaments-grid">${items.map(cardHTML).join('')}</div>`;
+
+  const itemsToRender = allowPagination ? items.slice(0, displayLimit) : items;
+  const content = currentView === 'list'
+    ? `<div class="tournaments-list">${itemsToRender.map(rowHTML).join('')}</div>`
+    : `<div class="tournaments-grid">${itemsToRender.map(cardHTML).join('')}</div>`;
+
+  let paginationHTML = '';
+  if (allowPagination && items.length > displayLimit) {
+    const remaining = items.length - displayLimit;
+    const nextChunk = Math.min(PAGE_SIZE, remaining);
+    paginationHTML = `
+      <div class="load-more-wrap">
+        <button class="load-more-btn" onclick="loadMoreTournaments()">
+          Show next ${nextChunk} tournaments (${displayLimit} of ${items.length})
+        </button>
+        <span class="load-more-count">${remaining} more upcoming tournaments</span>
+      </div>`;
   }
+
+  container.innerHTML = content + paginationHTML;
 }
 
 function sortItems(items) {
@@ -452,13 +489,27 @@ function renderAll() {
       mapSorted = sorted;
     }
 
-    // Show all items (no tab filtering in map mode) with a label
+    // Show items with pagination below map
+    const itemsToRender = mapSorted.slice(0, displayLimit);
+    let paginationHTML = '';
+    if (mapSorted.length > displayLimit) {
+      const remaining = mapSorted.length - displayLimit;
+      const nextChunk = Math.min(PAGE_SIZE, remaining);
+      paginationHTML = `
+        <div class="load-more-wrap">
+          <button class="load-more-btn" onclick="loadMoreTournaments()">
+            Show next ${nextChunk} tournaments (${displayLimit} of ${mapSorted.length})
+          </button>
+        </div>`;
+    }
+
     tabWrap.innerHTML = `
       <div style="font-size:12px;color:#718096;margin:10px 0 8px;font-style:italic;">
         ${activeCenterLat ? '📍 Sorted by distance from selected point' : '📅 Sorted by date'}
         · ${mapSorted.filter(t=>t.lat).length} pins on map · ${mapSorted.filter(t=>!t.lat).length} without coordinates
       </div>
-      <div class="tournaments-list">${mapSorted.map(rowHTML).join('')}</div>`;
+      <div class="tournaments-list">${itemsToRender.map(rowHTML).join('')}</div>
+      ${paginationHTML}`;
 
     updateMap(filtered);
   } else {
@@ -476,8 +527,8 @@ function renderAll() {
     else if (currentTab === 'upcoming')  tabItems = rest.filter(isUpcoming);
     else                                 tabItems = rest.filter(isOngoing);
 
-    renderList(featured, featuredWrap);
-    renderList(tabItems, tabWrap);
+    renderList(featured, featuredWrap, false);
+    renderList(tabItems, tabWrap, true);
   }
 
   document.getElementById('result-meta').innerHTML =
@@ -676,9 +727,15 @@ function runFilter(centerLat, centerLon) {
       const ok = durs.some(d => { const [mn,mx] = durMap[d]; return days >= mn && days <= mx; });
       if (!ok) return false;
     }
+    const fideOnly  = document.getElementById('fide-only-check')?.checked || false;
+    const normsOnly = document.getElementById('norms-only-check')?.checked || false;
+    if (fideOnly && !t.isFide) return false;
+    if (normsOnly && !t.categoryNorms && !t.hasNorms) return false;
+
     return true;
   });
 
+  displayLimit = PAGE_SIZE;
   renderAll();
 }
 
@@ -727,10 +784,15 @@ function clearFilters() {
   document.getElementById('distance-value').textContent = 'Any distance';
   document.getElementById('geo-btn').innerHTML = '📍 Use My Location';
   document.querySelectorAll('.tc-check, .dur-check').forEach(el => el.checked = false);
+  const fideBox = document.getElementById('fide-only-check');
+  if (fideBox) fideBox.checked = false;
+  const normsBox = document.getElementById('norms-only-check');
+  if (normsBox) normsBox.checked = false;
   userLat = userLon = activeCenterLat = activeCenterLon = null;
   selectedMonths.clear();
   updateMonthPickerLabel();
   renderPickerMonths();
+  displayLimit = PAGE_SIZE;
   filtered = [...TOURNAMENTS];
   renderAll();
 }
@@ -785,12 +847,29 @@ const blueIcon = L.icon({
   iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
 });
 
+let clusterGroup = null;
 let centerMarker = null;
 
 function updateMap(items) {
   if (!leafletMap) return;
-  markers.forEach(m => leafletMap.removeLayer(m));
-  markers = [];
+
+  // Initialize or clear marker cluster group
+  if (!clusterGroup) {
+    if (typeof L.markerClusterGroup === 'function') {
+      clusterGroup = L.markerClusterGroup({
+        maxClusterRadius: 45,
+        spiderfyOnMaxZoom: true,
+        showCoverageOnHover: false,
+        zoomToBoundsOnClick: true
+      });
+      leafletMap.addLayer(clusterGroup);
+    } else {
+      clusterGroup = L.featureGroup().addTo(leafletMap);
+    }
+  } else {
+    clusterGroup.clearLayers();
+  }
+
   if (centerMarker) { leafletMap.removeLayer(centerMarker); centerMarker = null; }
 
   // Add center-point marker if distance filter is active
@@ -809,22 +888,26 @@ function updateMap(items) {
     leafletMap._searchCircle = null;
   }
 
+  const newMarkers = [];
   items.forEach(t => {
     if (t.lat && t.lon) {
       const dist = (activeCenterLat && activeCenterLon)
         ? ` · ${Math.round(getHaversineDistance(activeCenterLat, activeCenterLon, t.lat, t.lon))} km`
         : '';
-      const m = L.marker([t.lat, t.lon], { icon: redIcon }).addTo(leafletMap);
-      m.bindPopup(`<b>${t.name}</b><br>${t.city}, ${t.country}${dist}<br>${fmtDateRange(t.startDate, t.endDate)}${t.firstPrize ? '<br>Prize: ' + fmtPrize(t.firstPrize) : ''}`);
-      markers.push(m);
+      const fideTag = t.isFide ? '<br><span style="color:#1d4ed8;font-weight:700">⭐ FIDE Rated</span>' : '';
+      const normTag = (t.categoryNorms || t.hasNorms) ? `<br><span style="color:#047857;font-weight:700">🎯 Norm: ${t.categoryNorms || 'kategorie'}</span>` : '';
+      const m = L.marker([t.lat, t.lon], { icon: redIcon });
+      m.bindPopup(`<b>${t.name}</b><br>${t.city}, ${t.country}${dist}<br>${fmtDateRange(t.startDate, t.endDate)}${t.firstPrize ? '<br>Prize: ' + fmtPrize(t.firstPrize) : ''}${fideTag}${normTag}`);
+      newMarkers.push(m);
     }
   });
 
-  if (markers.length > 0) {
+  if (newMarkers.length > 0) {
+    clusterGroup.addLayers(newMarkers);
     try {
       const group = centerMarker
-        ? L.featureGroup([...markers, centerMarker])
-        : L.featureGroup(markers);
+        ? L.featureGroup([clusterGroup, centerMarker])
+        : clusterGroup;
       leafletMap.fitBounds(group.getBounds().pad(0.15));
     } catch(e) {}
   } else if (activeCenterLat) {
