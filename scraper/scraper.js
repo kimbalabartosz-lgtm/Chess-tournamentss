@@ -82,12 +82,17 @@ function computePzszachNorms({ timeControl, rounds, durationDays, players, playe
   // Check explicit mentions in tournament title / text
   const t = text.toLowerCase();
 
+  // Exclude trainings, arbiter courses, instructor courses, seminars
+  if (/kurs instruktor|kurs s[eę]dziow|seminarium|szkolenie/i.test(t)) {
+    return [];
+  }
+
   // Rapid/szybkie tournaments: only V, IV, and in special cases III (min 30 min)
   if (tc === 'rapid') {
-    if (t.includes('v kat') || t.includes('iv kat') || t.includes('v-iv') || t.includes('v i iv') || t.includes('iv i v')) {
+    if (t.includes('v kat') || t.includes('iv kat') || t.includes('v-iv') || t.includes('v i iv') || t.includes('iv i v') || /(?:na|o|do)\s*iv\s*kat/i.test(t)) {
       norms.add('V'); norms.add('IV');
     }
-    if (t.includes('iii kat') || t.includes('do iii') || t.includes('v-iii')) {
+    if (t.includes('iii kat') || t.includes('do iii') || t.includes('v-iii') || /(?:na|o|do)\s*iii\s*kat/i.test(t)) {
       norms.add('V'); norms.add('IV'); norms.add('III');
     }
     if (!norms.size && ((r && r >= 5) || dur >= 1) && n >= 6) {
@@ -99,28 +104,29 @@ function computePzszachNorms({ timeControl, rounds, durationDays, players, playe
   }
 
   // STRICT RULE 2: Classical chess (szachy klasyczne)
-  // II, I, k, m require multiple rounds (at least 7 for II/I, 9 for k/m)
-  // A 1-day classical tournament CANNOT realistically hold 7+ classical games (min 60m each = 14 hours playing time!)
-  // If duration is 1 day, maximum achievable category is III (or II only if explicitly titled multi-round)
   const isMultiDayOrLong = dur >= 2 || (r && r >= 7);
 
-  if (t.includes('v kat') || t.includes('v-iv') || t.includes('v-iii') || t.includes('v-ii') || t.includes('v-i')) norms.add('V');
-  if (t.includes('iv kat') || t.includes('iv-iii') || t.includes('iv-ii') || t.includes('iv-i')) { norms.add('V'); norms.add('IV'); }
-  if (t.includes('iii kat') || t.includes('iii-ii') || t.includes('iii-i')) { norms.add('V'); norms.add('IV'); norms.add('III'); }
-
-  if (isMultiDayOrLong) {
-    if (t.includes('ii kat') || t.includes('ii-i')) {
-      norms.add('II'); norms.add('III'); norms.add('IV'); norms.add('V');
-    }
-    if (t.includes('i kat') || t.includes('kategoria i') || t.includes('kategorii i')) {
-      norms.add('I'); norms.add('II'); norms.add('III'); norms.add('IV'); norms.add('V');
-    }
-    if (t.includes('norma na k') || t.includes('normy na k') || t.includes('kandydat') || t.includes('k++') || t.includes('k+')) {
-      if (r === null || r >= 9) { norms.add('k'); norms.add('I'); norms.add('II'); norms.add('III'); norms.add('IV'); norms.add('V'); }
-    }
-    if (t.includes('norma na m') || t.includes('normy na m') || t.includes('mistrz') || t.includes('kołowy') || t.includes('kolowy') || t.includes('arcymistrz')) {
-      if (r === null || r >= 9) { norms.add('m'); norms.add('k'); norms.add('I'); norms.add('II'); norms.add('III'); norms.add('IV'); norms.add('V'); }
-    }
+  // Check explicit category declarations from organizers in titles
+  if (/norm[ay]\s+na\s+k\b/i.test(t) || /na\s+i\s+i\s+k\b/i.test(t) || /kandydat/i.test(t) || /\bk\+\+/i.test(t) || /\bk\+/i.test(t)) {
+    norms.add('k'); norms.add('I'); norms.add('II'); norms.add('III'); norms.add('IV'); norms.add('V');
+  }
+  if (/norm[ay]\s+na\s+m\b/i.test(t) || (/\bmistrz\b/i.test(t) && !t.includes('mistrzostwa'))) {
+    norms.add('m'); norms.add('k'); norms.add('I'); norms.add('II'); norms.add('III'); norms.add('IV'); norms.add('V');
+  }
+  if (/(?:na|o|do|\b)\s*i\s*(?:lub|i|\/)?\s*(?:kategori|kat\b)/i.test(t) || /norm[ay]\s+na\s+i\b/i.test(t) || /mała norma na i/i.test(t) || /o\s+iii\s+ii\s+i/i.test(t)) {
+    norms.add('I'); norms.add('II'); norms.add('III'); norms.add('IV'); norms.add('V');
+  }
+  if (/(?:na|o|do|\b)\s*ii\s*(?:lub|i|\/)?\s*(?:kategori|kat\b)/i.test(t) || /norm[ay]\s+na\s+ii\b/i.test(t) || /o\s+iii\s+ii/i.test(t) || /ii\s+lub\s+i/i.test(t)) {
+    norms.add('II'); norms.add('III'); norms.add('IV'); norms.add('V');
+  }
+  if (/(?:na|o|do|\b)\s*iii\s*(?:lub|i|\/)?\s*(?:kategori|kat\b)/i.test(t) || /norm[ay]\s+na\s+iii\b/i.test(t) || /do\s+iii\b/i.test(t)) {
+    norms.add('III'); norms.add('IV'); norms.add('V');
+  }
+  if (/(?:na|o|do|\b)\s*iv\s*(?:lub|i|\/)?\s*(?:kategori|kat\b)/i.test(t) || /norm[ay]\s+na\s+iv\b/i.test(t) || /v-iv/i.test(t) || /iv i v/i.test(t) || /v i iv/i.test(t)) {
+    norms.add('IV'); norms.add('V');
+  }
+  if (/(?:na|o|do|\b)\s*v\s*(?:kategori|kat\b)/i.test(t) || /norm[ay]\s+na\s+v\b/i.test(t)) {
+    norms.add('V');
   }
 
   // If we have actual registered players list from ChessArbiter:
@@ -471,13 +477,13 @@ function parseChessManagerCard(raw, id) {
   const durationDays = isNaN(ms) || ms < 0 ? 1 : Math.max(1, Math.round(ms / 86400000) + 1);
 
   const isFide = detectFide(name) || detectFide(raw.text);
-  const achievableNorms = computePzszachNorms({
+  const achievableNorms = countryInfo.code === 'POL' ? computePzszachNorms({
     timeControl: tc,
     rounds,
     durationDays,
     players,
     text: `${name} ${raw.text}`
-  });
+  }) : [];
 
   return {
     id: `cm-${id}`,
@@ -599,9 +605,16 @@ async function fetchTournamentDetails(tournaments, cache) {
     const t = batch[i];
     try {
       if (t.scrapedFrom === 'ChessArbiter' && t.source && t.source.includes('turnieje/')) {
-        const match = t.source.match(/turnieje\/([^\/]+)\/([^\/]+)/) || t.source.match(/turn=([^&]+)/);
-        if (match) {
-          const turnPath = t.source.includes('turn=') ? match[1] : `${match[1]}/${match[2]}`;
+        let turnPath = null;
+        const turnParamMatch = t.source.match(/turn=([^&]+)/);
+        if (turnParamMatch) {
+          turnPath = turnParamMatch[1];
+        } else {
+          const pathMatch = t.source.match(/turnieje\/(\d{4}\/[^\/]+)/);
+          if (pathMatch) turnPath = pathMatch[1];
+        }
+
+        if (turnPath) {
           const baseUrl = `http://www.chessarbiter.com/turnieje/${turnPath}/`;
 
           let detailsFound = false;
