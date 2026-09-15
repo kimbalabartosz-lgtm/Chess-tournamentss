@@ -822,6 +822,55 @@ async function applyFilters() {
   if (maxDist > 0 && centerLat && centerLon && currentView !== 'map') {
     setView('map');
   }
+
+  updateFilterBadge();
+}
+
+function updateFilterBadge() {
+  let count = 0;
+  if (document.getElementById('q-input').value.trim()) count++;
+  if (document.getElementById('continent-select').value) count++;
+  if (document.getElementById('country-select').value) count++;
+  if (document.getElementById('city-input').value.trim()) count++;
+  if (document.getElementById('prize-min').value) count++;
+  if (document.getElementById('prize-max').value) count++;
+  if (document.getElementById('gm-min').value) count++;
+  if (document.getElementById('titled-min').value) count++;
+  if (+document.getElementById('distance-slider').value > 0) count++;
+  count += document.querySelectorAll('.tc-check:checked, .dur-check:checked, .norm-cat-check:checked').length;
+  if (document.getElementById('fide-only-check') && document.getElementById('fide-only-check').checked) count++;
+  if (selectedMonths.size > 0) count += selectedMonths.size;
+
+  const badge = document.getElementById('mobile-filter-badge');
+  if (badge) {
+    if (count > 0) {
+      badge.textContent = count;
+      badge.style.display = 'inline-block';
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+}
+
+function toggleMobileFilters() {
+  const sidebar = document.getElementById('sidebar');
+  const backdrop = document.getElementById('filter-backdrop');
+  const isOpen = sidebar.classList.contains('open');
+  if (isOpen) {
+    closeMobileFilters();
+  } else {
+    sidebar.classList.add('open');
+    backdrop.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeMobileFilters() {
+  const sidebar = document.getElementById('sidebar');
+  const backdrop = document.getElementById('filter-backdrop');
+  if (sidebar) sidebar.classList.remove('open');
+  if (backdrop) backdrop.classList.remove('open');
+  document.body.style.overflow = '';
 }
 
 function clearFilters() {
@@ -845,6 +894,7 @@ function clearFilters() {
   renderPickerMonths();
   displayLimit = PAGE_SIZE;
   filtered = [...TOURNAMENTS];
+  updateFilterBadge();
   renderAll();
 }
 

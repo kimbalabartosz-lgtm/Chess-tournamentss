@@ -37,13 +37,32 @@
 <!-- ═══════════════════════════════════ HEADER ═══════════════════════════════════ -->
 <header class="header">
   <a class="logo" href="#">chess<span class="logo-colon">:</span>tour</a>
+  <button class="mobile-filter-btn" id="mobile-filter-btn" onclick="toggleMobileFilters()">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+    </svg>
+    <span>Filters</span>
+    <span class="filter-count-badge" id="mobile-filter-badge" style="display:none">0</span>
+  </button>
 </header>
+
+<!-- Mobile backdrop overlay -->
+<div class="filter-backdrop" id="filter-backdrop" onclick="closeMobileFilters()"></div>
 
 <!-- ═══════════════════════════════════ PAGE ═══════════════════════════════════ -->
 <div class="page-wrap">
 
   <!-- ── SIDEBAR ─────────────────────────── -->
-  <aside class="sidebar">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header-mobile">
+      <div class="sidebar-header-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+        </svg>
+        Filters
+      </div>
+      <button class="sidebar-close-btn" onclick="closeMobileFilters()" title="Close filters">✕</button>
+    </div>
     <div class="sidebar-inner">
 
       <!-- Search -->
@@ -195,11 +214,11 @@
         </div>
       </div>
 
-      <button class="filter-btn" onclick="applyFilters()">
+      <button class="filter-btn" onclick="applyFilters(); closeMobileFilters();">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
         </svg>
-        Filter
+        Filter Tournaments
       </button>
       <button class="clear-btn" onclick="clearFilters()">Clear all filters</button>
     </div>

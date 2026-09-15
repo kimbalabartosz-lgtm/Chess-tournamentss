@@ -15,6 +15,7 @@
       height: 56px;
       display: flex;
       align-items: center;
+      justify-content: space-between;
       padding: 0 32px;
       position: sticky;
       top: 0;
@@ -32,6 +33,43 @@
       text-decoration: none;
     }
     .logo-colon { color: #10b981; }
+
+    /* Mobile Filter Button in Header */
+    .mobile-filter-btn {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #ffffff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+      transition: all 0.15s;
+    }
+    .mobile-filter-btn:active {
+      background: rgba(255, 255, 255, 0.25);
+      transform: scale(0.97);
+    }
+    .filter-count-badge {
+      background: #10b981;
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 1px 6px;
+      border-radius: 10px;
+      line-height: 1.2;
+    }
+    .sidebar-header-mobile {
+      display: none;
+    }
+    .filter-backdrop {
+      display: none;
+    }
 
     /* ── LAYOUT ─────────────────────────────────── */
     .page-wrap {
@@ -589,9 +627,155 @@
 
     /* ── RESPONSIVE ─────────────────────────────────── */
     @media (max-width: 768px) {
-      .page-wrap { flex-direction: column; padding: 16px; }
-      .sidebar { width: 100%; }
-      .header { padding: 0 16px; }
+      .header {
+        padding: 0 16px;
+      }
+      .mobile-filter-btn {
+        display: flex;
+      }
+
+      /* Mobile Drawer / Sheet */
+      .sidebar {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 86vw;
+        max-width: 360px;
+        height: 100vh;
+        z-index: 1001;
+        border-radius: 0;
+        border: none;
+        border-left: 1px solid #e2e8f0;
+        box-shadow: -4px 0 24px rgba(0, 0, 0, 0.25);
+        transform: translateX(105%);
+        transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .sidebar::before {
+        display: none; /* remove decorative inset bar on mobile drawer */
+      }
+      .sidebar-header-mobile {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 20px;
+        background: #043927;
+        color: #ffffff;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        flex-shrink: 0;
+      }
+      .sidebar-header-title {
+        font-size: 16px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .sidebar-close-btn {
+        background: rgba(255, 255, 255, 0.15);
+        border: none;
+        color: #ffffff;
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.15s;
+      }
+      .sidebar-close-btn:active {
+        background: rgba(255, 255, 255, 0.3);
+      }
+      .sidebar-inner {
+        padding: 16px;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        flex: 1;
+      }
+
+      /* Dim Backdrop */
+      .filter-backdrop {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(15, 23, 42, 0.55);
+        backdrop-filter: blur(2px);
+        z-index: 1000;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease;
+      }
+      .filter-backdrop.open {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      /* Main Page Layout on Mobile */
+      .page-wrap {
+        flex-direction: column;
+        padding: 14px 12px;
+        gap: 16px;
+      }
+      .content-header {
+        margin-bottom: 12px;
+      }
+      .content-title {
+        font-size: 19px;
+      }
+      .toolbar {
+        width: 100%;
+        justify-content: space-between;
+      }
+      .sort-select {
+        flex: 1;
+        min-width: 0;
+      }
+
+      /* Tournament Rows & Cards on Mobile */
+      .tournament-row {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 12px 14px 12px 22px;
+        gap: 10px;
+      }
+      .row-right {
+        align-items: stretch;
+        border-top: 1px solid #f1f5f9;
+        padding-top: 8px;
+        margin-top: 4px;
+      }
+      .location-line {
+        justify-content: space-between;
+      }
+      .prize-line {
+        justify-content: space-between;
+      }
+      .signup-btn {
+        text-align: center;
+      }
+
+      /* Tabs spacing */
+      .tab-list {
+        gap: 20px;
+        width: 100%;
+        justify-content: space-around;
+      }
+      .tab-btn {
+        font-size: 13px;
+        padding-bottom: 8px;
+      }
     }
 /* =================== MONTH PICKER =================== */
 .month-picker-wrap { position: relative; }
