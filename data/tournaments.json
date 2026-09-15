@@ -16408,8 +16408,9 @@
       "gms": 0,
       "ims": 0,
       "fms": 0,
-      "firstPrize": 0,
-      "isOpen": true
+      "firstPrize": 23,
+      "isOpen": true,
+      "prizeCurrency": "USD"
     },
     {
       "id": "cr-788",

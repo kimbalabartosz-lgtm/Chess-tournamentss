@@ -64,6 +64,8 @@ const COUNTRY_CURRENCIES = {
   'BAN': 'BDT', 'SRI': 'LKR', 'NEP': 'NPR', 'HKG': 'HKD', 'Mongolia': 'MNT'
 };
 
+const PESO_COUNTRIES = ['ARG', 'MEX', 'COL', 'CHI', 'URU', 'CUB', 'DOM'];
+
 const SYMBOL_CURRENCIES = [
   { regex: /\b(?:zł|zl|pln)\b/i, code: 'PLN' },
   { regex: /€|\b(?:eur|euro)\b/i, code: 'EUR' },
@@ -75,7 +77,8 @@ const SYMBOL_CURRENCIES = [
   { regex: /\b(?:bgn|лв)\b/i, code: 'BGN' },
   { regex: /\b(?:rs\.?|inr|rupee|rupees)\b/i, code: 'INR' },
   { regex: /r\$|\b(?:brl|reais|real)\b/i, code: 'BRL' },
-  { regex: /\b(?:usd|dollars?|dolar[yów]*)\b/i, code: 'USD' }
+  { regex: /\b(?:usd|u\$s|us\$|u\$d|dollars?|dolar[yów]*|d[oó]lares)\b/i, code: 'USD' },
+  { regex: /\$/, code: 'USD' }
 ];
 
 let cachedExchangeRates = null;
@@ -131,11 +134,36 @@ function parseTournamentPrize(text, country = '') {
   let isFirstPlace = false;
 
   const NUM_REGEX_STR = '\\d+(?:[ .]\\d{3})*(?:[.,]\\d{2})?';
+  const cUpper = (country || '').toUpperCase().trim();
+
+  function resolveDetectedCurrency(testArea) {
+    let foundCurr = null;
+    for (const sc of SYMBOL_CURRENCIES) {
+      if (sc.regex.test(testArea)) {
+        foundCurr = sc.code;
+        break;
+      }
+    }
+    // If it's generic '$' in a Peso country (ARG, MEX, COL, CHI, URU), and not explicitly 'USD'/'dólares'
+    if (foundCurr === 'USD' && PESO_COUNTRIES.includes(cUpper)) {
+      if (!/\b(?:usd|u\$s|us\$|u\$d|dollars?|dolar[yów]*|d[oó]lares)\b/i.test(testArea)) {
+        foundCurr = COUNTRY_CURRENCIES[cUpper] || 'USD';
+      }
+    }
+    return foundCurr;
+  }
 
   // 1. Check for specific first place prize patterns
   const firstPlacePatterns = [
-    new RegExp(`(?:1\\s*[-.]?\\s*miejsc[ea]|i\\s*miejsc[ea]|1st\\s*(?:place|prize)|1er\\s*(?:premio|prix)|1\\s*nagrod[a-z]*|i\\s*nagrod[a-z]*|1\\s*preis|1\\s*premio|\\bwinner\\b)\\s*[:=-]?\\s*([€$£złA-Z]{1,4})?\\s*(${NUM_REGEX_STR})\\s*([€$£złA-Za-z]{1,6})?`, 'i'),
-    new RegExp(`([€$£złA-Z]{1,4})?\\s*(${NUM_REGEX_STR})\\s*([€$£złA-Za-z]{1,6})?\\s*(?:za\\s*)?(?:1\\s*[-.]?\\s*miejsc[ea]|i\\s*miejsc[ea]|1st\\s*(?:place|prize)|1er\\s*(?:premio|prix)|dla\\s*zwyci[eę]zc[ay])`, 'i')
+    new RegExp(
+      `(?:1\\s*[-.]?\\s*miejsc[ea]|i\\s*miejsc[ea]|1st\\s*(?:place|prize)|1(?:ro|er|[°º])\\.?\\s*(?:premio|prix|puesto|lugar)?|1\\s*nagrod[a-z]*|i\\s*nagrod[a-z]*|1\\.\\s*(?:preis|premio|nagroda|miejsce|platz|prix)|\\bwinner\\b)` +
+      `\\s*[:=-]?\\s*([€$£złA-Z]{1,4}|r\\$|rs\\.?)?\\s*(${NUM_REGEX_STR})\\s*([€$£złA-Za-z]{1,6})?`,
+      'i'
+    ),
+    new RegExp(
+      `([€$£złA-Z]{1,4}|r\\$|rs\\.?)?\\s*(${NUM_REGEX_STR})\\s*([€$£złA-Za-z]{1,6})?\\s*(?:za\\s*)?(?:1\\s*[-.]?\\s*miejsc[ea]|i\\s*miejsc[ea]|1st\\s*(?:place|prize)|1(?:ro|er|[°º])\\.?\\s*(?:premio|prix|puesto|lugar)|dla\\s*zwyci[eę]zc[ay])`,
+      'i'
+    )
   ];
 
   for (const pat of firstPlacePatterns) {
@@ -147,13 +175,7 @@ function parseTournamentPrize(text, country = '') {
       const parsed = cleanNumber(numPart);
       if (parsed >= 50 && parsed <= 50000000) {
         const testArea = `${currPrefix} ${currSuffix} ${m[0]}`;
-        let foundCurr = null;
-        for (const sc of SYMBOL_CURRENCIES) {
-          if (sc.regex.test(testArea)) {
-            foundCurr = sc.code;
-            break;
-          }
-        }
+        const foundCurr = resolveDetectedCurrency(testArea);
         if (!foundCurr && parsed >= 2020 && parsed <= 2035) {
           continue;
         }
@@ -168,8 +190,9 @@ function parseTournamentPrize(text, country = '') {
   // 2. Check for total prize fund / pool patterns
   if (!rawVal) {
     const poolPatterns = [
-      new RegExp(`(?:pula\\s*nagr[oó]d|prize\\s*fund|total\\s*prize|pula|premios|bolsa\\s*de\\s*premios|preisfonds)\\s*[:=-]?\\s*([€$£złA-Z]{1,4}|rs\\.?)?\\s*(${NUM_REGEX_STR})\\s*([€$£złA-Za-z]{1,6})?`, 'i'),
-      new RegExp(`(?:nagrod[ay]\\s*o\\s*warto[śs]ci|nagrod[ay]\\s*finansowe\\s*do)\\s*[:=-]?\\s*([€$£złA-Z]{1,4})?\\s*(${NUM_REGEX_STR})\\s*([€$£złA-Za-z]{1,6})?`, 'i')
+      new RegExp(`(?:pula\\s*nagr[oó]d|prize\\s*fund|total\\s*prize|pula|premios?|pr[eê]mios?|bolsa\\s*de\\s*premios|preisfonds)\\s*[:=-]?\\s*([€$£złA-Z]{1,4}|r\\$|rs\\.?)?\\s*(${NUM_REGEX_STR})\\s*([€$£złA-Za-z]{1,6})?`, 'i'),
+      new RegExp(`(?:nagrod[ay]\\s*o\\s*warto[śs]ci|nagrod[ay]\\s*finansowe\\s*do)\\s*[:=-]?\\s*([€$£złA-Z]{1,4})?\\s*(${NUM_REGEX_STR})\\s*([€$£złA-Za-z]{1,6})?`, 'i'),
+      new RegExp(`([€$£złA-Z]{1,4}|r\\$|rs\\.?)?\\s*(${NUM_REGEX_STR})\\s*([€$£złA-Za-z]{1,6})?\\s*(?:em\\s*pr[eê]mios?|em\\s*premios?|w\\s*nagrodach|in\\s*prizes?)`, 'i')
     ];
     for (const pat of poolPatterns) {
       const m = str.match(pat);
@@ -180,13 +203,7 @@ function parseTournamentPrize(text, country = '') {
         const parsed = cleanNumber(numPart);
         if (parsed >= 50 && parsed <= 50000000) {
           const testArea = `${currPrefix} ${currSuffix} ${m[0]}`;
-          let foundCurr = null;
-          for (const sc of SYMBOL_CURRENCIES) {
-            if (sc.regex.test(testArea)) {
-              foundCurr = sc.code;
-              break;
-            }
-          }
+          const foundCurr = resolveDetectedCurrency(testArea);
           if (!foundCurr && parsed >= 2020 && parsed <= 2035) {
             continue;
           }
@@ -216,6 +233,15 @@ function parseTournamentPrize(text, country = '') {
   }
 
   // 5. Currency conversion
+  if (!cachedExchangeRates) {
+    const ratesFile = path.join(__dirname, '..', 'data', 'exchange_rates.json');
+    if (fs.existsSync(ratesFile)) {
+      try {
+        const j = JSON.parse(fs.readFileSync(ratesFile, 'utf8'));
+        if (j && j.rates) cachedExchangeRates = j.rates;
+      } catch(e) {}
+    }
+  }
   const rates = cachedExchangeRates || { USD: 1, PLN: 3.75, EUR: 0.86, GBP: 0.74 };
   const rateToUsd = rates[detectedCurrency] || 1.0;
   const valueInUsd = Math.round(rawVal / rateToUsd);
