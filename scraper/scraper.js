@@ -187,35 +187,7 @@ function parseTournamentPrize(text, country = '') {
     }
   }
 
-  // 2. Check for total prize fund / pool patterns
-  if (!rawVal) {
-    const poolPatterns = [
-      new RegExp(`(?:pula\\s*nagr[oó]d|prize\\s*fund|total\\s*prize|pula|premios?|pr[eê]mios?|bolsa\\s*de\\s*premios|preisfonds)\\s*[:=-]?\\s*([€$£złA-Z]{1,4}|r\\$|rs\\.?)?\\s*(${NUM_REGEX_STR})\\s*([€$£złA-Za-z]{1,6})?`, 'i'),
-      new RegExp(`(?:nagrod[ay]\\s*o\\s*warto[śs]ci|nagrod[ay]\\s*finansowe\\s*do)\\s*[:=-]?\\s*([€$£złA-Z]{1,4})?\\s*(${NUM_REGEX_STR})\\s*([€$£złA-Za-z]{1,6})?`, 'i'),
-      new RegExp(`([€$£złA-Z]{1,4}|r\\$|rs\\.?)?\\s*(${NUM_REGEX_STR})\\s*([€$£złA-Za-z]{1,6})?\\s*(?:em\\s*pr[eê]mios?|em\\s*premios?|w\\s*nagrodach|in\\s*prizes?)`, 'i')
-    ];
-    for (const pat of poolPatterns) {
-      const m = str.match(pat);
-      if (m) {
-        const currPrefix = m[1] || '';
-        const numPart = m[2];
-        const currSuffix = m[3] || '';
-        const parsed = cleanNumber(numPart);
-        if (parsed >= 50 && parsed <= 50000000) {
-          const testArea = `${currPrefix} ${currSuffix} ${m[0]}`;
-          const foundCurr = resolveDetectedCurrency(testArea);
-          if (!foundCurr && parsed >= 2020 && parsed <= 2035) {
-            continue;
-          }
-          rawVal = Math.round(parsed * 0.35);
-          detectedCurrency = foundCurr;
-          break;
-        }
-      }
-    }
-  }
-
-  // 3. Special case: "Turniej o Tysiaka"
+  // 2. Special case: "Turniej o Tysiaka" (tournament name explicitly defines 1000 PLN for 1st place)
   if (!rawVal) {
     if (/turniej\s*o\s*tysiak[a-z]*/i.test(str)) {
       rawVal = 1000;
@@ -224,7 +196,8 @@ function parseTournamentPrize(text, country = '') {
     }
   }
 
-  if (!rawVal) return null;
+  // If not 100% certain of the 1st place prize, do not display anything
+  if (!rawVal || !isFirstPlace) return null;
 
   // 4. Currency resolution: if not explicitly detected, fall back to country national currency
   if (!detectedCurrency) {

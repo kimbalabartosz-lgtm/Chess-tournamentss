@@ -17627,8 +17627,7 @@
       "isOpen": true,
       "lat": 49.88335,
       "lon": 19.49292,
-      "firstPrize": 1750,
-      "prizeCurrency": "PLN"
+      "firstPrize": 0
     },
     {
       "id": "ca-78",
@@ -25585,8 +25584,7 @@
       "players": 154,
       "lat": 49.88335,
       "lon": 19.49292,
-      "firstPrize": 1750,
-      "prizeCurrency": "PLN"
+      "firstPrize": 0
     },
     {
       "id": "ca-146",
@@ -47624,8 +47622,7 @@
       "isFide": true,
       "source": "https://chess-results.com/tnr1493760.aspx?lan=1",
       "scrapedFrom": "Chess-Results",
-      "firstPrize": 17500,
-      "prizeCurrency": "USD"
+      "firstPrize": 0
     },
     {
       "id": "cr-293",
@@ -57300,8 +57297,7 @@
       "isOpen": true,
       "lat": 51.10286,
       "lon": 17.03006,
-      "firstPrize": 15977,
-      "prizeCurrency": "PLN"
+      "firstPrize": 0
     },
     {
       "id": "cr-1901",

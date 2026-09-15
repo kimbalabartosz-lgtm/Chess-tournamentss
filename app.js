@@ -737,7 +737,6 @@ function runFilter(centerLat, centerLon) {
   const country   = document.getElementById('country-select').value;
   const city      = normalizeStr(document.getElementById('city-input').value.trim());
   const prizeMin  = +document.getElementById('prize-min').value || 0;
-  const prizeMax  = +document.getElementById('prize-max').value || Infinity;
   const gmMin     = +document.getElementById('gm-min').value || 0;
   const titledMin = +document.getElementById('titled-min').value || 0;
   const maxDist   = +document.getElementById('distance-slider').value;
@@ -774,8 +773,7 @@ function runFilter(centerLat, centerLon) {
     if (city && maxDist === 0 && !matchCity(city, tCity)) return false;
     // Month picker filter — match any selected month
     if (selectedMonths.size > 0 && !selectedMonths.has(t.startDate.substring(0, 7))) return false;
-    if (prizeMin > 0 && (t.firstPrize || 0) < prizeMin) return false;
-    if (prizeMax < Infinity && (t.firstPrize || 0) > prizeMax) return false;
+    if (prizeMin > 0 && (!t.firstPrize || t.firstPrize < prizeMin)) return false;
     if (tcs.length && !tcs.includes(t.timeControl)) return false;
     if (gmMin > 0 && (t.gms || 0) < gmMin) return false;
     if (titledMin > 0 && ((t.gms||0) + (t.ims||0) + (t.fms||0)) < titledMin) return false;
@@ -847,7 +845,6 @@ function updateFilterBadge() {
   if (document.getElementById('country-select').value) count++;
   if (document.getElementById('city-input').value.trim()) count++;
   if (document.getElementById('prize-min').value) count++;
-  if (document.getElementById('prize-max').value) count++;
   if (document.getElementById('gm-min').value) count++;
   if (document.getElementById('titled-min').value) count++;
   if (+document.getElementById('distance-slider').value > 0) count++;
@@ -893,7 +890,6 @@ function clearFilters() {
   document.getElementById('country-select').value = '';
   document.getElementById('city-input').value = '';
   document.getElementById('prize-min').value = '';
-  document.getElementById('prize-max').value = '';
   document.getElementById('gm-min').value = '';
   document.getElementById('titled-min').value = '';
   document.getElementById('distance-slider').value = '0';
@@ -1050,7 +1046,7 @@ function setView(view) {
 
 // ═══════════════════════ LIVE LISTENERS ══════════════════
 
-['q-input', 'city-input', 'prize-min', 'prize-max', 'gm-min', 'titled-min'].forEach(id => {
+['q-input', 'city-input', 'prize-min', 'gm-min', 'titled-min'].forEach(id => {
   document.getElementById(id).addEventListener('input', applyFilters);
 });
 
