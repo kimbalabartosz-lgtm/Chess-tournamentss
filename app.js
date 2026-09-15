@@ -287,9 +287,23 @@ function fmtDateRange(s, e) {
   return `${fmtDate(s)} – ${fmtDate(e)}`;
 }
 
-function fmtPrize(n) {
-  if(!n) return '—';
-  return n >= 1000 ? '$' + (n/1000).toFixed(0) + 'k' : '$' + n;
+function fmtPrize(n, country, currency) {
+  if (!n) return '—';
+  if (typeof n === 'object' && n !== null) {
+    country = n.country;
+    currency = n.prizeCurrency;
+    n = n.firstPrize;
+  }
+  if (!n) return '—';
+  const isPln = (currency === 'PLN' || country === 'POL' || country === 'Poland');
+  if (isPln) {
+    if (n >= 1000) {
+      const k = (n / 1000).toFixed(n % 1000 === 0 ? 0 : 1);
+      return `${k}k zł`;
+    }
+    return `${n} zł`;
+  }
+  return n >= 1000 ? '$' + (n / 1000).toFixed(0) + 'k' : '$' + n;
 }
 
 function getCalendarLink(t) {
@@ -392,7 +406,7 @@ function rowHTML(t) {
         ${distanceBadge(t)}
       </div>
       <div class="prize-line">
-        ${t.firstPrize > 0 ? `<span>Prize: <span class="prize-val">${fmtPrize(t.firstPrize)}</span></span>` : ''}
+        ${t.firstPrize > 0 ? `<span>Prize: <span class="prize-val">${fmtPrize(t.firstPrize, t.country, t.prizeCurrency)}</span></span>` : ''}
       </div>
       <div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap;justify-content:flex-end;">
         <a href="${getCalendarLink(t)}" target="_blank" rel="noopener noreferrer" class="signup-btn" onclick="event.stopPropagation()" style="background:#f7fafc;color:#4a5568;border:1px solid #e2e8f0;">📅 Calendar</a>
@@ -439,7 +453,7 @@ function cardHTML(t) {
         ${distanceBadge(t)}
       </div>
       <div class="prize-line">
-        ${t.firstPrize > 0 ? `<span class="prize-val">${fmtPrize(t.firstPrize)}</span>` : ''}
+        ${t.firstPrize > 0 ? `<span class="prize-val">${fmtPrize(t.firstPrize, t.country, t.prizeCurrency)}</span>` : ''}
       </div>
     </div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;">
@@ -998,7 +1012,7 @@ function updateMap(items) {
       const fideTag = t.isFide ? '<br><span style="color:#1d4ed8;font-weight:700">⭐ FIDE Rated</span>' : '';
       const normTag = (t.categoryNorms || t.hasNorms) ? `<br><span style="color:#047857;font-weight:700">🎯 Norm: ${t.categoryNorms || 'kategorie'}</span>` : '';
       const m = L.marker([t.lat, t.lon], { icon: redIcon });
-      m.bindPopup(`<b>${t.name}</b><br>${t.city}, ${t.country}${dist}<br>${fmtDateRange(t.startDate, t.endDate)}${t.firstPrize ? '<br>Prize: ' + fmtPrize(t.firstPrize) : ''}${fideTag}${normTag}`);
+      m.bindPopup(`<b>${t.name}</b><br>${t.city}, ${t.country}${dist}<br>${fmtDateRange(t.startDate, t.endDate)}${t.firstPrize ? '<br>Prize: ' + fmtPrize(t.firstPrize, t.country, t.prizeCurrency) : ''}${fideTag}${normTag}`);
       newMarkers.push(m);
     }
   });

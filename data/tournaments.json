@@ -2205,7 +2205,8 @@
       "fms": 0,
       "isOpen": true,
       "achievableNorms": [],
-      "hasNorms": true
+      "hasNorms": true,
+      "firstPrize": 0
     },
     {
       "id": "cr-1787",
@@ -2415,7 +2416,9 @@
       "fms": 0,
       "isOpen": true,
       "lat": 51.10286,
-      "lon": 17.03006
+      "lon": 17.03006,
+      "firstPrize": 1000,
+      "prizeCurrency": "PLN"
     },
     {
       "id": "ca-20",
@@ -3403,7 +3406,8 @@
       "achievableNorms": [],
       "hasNorms": true,
       "lat": 35.69439,
-      "lon": 51.42151
+      "lon": 51.42151,
+      "firstPrize": 0
     },
     {
       "id": "cr-1355",
@@ -3428,7 +3432,8 @@
       "achievableNorms": [],
       "hasNorms": true,
       "lat": 35.69439,
-      "lon": 51.42151
+      "lon": 51.42151,
+      "firstPrize": 0
     },
     {
       "id": "cr-1356",
@@ -3453,7 +3458,8 @@
       "achievableNorms": [],
       "hasNorms": true,
       "lat": 35.69439,
-      "lon": 51.42151
+      "lon": 51.42151,
+      "firstPrize": 0
     },
     {
       "id": "cr-1357",
@@ -3478,7 +3484,8 @@
       "achievableNorms": [],
       "hasNorms": true,
       "lat": 35.69439,
-      "lon": 51.42151
+      "lon": 51.42151,
+      "firstPrize": 0
     },
     {
       "id": "cr-1359",
@@ -3499,7 +3506,8 @@
       "achievableNorms": [],
       "hasNorms": true,
       "lat": 35.69439,
-      "lon": 51.42151
+      "lon": 51.42151,
+      "firstPrize": 0
     },
     {
       "id": "cr-1360",
@@ -3520,7 +3528,8 @@
       "achievableNorms": [],
       "hasNorms": true,
       "lat": 35.69439,
-      "lon": 51.42151
+      "lon": 51.42151,
+      "firstPrize": 0
     },
     {
       "id": "cr-1363",
@@ -3545,7 +3554,8 @@
       "achievableNorms": [],
       "hasNorms": true,
       "lat": 35.69439,
-      "lon": 51.42151
+      "lon": 51.42151,
+      "firstPrize": 0
     },
     {
       "id": "cr-1364",
@@ -3570,7 +3580,8 @@
       "achievableNorms": [],
       "hasNorms": true,
       "lat": 35.69439,
-      "lon": 51.42151
+      "lon": 51.42151,
+      "firstPrize": 0
     },
     {
       "id": "cr-1368",
@@ -3595,7 +3606,8 @@
       "achievableNorms": [],
       "hasNorms": true,
       "lat": 35.69439,
-      "lon": 51.42151
+      "lon": 51.42151,
+      "firstPrize": 0
     },
     {
       "id": "cr-1369",
@@ -3620,7 +3632,8 @@
       "achievableNorms": [],
       "hasNorms": true,
       "lat": 35.69439,
-      "lon": 51.42151
+      "lon": 51.42151,
+      "firstPrize": 0
     },
     {
       "id": "cr-1370",
@@ -3670,7 +3683,8 @@
       "achievableNorms": [],
       "hasNorms": true,
       "lat": 35.69439,
-      "lon": 51.42151
+      "lon": 51.42151,
+      "firstPrize": 0
     },
     {
       "id": "cr-1426",
@@ -4902,7 +4916,7 @@
       "gms": 0,
       "ims": 0,
       "fms": 0,
-      "firstPrize": 450,
+      "firstPrize": 0,
       "isOpen": true,
       "achievableNorms": [],
       "hasNorms": true,
@@ -5350,7 +5364,7 @@
       "gms": 0,
       "ims": 0,
       "fms": 0,
-      "firstPrize": 300000,
+      "firstPrize": 0,
       "isOpen": true,
       "achievableNorms": [],
       "hasNorms": true,
@@ -6178,7 +6192,8 @@
       "fms": 0,
       "isOpen": true,
       "achievableNorms": [],
-      "hasNorms": true
+      "hasNorms": true,
+      "firstPrize": 0
     },
     {
       "id": "cr-315",
@@ -6202,7 +6217,8 @@
       "fms": 0,
       "isOpen": true,
       "achievableNorms": [],
-      "hasNorms": true
+      "hasNorms": true,
+      "firstPrize": 0
     },
     {
       "id": "cr-316",
@@ -6226,7 +6242,8 @@
       "fms": 0,
       "isOpen": true,
       "achievableNorms": [],
-      "hasNorms": true
+      "hasNorms": true,
+      "firstPrize": 0
     },
     {
       "id": "cr-317",
@@ -6250,7 +6267,8 @@
       "fms": 0,
       "isOpen": true,
       "achievableNorms": [],
-      "hasNorms": true
+      "hasNorms": true,
+      "firstPrize": 0
     },
     {
       "id": "cr-318",
@@ -6274,7 +6292,8 @@
       "fms": 0,
       "isOpen": true,
       "achievableNorms": [],
-      "hasNorms": true
+      "hasNorms": true,
+      "firstPrize": 0
     },
     {
       "id": "cr-319",
@@ -6298,7 +6317,8 @@
       "fms": 0,
       "isOpen": true,
       "achievableNorms": [],
-      "hasNorms": true
+      "hasNorms": true,
+      "firstPrize": 0
     },
     {
       "id": "cr-336",
@@ -7095,7 +7115,7 @@
       "gms": 0,
       "ims": 0,
       "fms": 0,
-      "firstPrize": 3000,
+      "firstPrize": 0,
       "isOpen": true,
       "achievableNorms": [],
       "hasNorms": true,
@@ -9881,7 +9901,7 @@
       "gms": 0,
       "ims": 1,
       "fms": 0,
-      "firstPrize": 12500,
+      "firstPrize": 0,
       "isOpen": true,
       "achievableNorms": [],
       "hasNorms": true,
@@ -12122,7 +12142,7 @@
       "gms": 0,
       "ims": 0,
       "fms": 1,
-      "firstPrize": 25,
+      "firstPrize": 0,
       "isOpen": true,
       "achievableNorms": [],
       "hasNorms": true
@@ -14666,7 +14686,7 @@
       "gms": 0,
       "ims": 0,
       "fms": 0,
-      "firstPrize": 10,
+      "firstPrize": 0,
       "isOpen": true,
       "achievableNorms": [],
       "hasNorms": true,
@@ -16388,7 +16408,7 @@
       "gms": 0,
       "ims": 0,
       "fms": 0,
-      "firstPrize": 6000,
+      "firstPrize": 0,
       "isOpen": true
     },
     {
@@ -17605,7 +17625,9 @@
       "fms": 0,
       "isOpen": true,
       "lat": 49.88335,
-      "lon": 19.49292
+      "lon": 19.49292,
+      "firstPrize": 1750,
+      "prizeCurrency": "PLN"
     },
     {
       "id": "ca-78",
@@ -18899,7 +18921,9 @@
       "lastChecked": "2026-09-14T21:42:39.765Z",
       "players": 36,
       "lat": 52.10387,
-      "lon": 20.6337
+      "lon": 20.6337,
+      "firstPrize": 500,
+      "prizeCurrency": "PLN"
     },
     {
       "id": "ca-127",
@@ -19892,7 +19916,8 @@
       "fms": 0,
       "isOpen": true,
       "achievableNorms": [],
-      "hasNorms": true
+      "hasNorms": true,
+      "firstPrize": 0
     },
     {
       "id": "cr-245",
@@ -20392,7 +20417,8 @@
       "players": null,
       "isFide": true,
       "source": "https://chess-results.com/tnr1497439.aspx?lan=1",
-      "scrapedFrom": "Chess-Results"
+      "scrapedFrom": "Chess-Results",
+      "firstPrize": 0
     },
     {
       "id": "cr-452",
@@ -21201,7 +21227,7 @@
       "gms": 0,
       "ims": 1,
       "fms": 0,
-      "firstPrize": 1250,
+      "firstPrize": 0,
       "isOpen": true,
       "lat": 51.48026,
       "lon": -0.1993
@@ -21276,7 +21302,7 @@
       "gms": 0,
       "ims": 0,
       "fms": 0,
-      "firstPrize": 200000,
+      "firstPrize": 0,
       "isOpen": true,
       "achievableNorms": [],
       "hasNorms": false
@@ -21301,7 +21327,7 @@
       "gms": 0,
       "ims": 0,
       "fms": 0,
-      "firstPrize": 4000,
+      "firstPrize": 0,
       "isOpen": true
     },
     {
@@ -21324,7 +21350,7 @@
       "gms": 0,
       "ims": 0,
       "fms": 0,
-      "firstPrize": 4000,
+      "firstPrize": 0,
       "isOpen": true
     },
     {
@@ -21421,7 +21447,7 @@
       "gms": 0,
       "ims": 0,
       "fms": 0,
-      "firstPrize": 100,
+      "firstPrize": 0,
       "isOpen": true,
       "achievableNorms": [],
       "hasNorms": true,
@@ -22571,7 +22597,7 @@
       "gms": 0,
       "ims": 0,
       "fms": 0,
-      "firstPrize": 200000,
+      "firstPrize": 0,
       "isOpen": true,
       "achievableNorms": [],
       "hasNorms": true,
@@ -22898,7 +22924,7 @@
       "gms": 0,
       "ims": 0,
       "fms": 2,
-      "firstPrize": 200000,
+      "firstPrize": 0,
       "isOpen": true,
       "achievableNorms": [],
       "hasNorms": false
@@ -22973,7 +22999,7 @@
       "gms": 0,
       "ims": 0,
       "fms": 0,
-      "firstPrize": 9,
+      "firstPrize": 0,
       "isOpen": true,
       "achievableNorms": [],
       "hasNorms": true,
@@ -25315,7 +25341,8 @@
       "fms": 0,
       "isOpen": true,
       "achievableNorms": [],
-      "hasNorms": true
+      "hasNorms": true,
+      "firstPrize": 0
     },
     {
       "id": "cr-1987",
@@ -25556,7 +25583,9 @@
       "lastChecked": "2026-09-14T21:42:40.614Z",
       "players": 154,
       "lat": 49.88335,
-      "lon": 19.49292
+      "lon": 19.49292,
+      "firstPrize": 1750,
+      "prizeCurrency": "PLN"
     },
     {
       "id": "ca-146",
@@ -26704,7 +26733,8 @@
       "source": "https://chess-results.com/tnr1480245.aspx?lan=1",
       "scrapedFrom": "Chess-Results",
       "lat": 25.18254,
-      "lon": 75.83907
+      "lon": 75.83907,
+      "firstPrize": 0
     },
     {
       "id": "cr-360",
@@ -27032,7 +27062,7 @@
       "gms": 0,
       "ims": 0,
       "fms": 2,
-      "firstPrize": 1000,
+      "firstPrize": 0,
       "isOpen": true,
       "achievableNorms": [],
       "hasNorms": true,
@@ -30102,7 +30132,8 @@
       "players": 12,
       "isFide": true,
       "source": "https://chess-results.com/tnr1491753.aspx?lan=1",
-      "scrapedFrom": "Chess-Results"
+      "scrapedFrom": "Chess-Results",
+      "firstPrize": 0
     },
     {
       "id": "cr-248",
@@ -30350,7 +30381,8 @@
       "achievableNorms": [],
       "hasNorms": true,
       "lat": 37.27611,
-      "lon": 49.58862
+      "lon": 49.58862,
+      "firstPrize": 0
     },
     {
       "id": "cr-1541",
@@ -30394,7 +30426,8 @@
       "achievableNorms": [],
       "hasNorms": true,
       "lat": 37.27611,
-      "lon": 49.58862
+      "lon": 49.58862,
+      "firstPrize": 0
     },
     {
       "id": "cr-1561",
@@ -30415,7 +30448,8 @@
       "achievableNorms": [],
       "hasNorms": true,
       "lat": 37.27611,
-      "lon": 49.58862
+      "lon": 49.58862,
+      "firstPrize": 0
     },
     {
       "id": "cr-1567",
@@ -30436,7 +30470,8 @@
       "achievableNorms": [],
       "hasNorms": true,
       "lat": 37.27611,
-      "lon": 49.58862
+      "lon": 49.58862,
+      "firstPrize": 0
     },
     {
       "id": "cr-1577",
@@ -30461,7 +30496,8 @@
       "achievableNorms": [],
       "hasNorms": true,
       "lat": 37.27611,
-      "lon": 49.58862
+      "lon": 49.58862,
+      "firstPrize": 0
     },
     {
       "id": "cr-1613",
@@ -30972,7 +31008,8 @@
       "source": "https://chess-results.com/tnr1497444.aspx?lan=1",
       "scrapedFrom": "Chess-Results",
       "lat": -33.92584,
-      "lon": 18.42322
+      "lon": 18.42322,
+      "firstPrize": 0
     },
     {
       "id": "cr-451",
@@ -31048,7 +31085,7 @@
       "gms": 0,
       "ims": 2,
       "fms": 1,
-      "firstPrize": 140000,
+      "firstPrize": 0,
       "isOpen": true,
       "achievableNorms": [],
       "hasNorms": false
@@ -31108,7 +31145,7 @@
       "gms": 4,
       "ims": 2,
       "fms": 4,
-      "firstPrize": 30,
+      "firstPrize": 0,
       "isOpen": true,
       "achievableNorms": [],
       "hasNorms": true
@@ -31616,7 +31653,7 @@
       "gms": 0,
       "ims": 3,
       "fms": 3,
-      "firstPrize": 140000,
+      "firstPrize": 0,
       "isOpen": true,
       "achievableNorms": [],
       "hasNorms": true
@@ -32043,7 +32080,8 @@
       "fms": 1,
       "isOpen": true,
       "achievableNorms": [],
-      "hasNorms": true
+      "hasNorms": true,
+      "firstPrize": 0
     },
     {
       "id": "cr-1425",
@@ -33705,7 +33743,7 @@
       "gms": 0,
       "ims": 0,
       "fms": 1,
-      "firstPrize": 35,
+      "firstPrize": 0,
       "isOpen": true,
       "achievableNorms": [],
       "hasNorms": false,
@@ -33731,7 +33769,7 @@
       "gms": 0,
       "ims": 0,
       "fms": 0,
-      "firstPrize": 35,
+      "firstPrize": 0,
       "isOpen": true,
       "achievableNorms": [],
       "hasNorms": false,
@@ -33818,7 +33856,7 @@
       "gms": 0,
       "ims": 0,
       "fms": 0,
-      "firstPrize": 200,
+      "firstPrize": 0,
       "isOpen": true,
       "achievableNorms": [],
       "hasNorms": true
@@ -37299,7 +37337,7 @@
       "gms": 0,
       "ims": 0,
       "fms": 0,
-      "firstPrize": 10,
+      "firstPrize": 0,
       "isOpen": true,
       "achievableNorms": [],
       "hasNorms": true
@@ -42131,7 +42169,8 @@
       "source": "https://chess-results.com/tnr1478125.aspx?lan=1",
       "scrapedFrom": "Chess-Results",
       "lat": 43.20978,
-      "lon": -77.69306
+      "lon": -77.69306,
+      "firstPrize": 0
     },
     {
       "id": "cr-433",
@@ -42244,7 +42283,8 @@
       "achievableNorms": [],
       "hasNorms": true,
       "lat": 12.29791,
-      "lon": 76.63925
+      "lon": 76.63925,
+      "firstPrize": 0
     },
     {
       "id": "cr-863",
@@ -43498,7 +43538,9 @@
       "fms": 0,
       "isOpen": true,
       "lat": 51.10286,
-      "lon": 17.03006
+      "lon": 17.03006,
+      "firstPrize": 1000,
+      "prizeCurrency": "PLN"
     },
     {
       "id": "ca-343",
@@ -44460,7 +44502,9 @@
       "source": "https://chess-results.com/tnr1451930.aspx?lan=1",
       "scrapedFrom": "Chess-Results",
       "lat": 51.10286,
-      "lon": 17.03006
+      "lon": 17.03006,
+      "firstPrize": 1000,
+      "prizeCurrency": "PLN"
     },
     {
       "id": "cr-578",
@@ -47136,7 +47180,7 @@
       "gms": 1,
       "ims": 0,
       "fms": 1,
-      "firstPrize": 3500,
+      "firstPrize": 0,
       "isOpen": true,
       "achievableNorms": [],
       "hasNorms": true,
@@ -47559,7 +47603,9 @@
       "scrapedFrom": "ChessArbiter",
       "lastChecked": "2026-09-14T21:42:55.062Z",
       "lat": 53.04063,
-      "lon": 16.45629
+      "lon": 16.45629,
+      "firstPrize": 3000,
+      "prizeCurrency": "PLN"
     },
     {
       "id": "cr-43",
@@ -47576,7 +47622,9 @@
       "players": null,
       "isFide": true,
       "source": "https://chess-results.com/tnr1493760.aspx?lan=1",
-      "scrapedFrom": "Chess-Results"
+      "scrapedFrom": "Chess-Results",
+      "firstPrize": 17500,
+      "prizeCurrency": "USD"
     },
     {
       "id": "cr-293",
@@ -51870,7 +51918,7 @@
       "gms": 4,
       "ims": 6,
       "fms": 0,
-      "firstPrize": 140000,
+      "firstPrize": 0,
       "isOpen": true,
       "achievableNorms": [],
       "hasNorms": true
@@ -55022,7 +55070,8 @@
       "players": 24,
       "isFide": true,
       "source": "https://chess-results.com/tnr1492496.aspx?lan=1",
-      "scrapedFrom": "Chess-Results"
+      "scrapedFrom": "Chess-Results",
+      "firstPrize": 0
     },
     {
       "id": "cr-353",
@@ -55039,7 +55088,8 @@
       "players": 14,
       "isFide": true,
       "source": "https://chess-results.com/tnr1492497.aspx?lan=1",
-      "scrapedFrom": "Chess-Results"
+      "scrapedFrom": "Chess-Results",
+      "firstPrize": 0
     },
     {
       "id": "cr-489",
@@ -56321,7 +56371,8 @@
       "achievableNorms": [],
       "hasNorms": true,
       "lat": 37.13856,
-      "lon": -8.53775
+      "lon": -8.53775,
+      "firstPrize": 0
     },
     {
       "id": "ca-647",
@@ -56428,7 +56479,8 @@
       "achievableNorms": [],
       "hasNorms": false,
       "lat": 37.13856,
-      "lon": -8.53775
+      "lon": -8.53775,
+      "firstPrize": 0
     },
     {
       "id": "cr-1215",
@@ -57246,7 +57298,9 @@
       "fms": 0,
       "isOpen": true,
       "lat": 51.10286,
-      "lon": 17.03006
+      "lon": 17.03006,
+      "firstPrize": 15977,
+      "prizeCurrency": "PLN"
     },
     {
       "id": "cr-1901",

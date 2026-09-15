@@ -42,6 +42,212 @@ function detectFide(text) {
   return /\bFIDE\b/i.test(text);
 }
 
+// ── CURRENCY & PRIZE PARSER ───────────────────────────
+const COUNTRY_CURRENCIES = {
+  'POL': 'PLN', 'Poland': 'PLN',
+  'GER': 'EUR', 'FRA': 'EUR', 'ESP': 'EUR', 'ITA': 'EUR', 'NED': 'EUR', 'BEL': 'EUR',
+  'AUT': 'EUR', 'IRL': 'EUR', 'POR': 'EUR', 'FIN': 'EUR', 'GRE': 'EUR', 'CYP': 'EUR',
+  'MLT': 'EUR', 'SVK': 'EUR', 'SLO': 'EUR', 'EST': 'EUR', 'LAT': 'EUR', 'LTU': 'EUR',
+  'CRO': 'EUR', 'CAT': 'EUR', 'LUX': 'EUR',
+  'USA': 'USD', 'ECU': 'USD', 'PAN': 'USD', 'PUR': 'USD',
+  'ENG': 'GBP', 'SCO': 'GBP', 'WLS': 'GBP',
+  'CAN': 'CAD', 'AUS': 'AUD', 'NZL': 'NZD', 'SUI': 'CHF',
+  'CZE': 'CZK', 'HUN': 'HUF', 'SWE': 'SEK', 'NOR': 'NOK', 'DEN': 'DKK', 'ISL': 'ISK',
+  'ROU': 'RON', 'BUL': 'BGN', 'SRB': 'RSD', 'BIH': 'BAM', 'MKD': 'MKD', 'ALB': 'ALL',
+  'UKR': 'UAH', 'BLR': 'BYN', 'TUR': 'TRY', 'RUS': 'RUB', 'GEO': 'GEL', 'ARM': 'AMD', 'AZE': 'AZN',
+  'IND': 'INR', 'CHN': 'CNY', 'JPN': 'JPY', 'KOR': 'KRW', 'VIE': 'VND', 'THA': 'THB',
+  'MAS': 'MYR', 'SGP': 'SGD', 'INA': 'IDR', 'PHI': 'PHP', 'KAZ': 'KZT', 'UZB': 'UZS', 'KGZ': 'KGS',
+  'UAE': 'AED', 'KSA': 'SAR', 'IRI': 'IRR', 'IRQ': 'IQD', 'ISR': 'ILS', 'Jordan': 'JOD', 'Lebanon': 'LBP',
+  'BRA': 'BRL', 'ARG': 'ARS', 'COL': 'COP', 'CHI': 'CLP', 'PER': 'PEN', 'MEX': 'MXN',
+  'URU': 'UYU', 'PAR': 'PYG', 'BOL': 'BOB', 'Bolivia': 'BOB', 'VEN': 'VES', 'CRC': 'CRC', 'CUB': 'CUP', 'DOM': 'DOP', 'GUA': 'GTQ',
+  'EGY': 'EGP', 'RSA': 'ZAR', 'MAR': 'MAD', 'ALG': 'DZD', 'TUN': 'TND', 'NGR': 'NGN', 'KEN': 'KES', 'ZAM': 'ZMW', 'ZIM': 'USD', 'NAM': 'NAD', 'Botswana': 'BWP',
+  'BAN': 'BDT', 'SRI': 'LKR', 'NEP': 'NPR', 'HKG': 'HKD', 'Mongolia': 'MNT'
+};
+
+const SYMBOL_CURRENCIES = [
+  { regex: /\b(?:zł|zl|pln)\b/i, code: 'PLN' },
+  { regex: /€|\b(?:eur|euro)\b/i, code: 'EUR' },
+  { regex: /£|\b(?:gbp)\b/i, code: 'GBP' },
+  { regex: /\b(?:chf)\b/i, code: 'CHF' },
+  { regex: /\b(?:czk|kč|kc)\b/i, code: 'CZK' },
+  { regex: /\b(?:huf|ft)\b/i, code: 'HUF' },
+  { regex: /\b(?:ron|lei)\b/i, code: 'RON' },
+  { regex: /\b(?:bgn|лв)\b/i, code: 'BGN' },
+  { regex: /\b(?:rs\.?|inr|rupee|rupees)\b/i, code: 'INR' },
+  { regex: /r\$|\b(?:brl|reais|real)\b/i, code: 'BRL' },
+  { regex: /\b(?:usd|dollars?|dolar[yów]*)\b/i, code: 'USD' }
+];
+
+let cachedExchangeRates = null;
+async function fetchDailyExchangeRates() {
+  const ratesFile = path.join(__dirname, '..', 'data', 'exchange_rates.json');
+  try {
+    if (fs.existsSync(ratesFile)) {
+      const j = JSON.parse(fs.readFileSync(ratesFile, 'utf8'));
+      const today = new Date().toISOString().slice(0, 10);
+      if (j && j.date === today && j.rates) {
+        cachedExchangeRates = j.rates;
+        return j.rates;
+      }
+    }
+    const res = await fetch('https://open.er-api.com/v6/latest/USD', { timeout: 8000 });
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.rates) {
+        cachedExchangeRates = data.rates;
+        fs.writeFileSync(ratesFile, JSON.stringify({
+          date: new Date().toISOString().slice(0, 10),
+          base: 'USD',
+          rates: data.rates
+        }, null, 2), 'utf8');
+        console.log('  💱 Updated daily exchange rates successfully');
+        return data.rates;
+      }
+    }
+  } catch (err) {
+    console.warn('  ⚠️ Could not update exchange rates:', err.message);
+  }
+  if (!cachedExchangeRates && fs.existsSync(ratesFile)) {
+    try {
+      const j = JSON.parse(fs.readFileSync(ratesFile, 'utf8'));
+      if (j && j.rates) cachedExchangeRates = j.rates;
+    } catch(e) {}
+  }
+  return cachedExchangeRates || { USD: 1, PLN: 3.75, EUR: 0.86, GBP: 0.74 };
+}
+
+function cleanNumber(str) {
+  if (!str) return 0;
+  let s = str.trim().replace(/[,.]00\s*$/, '');
+  return parseInt(s.replace(/[^\d]/g, ''), 10);
+}
+
+function parseTournamentPrize(text, country = '') {
+  if (!text) return null;
+  const str = text.replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ');
+
+  let rawVal = 0;
+  let detectedCurrency = null;
+  let isFirstPlace = false;
+
+  const NUM_REGEX_STR = '\\d+(?:[ .]\\d{3})*(?:[.,]\\d{2})?';
+
+  // 1. Check for specific first place prize patterns
+  const firstPlacePatterns = [
+    new RegExp(`(?:1\\s*[-.]?\\s*miejsc[ea]|i\\s*miejsc[ea]|1st\\s*(?:place|prize)|1er\\s*(?:premio|prix)|1\\s*nagrod[a-z]*|i\\s*nagrod[a-z]*|1\\s*preis|1\\s*premio|\\bwinner\\b)\\s*[:=-]?\\s*([€$£złA-Z]{1,4})?\\s*(${NUM_REGEX_STR})\\s*([€$£złA-Za-z]{1,6})?`, 'i'),
+    new RegExp(`([€$£złA-Z]{1,4})?\\s*(${NUM_REGEX_STR})\\s*([€$£złA-Za-z]{1,6})?\\s*(?:za\\s*)?(?:1\\s*[-.]?\\s*miejsc[ea]|i\\s*miejsc[ea]|1st\\s*(?:place|prize)|1er\\s*(?:premio|prix)|dla\\s*zwyci[eę]zc[ay])`, 'i')
+  ];
+
+  for (const pat of firstPlacePatterns) {
+    const m = str.match(pat);
+    if (m) {
+      const currPrefix = m[1] || '';
+      const numPart = m[2];
+      const currSuffix = m[3] || '';
+      const parsed = cleanNumber(numPart);
+      if (parsed >= 50 && parsed <= 50000000) {
+        const testArea = `${currPrefix} ${currSuffix} ${m[0]}`;
+        let foundCurr = null;
+        for (const sc of SYMBOL_CURRENCIES) {
+          if (sc.regex.test(testArea)) {
+            foundCurr = sc.code;
+            break;
+          }
+        }
+        if (!foundCurr && parsed >= 2020 && parsed <= 2035) {
+          continue;
+        }
+        rawVal = parsed;
+        isFirstPlace = true;
+        detectedCurrency = foundCurr;
+        break;
+      }
+    }
+  }
+
+  // 2. Check for total prize fund / pool patterns
+  if (!rawVal) {
+    const poolPatterns = [
+      new RegExp(`(?:pula\\s*nagr[oó]d|prize\\s*fund|total\\s*prize|pula|premios|bolsa\\s*de\\s*premios|preisfonds)\\s*[:=-]?\\s*([€$£złA-Z]{1,4}|rs\\.?)?\\s*(${NUM_REGEX_STR})\\s*([€$£złA-Za-z]{1,6})?`, 'i'),
+      new RegExp(`(?:nagrod[ay]\\s*o\\s*warto[śs]ci|nagrod[ay]\\s*finansowe\\s*do)\\s*[:=-]?\\s*([€$£złA-Z]{1,4})?\\s*(${NUM_REGEX_STR})\\s*([€$£złA-Za-z]{1,6})?`, 'i')
+    ];
+    for (const pat of poolPatterns) {
+      const m = str.match(pat);
+      if (m) {
+        const currPrefix = m[1] || '';
+        const numPart = m[2];
+        const currSuffix = m[3] || '';
+        const parsed = cleanNumber(numPart);
+        if (parsed >= 50 && parsed <= 50000000) {
+          const testArea = `${currPrefix} ${currSuffix} ${m[0]}`;
+          let foundCurr = null;
+          for (const sc of SYMBOL_CURRENCIES) {
+            if (sc.regex.test(testArea)) {
+              foundCurr = sc.code;
+              break;
+            }
+          }
+          if (!foundCurr && parsed >= 2020 && parsed <= 2035) {
+            continue;
+          }
+          rawVal = Math.round(parsed * 0.35);
+          detectedCurrency = foundCurr;
+          break;
+        }
+      }
+    }
+  }
+
+  // 3. Special case: "Turniej o Tysiaka"
+  if (!rawVal) {
+    if (/turniej\s*o\s*tysiak[a-z]*/i.test(str)) {
+      rawVal = 1000;
+      detectedCurrency = 'PLN';
+      isFirstPlace = true;
+    }
+  }
+
+  if (!rawVal) return null;
+
+  // 4. Currency resolution: if not explicitly detected, fall back to country national currency
+  if (!detectedCurrency) {
+    const cUpper = (country || '').toUpperCase().trim();
+    detectedCurrency = COUNTRY_CURRENCIES[cUpper] || 'USD';
+  }
+
+  // 5. Currency conversion
+  const rates = cachedExchangeRates || { USD: 1, PLN: 3.75, EUR: 0.86, GBP: 0.74 };
+  const rateToUsd = rates[detectedCurrency] || 1.0;
+  const valueInUsd = Math.round(rawVal / rateToUsd);
+
+  const isPoland = (country === 'POL' || country === 'Poland');
+  let finalPrize = 0;
+  let finalCurrency = 'USD';
+
+  if (isPoland) {
+    if (detectedCurrency === 'PLN') {
+      finalPrize = rawVal;
+    } else {
+      const plnRate = rates['PLN'] || 3.75;
+      finalPrize = Math.round(valueInUsd * plnRate);
+    }
+    finalCurrency = 'PLN';
+  } else {
+    finalPrize = valueInUsd;
+    finalCurrency = 'USD';
+  }
+
+  if (finalPrize < 10) return null;
+
+  return {
+    firstPrize: finalPrize,
+    prizeCurrency: finalCurrency,
+    originalPrize: rawVal,
+    originalCurrency: detectedCurrency,
+    isFirstPlace
+  };
+}
+
 const PZSZACH_RANKINGS = {
   'BK': 1000, 'BRAK': 1000, '': 1000,
   'V': 1200,
@@ -260,6 +466,7 @@ async function scrapeChessArbiter() {
         const timeControl = detectTimeControl(name, `${fullTd} ${col2Text}`);
         const rounds = detectRounds(name);
         const achievableNorms = computePzszachNorms({ timeControl, rounds, durationDays, text: `${name} ${fullTd} ${col2Text}` });
+        const prizeInfo = parseTournamentPrize(`${name} ${fullTd} ${col2Text}`, 'POL');
 
         tournaments.push({
           id: `ca-${idCounter++}`,
@@ -273,6 +480,8 @@ async function scrapeChessArbiter() {
           durationDays,
           timeControl,
           rounds,
+          firstPrize: prizeInfo ? prizeInfo.firstPrize : 0,
+          prizeCurrency: prizeInfo ? prizeInfo.prizeCurrency : 'PLN',
           isFide,
           achievableNorms,
           hasNorms: achievableNorms.length > 0,
@@ -386,6 +595,7 @@ async function scrapeChessResults(browser) {
 
       const ms = new Date(end || start) - new Date(start);
       const durationDays = isNaN(ms) || ms < 0 ? 1 : Math.max(1, Math.round(ms / 86400000) + 1);
+      const prizeInfo = parseTournamentPrize(name, fedCode);
       
       tournaments.push({
         id: `cr-${crCounter++}`,
@@ -400,6 +610,8 @@ async function scrapeChessResults(browser) {
         timeControl: detectTimeControl(tcRaw || name),
         rounds: rounds,
         players: players,
+        firstPrize: prizeInfo ? prizeInfo.firstPrize : 0,
+        prizeCurrency: prizeInfo ? prizeInfo.prizeCurrency : (fedCode === 'POL' ? 'PLN' : 'USD'),
         isFide: true,
         source: `https://chess-results.com/${sourceUrl}`,
         scrapedFrom: 'Chess-Results'
@@ -484,6 +696,7 @@ function parseChessManagerCard(raw, id) {
     players,
     text: `${name} ${raw.text}`
   }) : [];
+  const prizeInfo = parseTournamentPrize(`${name} ${raw.text}`, countryInfo.code);
 
   return {
     id: `cm-${id}`,
@@ -498,6 +711,8 @@ function parseChessManagerCard(raw, id) {
     timeControl: tc,
     rounds,
     players,
+    firstPrize: prizeInfo ? prizeInfo.firstPrize : 0,
+    prizeCurrency: prizeInfo ? prizeInfo.prizeCurrency : (countryInfo.code === 'POL' ? 'PLN' : 'USD'),
     isFide,
     achievableNorms,
     hasNorms: achievableNorms.length > 0,
@@ -568,6 +783,7 @@ async function fetchTournamentDetails(tournaments, cache) {
       if (old.ims !== undefined) t.ims = old.ims;
       if (old.fms !== undefined) t.fms = old.fms;
       if (old.firstPrize !== undefined) t.firstPrize = old.firstPrize;
+      if (old.prizeCurrency !== undefined) t.prizeCurrency = old.prizeCurrency;
       if (old.isOpen !== undefined) t.isOpen = old.isOpen;
       if (old.isFide !== undefined && !t.isFide) t.isFide = old.isFide;
       if (old.achievableNorms && (!t.achievableNorms || !t.achievableNorms.length)) {
@@ -710,6 +926,13 @@ async function fetchTournamentDetails(tournaments, cache) {
               const merged = new Set([...(t.achievableNorms || []), ...calculatedNorms]);
               t.achievableNorms = allowedOrder.filter(x => merged.has(x));
               t.hasNorms = t.achievableNorms.length > 0;
+
+              const prizeInfo = parseTournamentPrize(`${t.name || ''} ${js || ''}`, t.country || 'POL');
+              if (prizeInfo) {
+                t.firstPrize = prizeInfo.firstPrize;
+                t.prizeCurrency = prizeInfo.prizeCurrency;
+              }
+
               detailsFound = true;
             }
           } catch (e) {
@@ -824,10 +1047,10 @@ async function fetchTournamentDetails(tournaments, cache) {
                 t.hasNorms = t.achievableNorms.length > 0;
               }
 
-              const prizeMatch = html.match(/(PLN|zł|zl|EUR|€)\s*([\d,\.]+)/i);
-              if (prizeMatch) {
-                const val = parseInt(prizeMatch[2].replace(/[^\d]/g, ''), 10);
-                if (val > 0 && val < 500000) t.firstPrize = val;
+              const prizeInfo = parseTournamentPrize(`${t.name || ''} ${html || ''}`, t.country || 'POL');
+              if (prizeInfo) {
+                t.firstPrize = prizeInfo.firstPrize;
+                t.prizeCurrency = prizeInfo.prizeCurrency;
               }
             }
 
@@ -904,22 +1127,10 @@ async function fetchTournamentDetails(tournaments, cache) {
           t.ims = (html.match(/\bW?IM\b/g) || []).length;
           t.fms = (html.match(/\bW?FM\b/g) || []).length;
 
-          const prizeMatch = html.match(/(€|PLN|EUR|USD|\$|£|GBP|CHF|AUD|CAD)\s*([\d,\.]+)/i);
-          if (prizeMatch) {
-            const currency = prizeMatch[1].toUpperCase();
-            const val = parseInt(prizeMatch[2].replace(/[^\d]/g, ''), 10);
-            if (val > 0 && val < 1000000) {
-              let multiplier = 1.0;
-              switch(currency) {
-                case '€': case 'EUR': multiplier = 1.10; break;
-                case 'PLN': multiplier = 0.25; break;
-                case '£': case 'GBP': multiplier = 1.25; break;
-                case 'CHF': multiplier = 1.15; break;
-                case 'AUD': multiplier = 0.65; break;
-                case 'CAD': multiplier = 0.74; break;
-              }
-              t.firstPrize = Math.round(val * multiplier);
-            }
+          const prizeInfo = parseTournamentPrize(`${t.name || ''} ${html || ''}`, t.country);
+          if (prizeInfo) {
+            t.firstPrize = prizeInfo.firstPrize;
+            t.prizeCurrency = prizeInfo.prizeCurrency;
           }
           t.isOpen = !(html.toLowerCase().includes('closed') || (t.name && t.name.toLowerCase().includes('zamknięt')));
         }
@@ -940,6 +1151,9 @@ async function fetchTournamentDetails(tournaments, cache) {
 
 async function main() {
   console.log('\n🏁 chess:tour scraper starting...\n');
+
+  // Fetch / update daily world currency rates
+  await fetchDailyExchangeRates();
 
   // Load cache of previously scraped details
   const cacheFile = path.join(__dirname, '..', 'data', 'tournaments.json');
@@ -1114,4 +1328,12 @@ async function main() {
   console.log(`✅ Saved to ${outFile}\n`);
 }
 
-main().catch(e => { console.error('Fatal error:', e); process.exit(1); });
+if (require.main === module) {
+  main().catch(e => { console.error('Fatal error:', e); process.exit(1); });
+}
+
+module.exports = {
+  parseTournamentPrize,
+  fetchDailyExchangeRates,
+  computePzszachNorms
+};
